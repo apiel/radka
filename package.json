@@ -1,9 +1,9 @@
 {
   "name": "radka",
   "version": "0.0.1",
-  "main": "index.js",
   "license": "MIT",
   "bin": "dist/index.js",
+  "main": "dist/lib.js",
   "author": "Alexandre Piel <alexandre.piel@gmail.com>",
   "repository": {
     "type": "git",
@@ -26,10 +26,12 @@
     "jsx-pragmatic": "^2.0.8",
     "logol": "^0.0.3",
     "minimist": "^1.2.5",
+    "tmp": "^0.1.0",
     "ts-loader": "^6.2.2"
   },
   "devDependencies": {
     "@types/node": "^12.12.31",
+    "@types/tmp": "^0.1.0",
     "ts-node": "^8.8.1"
   }
 }

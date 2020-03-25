@@ -4,7 +4,7 @@ import { info } from 'logol';
 import * as minimist from 'minimist';
 import { cosmiconfig } from 'cosmiconfig';
 
-import { CONFIG_FILE, setConfig } from './config';
+import { CONFIG_FILE, setConfig, config as globalConfig } from './config';
 import { compile } from './compile';
 
 const cosmiconfigOptions = {
@@ -18,10 +18,7 @@ const cosmiconfigOptions = {
 };
 
 async function run() {
-    const {
-        configFile,
-        ...config
-    } = minimist(process.argv.slice(2));
+    const { configFile, ...config } = minimist(process.argv.slice(2));
     if (config.help || config.h) {
         console.log(`Usage: radka
 
@@ -39,7 +36,9 @@ Options:
 
         setConfig(cosmic?.config);
         setConfig(config);
-        const res = await compile();
+        info('Config', globalConfig);
+        await compile();
+        // const res = await compile();
         // info('Result', res);
     }
 }

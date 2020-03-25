@@ -1,4 +1,5 @@
 import { resolve, join } from 'path';
+import { dirSync } from 'tmp';
 
 export const CONFIG_FILE = 'radka.config';
 export const ROOT_FOLDER = process.env.ROOT_FOLDER
@@ -8,6 +9,7 @@ export const ROOT_FOLDER = process.env.ROOT_FOLDER
 export let config = {
     srcFolder: 'src',
     distFolder: 'site',
+    tmpFolder: dirSync().name,
 };
 
 export let distPath = join(ROOT_FOLDER, config.distFolder);
