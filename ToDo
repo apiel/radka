@@ -1,0 +1,7 @@
+- link page
+- page with multiple values [index].js
+
+- onClick should be included in html as script, this can be done with custom node function in jsx-pragmatic
+    + it should as well recognize that it is including a server function, like isomor (maybe later)
+
+- <script> in html should be able to call server function isomor style
