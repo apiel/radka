@@ -1,11 +1,11 @@
-import { jsx } from '../../dist/lib';
+import { jsx, page } from '../../dist/lib';
 import { Hello } from '../components/Hello';
 
-function Login({ prefilledEmail }) {
+function Login() {
     return (
         <section>
             <Hello name="abc" />
-            <input type="text" placeholder="email" value={prefilledEmail} />
+            <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />
             <button>Log In</button>
         </section>
