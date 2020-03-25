@@ -1,29 +1,14 @@
-import * as webpack from 'webpack';
+import * as cp from 'child_process';
+import { promisify } from 'util';
+
 import { srcPath, distPath } from './config';
 
-const webpackConfig = {
-    context: srcPath,
-    // entry: './src-demo/hello.ts',
-    output: {
-        pathinfo: true,
-        path: distPath,
-        // filename: 'bundle.js',
-    },
-    module: {
-        rules: [{ test: /\.tsx?$/, use: 'ts-loader' }],
-    },
-};
+const exec = promisify(cp.exec as any);
 
-export function compile() {
-    const compiler = webpack(webpackConfig);
-    return new Promise((resolve, reject) => {
-        compiler.run((err, stats) => {
-            if (err) {
-                reject(err);
-            }
-            return resolve({
-                stats,
-            });
-        });
+export async function compile() {
+    const output = await exec(`babel ${srcPath} --out-dir ${distPath}`, {
+        stdio: 'inherit',
+        shell: true,
     });
+    console.log('out', output);
 }
