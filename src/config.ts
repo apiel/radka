@@ -11,13 +11,10 @@ export let config = {
 };
 
 export let distPath = join(ROOT_FOLDER, config.distFolder);
+export let srcPath = join(ROOT_FOLDER, config.srcFolder);
 
 export function setConfig(newConfig = {}) {
     config = { ...config, ...newConfig };
     distPath = join(ROOT_FOLDER, config.distFolder);
+    srcPath = join(ROOT_FOLDER, config.srcFolder);
 }
-
-export function setDistPath(path: string) {
-    distPath = path;
-}
-

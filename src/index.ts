@@ -5,6 +5,7 @@ import * as minimist from 'minimist';
 import { cosmiconfig } from 'cosmiconfig';
 
 import { CONFIG_FILE, setConfig } from './config';
+import { compile } from './compile';
 
 const cosmiconfigOptions = {
     searchPlaces: [
@@ -18,12 +19,11 @@ const cosmiconfigOptions = {
 
 async function run() {
     const {
-        _: [src, dist],
         configFile,
         ...config
     } = minimist(process.argv.slice(2));
     if (config.help || config.h) {
-        console.log(`Usage: radka [src] [dist]
+        console.log(`Usage: radka
 
 Options:
   --configFile=./config.json
@@ -39,6 +39,7 @@ Options:
 
         setConfig(cosmic?.config);
         setConfig(config);
+        compile();
     }
 }
 
