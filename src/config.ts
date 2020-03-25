@@ -9,6 +9,7 @@ export const ROOT_FOLDER = process.env.ROOT_FOLDER
 export let config = {
     srcFolder: 'src',
     distFolder: 'site',
+    pagesFolder: 'pages',
     tmpFolder: dirSync().name,
 };
 

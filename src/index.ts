@@ -24,8 +24,7 @@ async function run() {
 
 Options:
   --configFile=./config.json
-  --srcFolder=src
-  --distFolder=site
+${Object.keys(globalConfig).map(k => `  --${k}=${globalConfig[k]}\n`).join('')}
 `);
     } else {
         info('Start Radka');
