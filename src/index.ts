@@ -39,7 +39,8 @@ Options:
 
         setConfig(cosmic?.config);
         setConfig(config);
-        compile();
+        const res = await compile();
+        // info('Result', res);
     }
 }
 
