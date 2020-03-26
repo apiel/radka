@@ -1,8 +1,12 @@
 import { jsx, page } from '../../../dist/lib';
+import Login from '../index';
 
 function Sub() {
     return (
-        <h1>Sub</h1>
+        <div>
+            <h1>Sub</h1>
+            {/* <a href={Login.linkId}>home</a> */}
+        </div>
     );
 }
 

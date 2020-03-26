@@ -1,4 +1,5 @@
 import * as cp from 'child_process';
+import { log } from 'logol';
 import { promisify } from 'util';
 import { html } from 'jsx-pragmatic';
 import { join, basename, extname, dirname } from 'path';
@@ -6,6 +7,7 @@ import * as glob from 'glob';
 import { ensureFile, outputFile } from 'fs-extra';
 
 import { srcPath, distPath, config } from './config';
+import { Page } from './lib';
 
 const exec = promisify(cp.exec as any);
 const globAsync = promisify(glob);
@@ -26,6 +28,7 @@ async function generatePages() {
     const basePath = join(config.tmpFolder, config.pagesFolder);
     const files = await globAsync(join(basePath, '**', '*'));
     for (const file of files) {
+        console.log('file', file);
         const filename = basename(file, extname(file));
         const htmlPath = join(
             distPath,
@@ -36,10 +39,29 @@ async function generatePages() {
             ).substr(basePath.length),
         );
 
-        const page = require(file).default;
-        const source = page.component().render(html());
-
-        await ensureFile(htmlPath);
-        await outputFile(htmlPath, source);
+        log('Load page component', file);
+        const page: Page = require(file).default;
+        if (page.propsList) {
+            for (const props of page.propsList) {
+                let htmlPathWithProps = htmlPath;
+                Object.keys(props).forEach(key => {
+                    htmlPathWithProps = htmlPathWithProps.replace(
+                        `[${key}]`,
+                        props[key],
+                    );
+                });
+                await saveComponentToHtml(page, htmlPathWithProps, props);
+            }
+        } else {
+            await saveComponentToHtml(page, htmlPath);
+        }
     }
+}
+
+async function saveComponentToHtml(page: Page, htmlPath: string, props?: any) {
+    log('Generate page', htmlPath);
+    const source = page.component(props).render(html());
+
+    await ensureFile(htmlPath);
+    await outputFile(htmlPath, source);
 }
