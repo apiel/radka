@@ -4,9 +4,11 @@ export const jsx = node;
 
 let linkId = 0;
 
-type PropsList = {
+export type Props = {
     [key: string]: any;
-}[] | undefined;
+};
+
+type PropsList = Props[] | undefined;
 
 export interface Page {
     propsList: PropsList;
@@ -17,7 +19,7 @@ export interface Page {
 // need to improve types
 export function page(
     component: Function,
-    propsList: PropsList,
+    propsList?: PropsList,
 ): Page {
     return {
         propsList,

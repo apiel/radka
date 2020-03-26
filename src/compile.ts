@@ -7,7 +7,7 @@ import * as glob from 'glob';
 import { ensureFile, outputFile } from 'fs-extra';
 
 import { srcPath, distPath, config } from './config';
-import { Page } from './lib';
+import { Page, Props } from './lib';
 
 const exec = promisify(cp.exec as any);
 const globAsync = promisify(glob);
@@ -26,9 +26,9 @@ export async function compile() {
 
 async function generatePages() {
     const basePath = join(config.tmpFolder, config.pagesFolder);
-    const files = await globAsync(join(basePath, '**', '*'));
+    const files = await globAsync(join(basePath, '**', '*.*'));
+    log('Pages component founds', files);
     for (const file of files) {
-        console.log('file', file);
         const filename = basename(file, extname(file));
         const htmlPath = join(
             distPath,
@@ -43,14 +43,11 @@ async function generatePages() {
         const page: Page = require(file).default;
         if (page.propsList) {
             for (const props of page.propsList) {
-                let htmlPathWithProps = htmlPath;
-                Object.keys(props).forEach(key => {
-                    htmlPathWithProps = htmlPathWithProps.replace(
-                        `[${key}]`,
-                        props[key],
-                    );
-                });
-                await saveComponentToHtml(page, htmlPathWithProps, props);
+                await saveComponentToHtml(
+                    page,
+                    applyPropsToHtmlPath(htmlPath, props),
+                    props,
+                );
             }
         } else {
             await saveComponentToHtml(page, htmlPath);
@@ -58,7 +55,19 @@ async function generatePages() {
     }
 }
 
-async function saveComponentToHtml(page: Page, htmlPath: string, props?: any) {
+function applyPropsToHtmlPath(htmlPath: string, props: Props) {
+    let htmlPathWithProps = htmlPath;
+    Object.keys(props).forEach(key => {
+        htmlPathWithProps = htmlPathWithProps.replace(`[${key}]`, props[key]);
+    });
+    return htmlPathWithProps;
+}
+
+async function saveComponentToHtml(
+    page: Page,
+    htmlPath: string,
+    props?: Props,
+) {
     log('Generate page', htmlPath);
     const source = page.component(props).render(html());
 
