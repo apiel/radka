@@ -11,6 +11,6 @@ function Product({ id, color }) {
 }
 
 export default page(Product, [
-    { id: 1, color: 'red' },
-    { id: 2, color: 'blue' },
+    { id: "1", color: 'red' },
+    { id: "2", color: 'blue' },
 ]);

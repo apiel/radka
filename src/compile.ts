@@ -69,6 +69,7 @@ async function saveComponentToHtml(
     props?: Props,
 ) {
     log('Generate page', htmlPath);
+    console.log('yyoyoyoy', page.component(props));
     const source = page.component(props).render(html());
 
     await ensureFile(htmlPath);
