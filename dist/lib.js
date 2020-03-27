@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsx_pragmatic_1 = require("jsx-pragmatic");
+const fs_extra_1 = require("fs-extra");
 exports.jsx = jsx_pragmatic_1.node;
 let linkIdSeq = 0;
 function page(component, propsList) {
@@ -15,8 +16,15 @@ function page(component, propsList) {
 exports.page = page;
 function serialize(props) {
     if (props) {
-        return Object.keys(props).map((k) => `${k}=${props[k]}`).join(';');
+        return Object.keys(props)
+            .map(k => `${k}=${props[k]}`)
+            .join(';');
     }
     return '';
 }
+function Import({ src }) {
+    const source = fs_extra_1.readFileSync(src).toString();
+    return jsx_pragmatic_1.node('script', { innerHTML: source });
+}
+exports.Import = Import;
 //# sourceMappingURL=lib.js.map

@@ -3,14 +3,14 @@
 import { NODE_TYPE } from 'jsx-pragmatic';
 
 const ELEMENT_PROP = {
-    INNER_HTML: 'innerHTML'
+    INNER_HTML: 'innerHTML',
 };
 
 const SELF_CLOSING_TAGS = {
-    br: true
+    br: true,
 };
 
-function htmlEncode(text : string) : string {
+function htmlEncode(text: string): string {
     return text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -20,8 +20,7 @@ function htmlEncode(text : string) : string {
         .replace(/\//g, '&#x2F;');
 }
 
-function propsToHTML(props : any) : string {
-
+function propsToHTML(props: any): string {
     const keys = Object.keys(props).filter(key => {
         const val = props[key];
 
@@ -33,7 +32,11 @@ function propsToHTML(props : any) : string {
             return false;
         }
 
-        if (typeof val === 'string' || typeof val === 'number' || val === true) {
+        if (
+            typeof val === 'string' ||
+            typeof val === 'number' ||
+            val === true
+        ) {
             return true;
         }
 
@@ -48,23 +51,23 @@ function propsToHTML(props : any) : string {
         const val = props[key];
 
         if (val === true) {
-            return `${ htmlEncode(key) }`;
+            return `${htmlEncode(key)}`;
         }
 
         if (typeof val !== 'string' && typeof val !== 'number') {
-            throw new TypeError(`Unexpected prop type: ${ typeof val }`);
+            throw new TypeError(`Unexpected prop type: ${typeof val}`);
         }
 
-        return `${ htmlEncode(key) }="${ htmlEncode(val.toString()) }"`;
+        return `${htmlEncode(key)}="${htmlEncode(val.toString())}"`;
     });
 
-    return ` ${ pairs.join(' ') }`;
+    return ` ${pairs.join(' ')}`;
 }
 
 export function html(opts: { transform?: (node: any) => any } = {}) {
     const { transform } = opts;
 
-    const htmlRenderer = (node) => {
+    const htmlRenderer = node => {
         if (transform) {
             node = transform(node);
         }
@@ -72,26 +75,27 @@ export function html(opts: { transform?: (node: any) => any } = {}) {
         if (node.type === NODE_TYPE.COMPONENT) {
             return [].concat(node.renderComponent(htmlRenderer)).join('');
         }
-        
+
         if (node.type === NODE_TYPE.ELEMENT) {
             const renderedProps = propsToHTML(node.props);
 
             if (SELF_CLOSING_TAGS[node.name]) {
-                return `<${ node.name }${ renderedProps } />`;
+                return `<${node.name}${renderedProps} />`;
             } else {
-                const renderedChildren = (typeof node.props[ELEMENT_PROP.INNER_HTML] === 'string')
-                    ? node.props[ELEMENT_PROP.INNER_HTML]
-                    : node.renderChildren(htmlRenderer).join('');
-                    
-                return `<${ node.name }${ renderedProps }>${ renderedChildren }</${ node.name }>`;
+                const renderedChildren =
+                    typeof node.props[ELEMENT_PROP.INNER_HTML] === 'string'
+                        ? node.props[ELEMENT_PROP.INNER_HTML]
+                        : node.renderChildren(htmlRenderer).join('');
+
+                return `<${node.name}${renderedProps}>${renderedChildren}</${node.name}>`;
             }
         }
-        
+
         if (node.type === NODE_TYPE.TEXT) {
             return htmlEncode(node.text);
         }
 
-        throw new TypeError(`Unhandleable node: ${ node.type }`);
+        throw new TypeError(`Unhandleable node: ${node.type}`);
     };
 
     return htmlRenderer;

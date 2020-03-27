@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsx_pragmatic_1 = require("jsx-pragmatic");
 const ELEMENT_PROP = {
-    INNER_HTML: 'innerHTML'
+    INNER_HTML: 'innerHTML',
 };
 const SELF_CLOSING_TAGS = {
-    br: true
+    br: true,
 };
 function htmlEncode(text) {
     return text
@@ -25,7 +25,9 @@ function propsToHTML(props) {
         if (!val) {
             return false;
         }
-        if (typeof val === 'string' || typeof val === 'number' || val === true) {
+        if (typeof val === 'string' ||
+            typeof val === 'number' ||
+            val === true) {
             return true;
         }
         return false;
@@ -47,7 +49,7 @@ function propsToHTML(props) {
 }
 function html(opts = {}) {
     const { transform } = opts;
-    const htmlRenderer = (node) => {
+    const htmlRenderer = node => {
         if (transform) {
             node = transform(node);
         }
@@ -60,7 +62,7 @@ function html(opts = {}) {
                 return `<${node.name}${renderedProps} />`;
             }
             else {
-                const renderedChildren = (typeof node.props[ELEMENT_PROP.INNER_HTML] === 'string')
+                const renderedChildren = typeof node.props[ELEMENT_PROP.INNER_HTML] === 'string'
                     ? node.props[ELEMENT_PROP.INNER_HTML]
                     : node.renderChildren(htmlRenderer).join('');
                 return `<${node.name}${renderedProps}>${renderedChildren}</${node.name}>`;

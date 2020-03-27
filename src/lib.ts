@@ -1,4 +1,5 @@
-import { node, html } from 'jsx-pragmatic';
+import { node } from 'jsx-pragmatic';
+import { readFileSync } from 'fs-extra';
 
 export const jsx = node;
 
@@ -37,7 +38,14 @@ function serialize(props?: LinkProps) {
         // should we remove % from value
         // we would anyway need a central place to generate url values
         // for the applyPropsToHtmlPath in compile.ts
-        return Object.keys(props).map((k) => `${k}=${props[k]}`).join(';');
+        return Object.keys(props)
+            .map(k => `${k}=${props[k]}`)
+            .join(';');
     }
     return '';
+}
+
+export function Import({ src }: { src: string }) {
+    const source = readFileSync(src).toString();
+    return node('script', { innerHTML: source });
 }
