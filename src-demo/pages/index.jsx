@@ -5,9 +5,13 @@ import { readFileSync } from 'fs-extra';
 // import { handleClick } from '../script';
 
 function Login() {
+    // should we move the script along page folder
+    // and only create page for jsx/tsx files?
+    // what about babel and transformation for borwser
+    // also need a folder for bundle / should it be done with webpack?
     return (
         <section>
-            <Import src={require.resolve(`../script/index.js`)} />
+            <Import src={require.resolve('../script/index.js')} />
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />
