@@ -12,12 +12,18 @@ exports.config = {
     pagesFolder: 'pages',
     tmpFolder: tmp_1.dirSync().name,
 };
-exports.distPath = path_1.join(exports.ROOT_FOLDER, exports.config.distFolder);
-exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
+exports.distPath = '';
+exports.srcPath = '';
+exports.pagesPath = '';
+initPath();
 function setConfig(newConfig = {}) {
     exports.config = Object.assign(Object.assign({}, exports.config), newConfig);
-    exports.distPath = path_1.join(exports.ROOT_FOLDER, exports.config.distFolder);
-    exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
+    initPath();
 }
 exports.setConfig = setConfig;
+function initPath() {
+    exports.distPath = path_1.join(exports.ROOT_FOLDER, exports.config.distFolder);
+    exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
+    exports.pagesPath = path_1.join(exports.config.tmpFolder, exports.config.pagesFolder);
+}
 //# sourceMappingURL=config.js.map

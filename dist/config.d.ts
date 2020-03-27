@@ -8,4 +8,5 @@ export declare let config: {
 };
 export declare let distPath: string;
 export declare let srcPath: string;
+export declare let pagesPath: string;
 export declare function setConfig(newConfig?: {}): void;

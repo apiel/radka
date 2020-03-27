@@ -1,13 +1,15 @@
 import * as cp from 'child_process';
 import { log } from 'logol';
 import { promisify } from 'util';
-import { html } from 'jsx-pragmatic';
+// import { html } from 'jsx-pragmatic';
+import { html } from './html';
 import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile } from 'fs-extra';
 
 import { srcPath, distPath, config, pagesPath } from './config';
 import { Page, Props } from './lib';
+import { transform } from './transform';
 
 const exec = promisify(cp.exec as any);
 const globAsync = promisify(glob);
@@ -83,7 +85,7 @@ async function saveComponentToHtml(
     props?: Props,
 ) {
     log('Generate page', htmlPath);
-    const source = page.component(props).render(html());
+    const source = page.component(props).render(html({ transform }));
     const sourceWithLinks = applyPropsToLinks(source, links);
 
     await ensureFile(htmlPath);
