@@ -27,18 +27,10 @@ export async function compile() {
 async function generatePages() {
     const basePath = join(config.tmpFolder, config.pagesFolder);
     const files = await globAsync(join(basePath, '**', '*.*'));
-    log('Pages component founds', files);
+    const links = collectPageLinks(files);
+    log('Pages component founds', links);
     for (const file of files) {
-        const filename = basename(file, extname(file));
-        const htmlPath = join(
-            distPath,
-            join(
-                dirname(file),
-                filename === 'index' ? '' : filename,
-                'index.html',
-            ).substr(basePath.length),
-        );
-
+        const htmlPath = getHtmlPath(basePath, file);
         log('Load page component', file);
         const page: Page = require(file).default;
         if (page.propsList) {
@@ -55,6 +47,29 @@ async function generatePages() {
     }
 }
 
+function collectPageLinks(files: string[]) {
+    const links = {};
+    files.forEach(file => {
+        const page: Page = require(file).default;
+        links[page.linkId] = file;
+    });
+    return links;
+}
+
+function getHtmlPath(basePath: string, file: string) {
+    const filename = basename(file, extname(file));
+    const htmlPath = join(
+        distPath,
+        join(
+            dirname(file),
+            filename === 'index' ? '' : filename,
+            'index.html',
+        ).substr(basePath.length),
+    );
+
+    return htmlPath;
+}
+
 function applyPropsToHtmlPath(htmlPath: string, props: Props) {
     let htmlPathWithProps = htmlPath;
     Object.keys(props).forEach(key => {
@@ -69,7 +84,6 @@ async function saveComponentToHtml(
     props?: Props,
 ) {
     log('Generate page', htmlPath);
-    console.log('yyoyoyoy', page.component(props));
     const source = page.component(props).render(html());
 
     await ensureFile(htmlPath);

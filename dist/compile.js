@@ -39,7 +39,6 @@ function generatePages() {
             const htmlPath = path_1.join(config_1.distPath, path_1.join(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(basePath.length));
             logol_1.log('Load page component', file);
             const page = require(file).default;
-            console.log('page', page);
             if (page.propsList) {
                 for (const props of page.propsList) {
                     yield saveComponentToHtml(page, applyPropsToHtmlPath(htmlPath, props), props);
