@@ -10,6 +10,7 @@ function Login() {
             <input type="password" placeholder="password" />
             <button>Log In</button>
             <a href={Item.link({ id: 3, b: 'c' })}>link</a>
+            <a href={Item.link({ id: 2, b: 'e' })}>link</a>
         </section>
     );
 }

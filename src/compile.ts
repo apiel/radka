@@ -6,7 +6,7 @@ import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile } from 'fs-extra';
 
-import { srcPath, distPath, config } from './config';
+import { srcPath, distPath, config, pagesPath } from './config';
 import { Page, Props } from './lib';
 
 const exec = promisify(cp.exec as any);
@@ -25,29 +25,30 @@ export async function compile() {
 }
 
 async function generatePages() {
-    const basePath = join(config.tmpFolder, config.pagesFolder);
-    const files = await globAsync(join(basePath, '**', '*.*'));
+    const files = await globAsync(join(pagesPath, '**', '*.*'));
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {
-        const htmlPath = getHtmlPath(basePath, file);
+        const htmlPath = join(distPath, getRoutePath(file));
         log('Load page component', file);
         const page: Page = require(file).default;
         if (page.propsList) {
             for (const props of page.propsList) {
                 await saveComponentToHtml(
                     page,
-                    applyPropsToHtmlPath(htmlPath, props),
+                    applyPropsToPath(htmlPath, props),
+                    links,
                     props,
                 );
             }
         } else {
-            await saveComponentToHtml(page, htmlPath);
+            await saveComponentToHtml(page, htmlPath, links);
         }
     }
 }
 
-function collectPageLinks(files: string[]) {
+type Links = { [linkId: string]: string };
+function collectPageLinks(files: string[]): Links {
     const links = {};
     files.forEach(file => {
         const page: Page = require(file).default;
@@ -56,36 +57,49 @@ function collectPageLinks(files: string[]) {
     return links;
 }
 
-function getHtmlPath(basePath: string, file: string) {
+// using this for link will be wrong on windows
+// need to fix
+function getRoutePath(file: string) {
     const filename = basename(file, extname(file));
-    const htmlPath = join(
-        distPath,
-        join(
-            dirname(file),
-            filename === 'index' ? '' : filename,
-            'index.html',
-        ).substr(basePath.length),
-    );
-
-    return htmlPath;
+    return join(
+        dirname(file),
+        filename === 'index' ? '' : filename,
+        'index.html',
+    ).substr(pagesPath.length);
 }
 
-function applyPropsToHtmlPath(htmlPath: string, props: Props) {
-    let htmlPathWithProps = htmlPath;
+function applyPropsToPath(path: string, props: Props) {
+    let pathWithProps = path;
     Object.keys(props).forEach(key => {
-        htmlPathWithProps = htmlPathWithProps.replace(`[${key}]`, props[key]);
+        pathWithProps = pathWithProps.replace(`[${key}]`, props[key]);
     });
-    return htmlPathWithProps;
+    return pathWithProps;
 }
 
 async function saveComponentToHtml(
     page: Page,
     htmlPath: string,
+    links: Links,
     props?: Props,
 ) {
     log('Generate page', htmlPath);
     const source = page.component(props).render(html());
+    const sourceWithLinks = applyPropsToLinks(source, links);
 
     await ensureFile(htmlPath);
-    await outputFile(htmlPath, source);
+    await outputFile(htmlPath, sourceWithLinks);
+}
+
+function applyPropsToLinks(source: string, links: Links) {
+    return source.replace(
+        /%link%([^%]+)%([^%]*)%/g, // [^%] = all exepct %
+        (match, linkId, propsStr) => {
+            const props = {};
+            propsStr.split(';').forEach(prop => {
+                const [key, value] = prop.split('=');
+                props[key] = value;
+            });
+            return applyPropsToPath(getRoutePath(links[linkId]), props);
+        },
+    );
 }

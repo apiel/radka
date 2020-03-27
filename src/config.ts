@@ -13,11 +13,18 @@ export let config = {
     tmpFolder: dirSync().name,
 };
 
-export let distPath = join(ROOT_FOLDER, config.distFolder);
-export let srcPath = join(ROOT_FOLDER, config.srcFolder);
+export let distPath = '';
+export let srcPath = '';
+export let pagesPath = '';
+initPath();
 
 export function setConfig(newConfig = {}) {
     config = { ...config, ...newConfig };
+    initPath();
+}
+
+function initPath() {
     distPath = join(ROOT_FOLDER, config.distFolder);
     srcPath = join(ROOT_FOLDER, config.srcFolder);
+    pagesPath = join(config.tmpFolder, config.pagesFolder);
 }
