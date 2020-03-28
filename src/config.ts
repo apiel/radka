@@ -10,6 +10,7 @@ export let config = {
     srcFolder: 'src',
     distFolder: 'site',
     pagesFolder: 'pages',
+    pagesSuffix: '.page',
     tmpFolder: dirSync().name,
 };
 

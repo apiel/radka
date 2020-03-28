@@ -1,6 +1,6 @@
 import { jsx, page, Import } from '../../dist/lib';
 import { Hello } from '../components/Hello';
-import Item from './item/[id]';
+import Item from './item/[id].page';
 import { readFileSync } from 'fs-extra';
 
 function Login() {

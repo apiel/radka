@@ -28,7 +28,7 @@ export async function compile() {
 }
 
 async function generatePages() {
-    const files = await globAsync(join(pagesPath, '**', '!(*.script).*'));
+    const files = await globAsync(join(pagesPath, '**', `*${config.pagesSuffix}.js`));
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {
@@ -63,7 +63,7 @@ function collectPageLinks(files: string[]): Links {
 // using this for link will be wrong on windows
 // need to fix
 function getRoutePath(file: string) {
-    const filename = basename(file, extname(file));
+    const filename = basename(file, `${config.pagesSuffix}${extname(file)}`);
     return join(
         dirname(file),
         filename === 'index' ? '' : filename,

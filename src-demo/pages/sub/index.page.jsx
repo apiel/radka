@@ -1,5 +1,5 @@
 import { jsx, page } from '../../../dist/lib';
-import Login from '../index';
+import Login from '../index.page';
 
 function Sub() {
     return (
