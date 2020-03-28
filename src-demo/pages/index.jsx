@@ -2,16 +2,16 @@ import { jsx, page, Import } from '../../dist/lib';
 import { Hello } from '../components/Hello';
 import Item from './item/[id]';
 import { readFileSync } from 'fs-extra';
-// import { handleClick } from '../script';
 
 function Login() {
     // should we move the script along page folder
     // and only create page for jsx/tsx files?
     // what about babel and transformation for borwser
     // also need a folder for bundle / should it be done with webpack?
+    // will have as index.api.js for isomor
     return (
         <section>
-            <Import src={require.resolve('../script/index.js')} />
+            <Import src={require.resolve('./index.script.js')} />
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />

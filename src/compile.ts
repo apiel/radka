@@ -15,8 +15,9 @@ const exec = promisify(cp.exec as any);
 const globAsync = promisify(glob);
 
 export async function compile() {
+    const configPath = join(__dirname, '..', '.babelrc.jsx.json');
     const output = await exec(
-        `babel ${srcPath} --out-dir ${config.tmpFolder}`,
+        `babel ${srcPath} --out-dir ${config.tmpFolder} --config-file ${configPath}`,
         {
             stdio: 'inherit',
             shell: true,
@@ -27,7 +28,7 @@ export async function compile() {
 }
 
 async function generatePages() {
-    const files = await globAsync(join(pagesPath, '**', '*.*'));
+    const files = await globAsync(join(pagesPath, '**', '!(*.script).*'));
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {
