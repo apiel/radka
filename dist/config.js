@@ -11,11 +11,13 @@ exports.config = {
     distFolder: 'site',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
-    tmpFolder: tmp_1.dirSync().name,
+    bundleFolder: 'bundle',
+    tmpFolder: process.env.TEMP_FOLDER || tmp_1.dirSync().name,
 };
 exports.distPath = '';
 exports.srcPath = '';
 exports.pagesPath = '';
+exports.bundlePath = '';
 initPath();
 function setConfig(newConfig = {}) {
     exports.config = Object.assign(Object.assign({}, exports.config), newConfig);
@@ -26,5 +28,6 @@ function initPath() {
     exports.distPath = path_1.join(exports.ROOT_FOLDER, exports.config.distFolder);
     exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
     exports.pagesPath = path_1.join(exports.config.tmpFolder, exports.config.pagesFolder);
+    exports.bundlePath = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);
 }
 //# sourceMappingURL=config.js.map

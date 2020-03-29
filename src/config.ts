@@ -11,12 +11,14 @@ export let config = {
     distFolder: 'site',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
-    tmpFolder: dirSync().name,
+    bundleFolder: 'bundle',
+    tmpFolder: process.env.TEMP_FOLDER || dirSync().name,
 };
 
 export let distPath = '';
 export let srcPath = '';
 export let pagesPath = '';
+export let bundlePath = '';
 initPath();
 
 export function setConfig(newConfig = {}) {
@@ -28,4 +30,5 @@ function initPath() {
     distPath = join(ROOT_FOLDER, config.distFolder);
     srcPath = join(ROOT_FOLDER, config.srcFolder);
     pagesPath = join(config.tmpFolder, config.pagesFolder);
+    bundlePath = join(config.tmpFolder, config.bundleFolder);
 }

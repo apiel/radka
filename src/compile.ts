@@ -1,5 +1,5 @@
 import * as cp from 'child_process';
-import { log } from 'logol';
+import { log, info } from 'logol';
 import { promisify } from 'util';
 // import { html } from 'jsx-pragmatic';
 import { html } from './html';
@@ -21,14 +21,20 @@ export async function compile() {
         {
             stdio: 'inherit',
             shell: true,
+            env: { ...process.env, TEMP_FOLDER: config.tmpFolder },
         },
     );
+
+    // info('babel output', output);
+    process.stdout.write(output.stdout);
 
     await generatePages();
 }
 
 async function generatePages() {
-    const files = await globAsync(join(pagesPath, '**', `*${config.pagesSuffix}.js`));
+    const files = await globAsync(
+        join(pagesPath, '**', `*${config.pagesSuffix}.js`),
+    );
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {

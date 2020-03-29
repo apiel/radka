@@ -26,7 +26,9 @@ function compile() {
         const output = yield exec(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath}`, {
             stdio: 'inherit',
             shell: true,
+            env: Object.assign(Object.assign({}, process.env), { TEMP_FOLDER: config_1.config.tmpFolder }),
         });
+        process.stdout.write(output.stdout);
         yield generatePages();
     });
 }

@@ -1,13 +1,19 @@
+import { ensureFileSync, readFileSync, outputFileSync } from 'fs-extra';
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
+import { join } from 'path';
+
+import { bundlePath } from './config';
+import { parse } from '@babel/parser';
+import generate from '@babel/generator';
 
 export default function() {
     return {
         visitor: {
-            ImportDeclaration(path: NodePath, state: any) {
+            ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: any) {
                 if (state.filename.endsWith('.script.js')) {
+                    addImportToBundle(path);
                     path.remove();
-                    // then we should save those path to add import in bundle
                 }
             },
             ExportDefaultDeclaration(
@@ -28,4 +34,15 @@ export default function() {
             },
         },
     };
+}
+
+function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
+    const importFile = join(bundlePath, '.import.js');
+    ensureFileSync(importFile);
+    const code = readFileSync(importFile).toString();
+    const ast = parse(code);
+    ast.program.body.push(path.node);
+
+    const output = generate(ast, { /* options */ }, code);
+    outputFileSync(importFile, output.code);
 }
