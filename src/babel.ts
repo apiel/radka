@@ -37,6 +37,7 @@ export default function() {
 }
 
 function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
+    // should be only if import is not a local lib
     const importFile = join(bundlePath, '.import.js');
     ensureFileSync(importFile);
     const code = readFileSync(importFile).toString();

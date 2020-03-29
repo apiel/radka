@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import { html } from './html';
 import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
-import { ensureFile, outputFile } from 'fs-extra';
+import { ensureFile, outputFile, remove } from 'fs-extra';
 
 import { srcPath, distPath, config, pagesPath } from './config';
 import { Page, Props } from './lib';
@@ -15,6 +15,7 @@ const exec = promisify(cp.exec as any);
 const globAsync = promisify(glob);
 
 export async function compile() {
+    await remove(config.tmpFolder);
     const configPath = join(__dirname, '..', '.babelrc.jsx.json');
     const output = await exec(
         `babel ${srcPath} --out-dir ${config.tmpFolder} --config-file ${configPath}`,

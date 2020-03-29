@@ -22,6 +22,7 @@ const exec = util_1.promisify(cp.exec);
 const globAsync = util_1.promisify(glob);
 function compile() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield fs_extra_1.remove(config_1.config.tmpFolder);
         const configPath = path_1.join(__dirname, '..', '.babelrc.jsx.json');
         const output = yield exec(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath}`, {
             stdio: 'inherit',
