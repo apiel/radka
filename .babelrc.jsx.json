@@ -1,4 +1,5 @@
 {
+    "presets": ["@babel/preset-env", "minify"],
     "plugins": [
         "./dist/babel",
         "@babel/plugin-transform-modules-commonjs",
