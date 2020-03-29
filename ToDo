@@ -5,3 +5,5 @@
     + it should as well recognize that it is including a server function, like isomor (maybe later)
 
 - <script> in html should be able to call server function isomor style
+
+- could use https://www.npmjs.com/package/light-server to hot reload

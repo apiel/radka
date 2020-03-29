@@ -14,9 +14,11 @@
   },
   "scripts": {
     "dev": "ts-node src/index.ts",
+    "serv": "http-server ./site",
     "build": "rm -rf dist/ && tsc -p tsconfig.json && chmod +x dist/index.js",
-    "build-babel": "babel src-demo/pages/index.jsx --out-dir tmp",
-    "build-babel2": "babel src-demo --out-dir tmp --out-file-extension .yo.js"
+    "build-babel": "babel src-demo --out-dir tmp --config-file ./.babelrc.jsx.json",
+    "build-babel2": "babel src-demo --out-dir tmp --out-file-extension .yo.js",
+    "build-babel3": "babel src-demo/pages/index.script.js --out-dir tmp --config-file ./.babelrc.script.json"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",
@@ -34,10 +36,12 @@
     "ts-loader": "^6.2.2"
   },
   "devDependencies": {
+    "@types/babel__core": "^7.1.6",
     "@types/fs-extra": "^8.1.0",
     "@types/glob": "^7.1.1",
     "@types/node": "^12.12.31",
     "@types/tmp": "^0.1.0",
+    "http-server": "^0.12.1",
     "ts-node": "^8.8.1"
   }
 }

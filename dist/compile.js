@@ -22,7 +22,8 @@ const exec = util_1.promisify(cp.exec);
 const globAsync = util_1.promisify(glob);
 function compile() {
     return __awaiter(this, void 0, void 0, function* () {
-        const output = yield exec(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder}`, {
+        const configPath = path_1.join(__dirname, '..', '.babelrc.jsx.json');
+        const output = yield exec(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath}`, {
             stdio: 'inherit',
             shell: true,
         });
@@ -32,7 +33,7 @@ function compile() {
 exports.compile = compile;
 function generatePages() {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield globAsync(path_1.join(config_1.pagesPath, '**', '*.*'));
+        const files = yield globAsync(path_1.join(config_1.pagesPath, '**', `*${config_1.config.pagesSuffix}.js`));
         const links = collectPageLinks(files);
         logol_1.log('Pages component founds', links);
         for (const file of files) {
@@ -59,7 +60,7 @@ function collectPageLinks(files) {
     return links;
 }
 function getRoutePath(file) {
-    const filename = path_1.basename(file, path_1.extname(file));
+    const filename = path_1.basename(file, `${config_1.config.pagesSuffix}${path_1.extname(file)}`);
     return path_1.join(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.pagesPath.length);
 }
 function applyPropsToPath(path, props) {

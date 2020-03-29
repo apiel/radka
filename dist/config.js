@@ -10,6 +10,7 @@ exports.config = {
     srcFolder: 'src',
     distFolder: 'site',
     pagesFolder: 'pages',
+    pagesSuffix: '.page',
     tmpFolder: tmp_1.dirSync().name,
 };
 exports.distPath = '';

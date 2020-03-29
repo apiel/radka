@@ -4,6 +4,7 @@ export declare let config: {
     srcFolder: string;
     distFolder: string;
     pagesFolder: string;
+    pagesSuffix: string;
     tmpFolder: string;
 };
 export declare let distPath: string;
