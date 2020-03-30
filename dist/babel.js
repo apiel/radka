@@ -43,7 +43,9 @@ function addImportToBundle(path) {
     const importFile = path_1.join(config_1.bundlePath, '.import.js');
     fs_extra_1.ensureFileSync(importFile);
     const code = fs_extra_1.readFileSync(importFile).toString();
-    const ast = parser_1.parse(code);
+    const ast = parser_1.parse(code, {
+        sourceType: 'module',
+    });
     path = convertImportToExport(path);
     ast.program.body.push(path.node);
     const output = generator_1.default(ast, {}, code);

@@ -1,15 +1,12 @@
-// export * as logol from 'logol';
-// export { info } from 'logol';
-
 import { info } from 'logol';
-// import { error } from 'logol';
+import { error } from 'logol';
 
-// export const handleClick = (param) => {
-//     info('yo');
-//     error('bad');
-//     console.log('click me', param);
-// }
+export const handleClick = (param) => {
+    info('yo');
+    error('bad');
+    console.log('click me', param);
+}
 
-// export function yo() {
-//     console.log('yo');
-// }
+export function yo() {
+    console.log('yo');
+}

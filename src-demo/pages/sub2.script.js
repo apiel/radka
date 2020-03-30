@@ -1,5 +1,5 @@
-// import { log } from 'logol';
+import { log } from 'logol';
 
-// const handleClick = () => {
-//     log('yo');
-// }
+const handleClick = () => {
+    log('yo');
+}

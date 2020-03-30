@@ -51,15 +51,15 @@ export default function() {
 }
 
 // should it go in the bundle only if it has been imported?
-function addImportToBundle(
-    path: NodePath<t.ImportDeclaration>,
-) {
+function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     // console.log('ImportDeclaration', JsonAst(path.node));
     // // should be only if import is not a local lib
     const importFile = join(bundlePath, '.import.js');
     ensureFileSync(importFile);
     const code = readFileSync(importFile).toString();
-    const ast = parse(code);
+    const ast = parse(code, {
+        sourceType: 'module',
+    });
 
     path = convertImportToExport(path);
 
@@ -68,6 +68,7 @@ function addImportToBundle(
     outputFileSync(importFile, output.code);
 }
 
+// we could remove duplicate import
 function convertImportToExport(
     path: NodePath<t.ImportDeclaration | t.ExportNamedDeclaration>,
 ) {
