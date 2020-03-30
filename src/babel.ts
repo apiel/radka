@@ -18,7 +18,7 @@ export default function() {
             ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: any) {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
-                    // path.remove();
+                    // ToDo: how to handle local import ./something // path.remove(); ?
                 }
             },
             ExportDefaultDeclaration(
@@ -54,9 +54,6 @@ export default function() {
 // should it go in the bundle only if it has been imported?
 function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     // console.log('ImportDeclaration', JsonAst(path.node));
-    // // should be only if import is not a local lib
-    // path = convertImportToExport(path);
-
     const emptyCode = '';
     const ast = parse(emptyCode);
     ast.program.body.push(path.node);
@@ -65,20 +62,6 @@ function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     const bundleFile = join(bundlePath, 'index.js');
     ensureFileSync(bundleFile);
     appendFileSync(bundleFile, output.code);
-}
-
-// we could remove duplicate import
-function convertImportToExport(
-    path: NodePath<t.ImportDeclaration | t.ExportNamedDeclaration>,
-) {
-    path.node.type = t.exportNamedDeclaration().type;
-    path.node.specifiers.forEach((specifier: any) => {
-        specifier.type =
-            specifier.type === 'ImportSpecifier'
-                ? 'ExportSpecifier'
-                : 'ExportNamespaceSpecifier';
-    });
-    return path as any;
 }
 
 // for debugging in console.log

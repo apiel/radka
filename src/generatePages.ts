@@ -105,6 +105,7 @@ function injectBundles(source: string) {
     // either find a way to load require async
     // or make onclick event set-able from JS with getElementById
     // or separate bundle with require and rest
+    // document.querySelector("[onclick='handleClick(123)']").onclick = () => handleClick(123);
     const tag = '</head>'; // </body>
     if (source.indexOf(tag) !== -1) {
         source = source.replace(tag, `${script}${tag}`);

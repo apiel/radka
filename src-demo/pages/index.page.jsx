@@ -11,6 +11,7 @@ function Login() {
     // will have as index.api.js for isomor
     return (
         <section>
+            {/* instead we could just import './index.script.js'; and use ImportDeclaration */}
             <Import src={require.resolve('./index.script.js')} />
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />
