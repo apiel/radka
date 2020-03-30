@@ -34,7 +34,7 @@ function runParcel() {
     info('Run parcel');
     const paths = [
         join(bundlePath, 'index.js'),
-        join(bundlePath, '.import.js'),
+        // join(bundlePath, 'index.css'), ?
     ];
     return shell(
         `parcel build ${paths.join(' ')}`,

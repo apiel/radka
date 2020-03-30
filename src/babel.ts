@@ -3,6 +3,7 @@ import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { ExportSpecifier } from '@babel/types';
 import { join } from 'path';
+import { appendFileSync } from 'fs';
 
 import { bundlePath } from './config';
 import { parse } from '@babel/parser';
@@ -54,18 +55,16 @@ export default function() {
 function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     // console.log('ImportDeclaration', JsonAst(path.node));
     // // should be only if import is not a local lib
-    const importFile = join(bundlePath, '.import.js');
-    ensureFileSync(importFile);
-    const code = readFileSync(importFile).toString();
-    const ast = parse(code, {
-        sourceType: 'module',
-    });
-
     path = convertImportToExport(path);
 
+    const emptyCode = '';
+    const ast = parse(emptyCode);
     ast.program.body.push(path.node);
-    const output = generate(ast, {}, code);
-    outputFileSync(importFile, output.code);
+    const output = generate(ast, {}, emptyCode);
+
+    const bundleFile = join(bundlePath, 'index.js');
+    ensureFileSync(bundleFile);
+    appendFileSync(bundleFile, output.code);
 }
 
 // we could remove duplicate import

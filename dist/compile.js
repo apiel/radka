@@ -37,7 +37,6 @@ function runParcel() {
     logol_1.info('Run parcel');
     const paths = [
         path_1.join(config_1.bundlePath, 'index.js'),
-        path_1.join(config_1.bundlePath, '.import.js'),
     ];
     return shell(`parcel build ${paths.join(' ')}`);
 }

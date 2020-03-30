@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_extra_1 = require("fs-extra");
 const t = require("@babel/types");
 const path_1 = require("path");
+const fs_1 = require("fs");
 const config_1 = require("./config");
 const parser_1 = require("@babel/parser");
 const generator_1 = require("@babel/generator");
@@ -40,16 +41,13 @@ function default_1() {
 }
 exports.default = default_1;
 function addImportToBundle(path) {
-    const importFile = path_1.join(config_1.bundlePath, '.import.js');
+    const importFile = path_1.join(config_1.bundlePath, 'index.js');
     fs_extra_1.ensureFileSync(importFile);
-    const code = fs_extra_1.readFileSync(importFile).toString();
-    const ast = parser_1.parse(code, {
-        sourceType: 'module',
-    });
     path = convertImportToExport(path);
+    const ast = parser_1.parse('');
     ast.program.body.push(path.node);
-    const output = generator_1.default(ast, {}, code);
-    fs_extra_1.outputFileSync(importFile, output.code);
+    const output = generator_1.default(ast, {}, '');
+    fs_1.appendFileSync(importFile, output.code);
 }
 function convertImportToExport(path) {
     path.node.type = t.exportNamedDeclaration().type;
