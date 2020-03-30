@@ -1,10 +1,9 @@
 import * as cp from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import * as glob from 'glob';
 import { remove } from 'fs-extra';
 
-import { srcPath, config, bundlePath } from './config';
+import { srcPath, config, bundlePath, distPath } from './config';
 import { generatePages } from './generatePages';
 import { info } from 'logol';
 
@@ -37,7 +36,7 @@ function runParcel() {
         // join(bundlePath, 'index.css'), ?
     ];
     return shell(
-        `parcel build ${paths.join(' ')}`,
+        `parcel build ${paths.join(' ')} --out-dir ${distPath}`,
     );
 }
 

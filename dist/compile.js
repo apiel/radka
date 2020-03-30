@@ -38,7 +38,7 @@ function runParcel() {
     const paths = [
         path_1.join(config_1.bundlePath, 'index.js'),
     ];
-    return shell(`parcel build ${paths.join(' ')}`);
+    return shell(`parcel build ${paths.join(' ')} --out-dir ${config_1.distPath}`);
 }
 function shell(cmd) {
     return exec(cmd, {

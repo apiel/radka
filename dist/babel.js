@@ -41,13 +41,14 @@ function default_1() {
 }
 exports.default = default_1;
 function addImportToBundle(path) {
-    const importFile = path_1.join(config_1.bundlePath, 'index.js');
-    fs_extra_1.ensureFileSync(importFile);
     path = convertImportToExport(path);
-    const ast = parser_1.parse('');
+    const emptyCode = '';
+    const ast = parser_1.parse(emptyCode);
     ast.program.body.push(path.node);
-    const output = generator_1.default(ast, {}, '');
-    fs_1.appendFileSync(importFile, output.code);
+    const output = generator_1.default(ast, {}, emptyCode);
+    const bundleFile = path_1.join(config_1.bundlePath, 'index.js');
+    fs_extra_1.ensureFileSync(bundleFile);
+    fs_1.appendFileSync(bundleFile, output.code);
 }
 function convertImportToExport(path) {
     path.node.type = t.exportNamedDeclaration().type;
