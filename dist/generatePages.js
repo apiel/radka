@@ -61,10 +61,11 @@ function applyPropsToPath(path, props) {
 function saveComponentToHtml(page, htmlPath, links, props) {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.log('Generate page', htmlPath);
-        const source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
-        const sourceWithLinks = applyPropsToLinks(source, links);
+        let source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
+        source = applyPropsToLinks(source, links);
+        source = injectBundles(source);
         yield fs_extra_1.ensureFile(htmlPath);
-        yield fs_extra_1.outputFile(htmlPath, sourceWithLinks);
+        yield fs_extra_1.outputFile(htmlPath, source);
     });
 }
 function applyPropsToLinks(source, links) {
@@ -76,5 +77,19 @@ function applyPropsToLinks(source, links) {
         });
         return applyPropsToPath(getRoutePath(links[linkId]), props);
     });
+}
+function injectBundles(source) {
+    const script = `
+    <script src="/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="/index.css">`;
+    if (source.indexOf('</body>') !== -1) {
+        source = source.replace('</body>', `${script}</body>`);
+    }
+    else {
+        source = `${source}${script}`;
+    }
+    if (source.indexOf('</body>') !== -1) {
+    }
+    return source;
 }
 //# sourceMappingURL=generatePages.js.map

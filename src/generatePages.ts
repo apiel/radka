@@ -73,11 +73,12 @@ async function saveComponentToHtml(
     props?: Props,
 ) {
     log('Generate page', htmlPath);
-    const source = page.component(props).render(html({ transform }));
-    const sourceWithLinks = applyPropsToLinks(source, links);
+    let source = page.component(props).render(html({ transform }));
+    source = applyPropsToLinks(source, links);
+    source = injectBundles(source);
 
     await ensureFile(htmlPath);
-    await outputFile(htmlPath, sourceWithLinks);
+    await outputFile(htmlPath, source);
 }
 
 function applyPropsToLinks(source: string, links: Links) {
@@ -92,4 +93,19 @@ function applyPropsToLinks(source: string, links: Links) {
             return applyPropsToPath(getRoutePath(links[linkId]), props);
         },
     );
+}
+
+function injectBundles(source: string) {
+    const script = `
+    <script src="/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="/index.css">`;
+    if (source.indexOf('</body>') !== -1) {
+        source = source.replace('</body>', `${script}</body>`);
+    } else {
+        source = `${source}${script}`;
+    }
+    if (source.indexOf('</body>') !== -1) {
+
+    }
+    return source;
 }

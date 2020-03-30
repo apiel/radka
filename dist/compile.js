@@ -19,6 +19,7 @@ const logol_1 = require("logol");
 const exec = util_1.promisify(cp.exec);
 function compile() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield fs_extra_1.remove(config_1.distPath);
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         const babelOutput = yield runBabel();
         process.stdout.write(babelOutput.stdout);
@@ -31,13 +32,15 @@ exports.compile = compile;
 function runBabel() {
     logol_1.info('Run babel');
     const configPath = path_1.join(__dirname, '..', '.babelrc.jsx.json');
-    return shell(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath}`);
+    return shell(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath} --copy-files`);
 }
 function runParcel() {
     logol_1.info('Run parcel');
     const paths = [
         path_1.join(config_1.bundlePath, 'index.js'),
+        path_1.join(config_1.bundlePath, 'index.css'),
     ];
+    paths.forEach(p => fs_extra_1.ensureFileSync(p));
     return shell(`parcel build ${paths.join(' ')} --out-dir ${config_1.distPath}`);
 }
 function shell(cmd) {
