@@ -7,3 +7,4 @@ export default function (): {
         ExportNamedDeclaration(path: NodePath<t.ExportNamedDeclaration>, state: any): void;
     };
 };
+export declare function JsonAst(node: any): string;
