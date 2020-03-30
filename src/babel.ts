@@ -18,7 +18,7 @@ export default function() {
             ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: any) {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
-                    path.remove();
+                    // path.remove();
                 }
             },
             ExportDefaultDeclaration(
@@ -55,7 +55,7 @@ export default function() {
 function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     // console.log('ImportDeclaration', JsonAst(path.node));
     // // should be only if import is not a local lib
-    path = convertImportToExport(path);
+    // path = convertImportToExport(path);
 
     const emptyCode = '';
     const ast = parse(emptyCode);

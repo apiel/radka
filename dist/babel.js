@@ -13,7 +13,6 @@ function default_1() {
             ImportDeclaration(path, state) {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
-                    path.remove();
                 }
             },
             ExportDefaultDeclaration(path, state) {
@@ -41,7 +40,6 @@ function default_1() {
 }
 exports.default = default_1;
 function addImportToBundle(path) {
-    path = convertImportToExport(path);
     const emptyCode = '';
     const ast = parser_1.parse(emptyCode);
     ast.program.body.push(path.node);

@@ -2,12 +2,14 @@ import * as cp from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { remove, ensureFileSync } from 'fs-extra';
+import { info } from 'logol';
+import * as fs from 'fs';
 
 import { srcPath, config, bundlePath, distPath } from './config';
 import { generatePages } from './generatePages';
-import { info } from 'logol';
 
 const exec = promisify(cp.exec as any);
+const appendFile = promisify(fs.appendFile);
 
 export async function compile() {
     // ToDo: is it good idea to remove distPath?
@@ -16,6 +18,8 @@ export async function compile() {
 
     const babelOutput = await runBabel();
     process.stdout.write(babelOutput.stdout);
+
+    appendFile(join(bundlePath, 'index.js'), 'window.require = require;');
 
     const parcelOutput = await runParcel();
     process.stdout.write(parcelOutput.stdout);

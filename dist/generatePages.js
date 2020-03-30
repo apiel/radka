@@ -82,13 +82,12 @@ function injectBundles(source) {
     const script = `
     <script src="/index.js"></script>
     <link rel="stylesheet" type="text/css" href="/index.css">`;
-    if (source.indexOf('</body>') !== -1) {
-        source = source.replace('</body>', `${script}</body>`);
+    const tag = '</head>';
+    if (source.indexOf(tag) !== -1) {
+        source = source.replace(tag, `${script}${tag}`);
     }
     else {
-        source = `${source}${script}`;
-    }
-    if (source.indexOf('</body>') !== -1) {
+        source = `${script}${source}`;
     }
     return source;
 }

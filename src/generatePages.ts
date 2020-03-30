@@ -100,13 +100,17 @@ function injectBundles(source: string) {
     const script = `
     <script src="/index.js"></script>
     <link rel="stylesheet" type="text/css" href="/index.css">`;
-    if (source.indexOf('</body>') !== -1) {
-        source = source.replace('</body>', `${script}</body>`);
+    // ToDo: we shoudl find a way to had bundle in body to be able to show html asap
+    // right now it is not possible because of require
+    // either find a way to load require async
+    // or make onclick event set-able from JS with getElementById
+    // or separate bundle with require and rest
+    const tag = '</head>'; // </body>
+    if (source.indexOf(tag) !== -1) {
+        source = source.replace(tag, `${script}${tag}`);
     } else {
-        source = `${source}${script}`;
-    }
-    if (source.indexOf('</body>') !== -1) {
-
+        // source = `${script}${source}`; // if body
+        source = `${script}${source}`;
     }
     return source;
 }

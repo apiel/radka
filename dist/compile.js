@@ -13,16 +13,19 @@ const cp = require("child_process");
 const util_1 = require("util");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
+const logol_1 = require("logol");
+const fs = require("fs");
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
-const logol_1 = require("logol");
 const exec = util_1.promisify(cp.exec);
+const appendFile = util_1.promisify(fs.appendFile);
 function compile() {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_extra_1.remove(config_1.distPath);
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         const babelOutput = yield runBabel();
         process.stdout.write(babelOutput.stdout);
+        appendFile(path_1.join(config_1.bundlePath, 'index.js'), 'window.require = require;');
         const parcelOutput = yield runParcel();
         process.stdout.write(parcelOutput.stdout);
         yield generatePages_1.generatePages();
