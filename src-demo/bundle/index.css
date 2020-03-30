@@ -1,3 +1,5 @@
+@import './another.css';
+
 button {
     border: 1px solid blue;
 }

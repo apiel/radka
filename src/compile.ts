@@ -32,14 +32,9 @@ function runBabel() {
 
 function runParcel() {
     info('Run parcel');
-    // copySync(join(config.srcFolder, config.bundleFolder, 'index.css'), join(bundlePath, 'index.css'));
-    const paths = [
-        join(bundlePath, 'index.js'),
-        join(bundlePath, 'index.css'),
-    ];
-    paths.forEach(p => ensureFileSync(p));
+
     return shell(
-        `parcel build ${paths.join(' ')} --out-dir ${distPath}`,
+        `parcel build ${join(bundlePath, 'index.js')} --out-dir ${distPath}`,
     );
 }
 

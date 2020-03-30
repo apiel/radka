@@ -36,12 +36,7 @@ function runBabel() {
 }
 function runParcel() {
     logol_1.info('Run parcel');
-    const paths = [
-        path_1.join(config_1.bundlePath, 'index.js'),
-        path_1.join(config_1.bundlePath, 'index.css'),
-    ];
-    paths.forEach(p => fs_extra_1.ensureFileSync(p));
-    return shell(`parcel build ${paths.join(' ')} --out-dir ${config_1.distPath}`);
+    return shell(`parcel build ${path_1.join(config_1.bundlePath, 'index.js')} --out-dir ${config_1.distPath}`);
 }
 function shell(cmd) {
     return exec(cmd, {
