@@ -36,6 +36,7 @@ function runBabel() {
 }
 function runParcel() {
     logol_1.info('Run parcel');
+    fs_extra_1.ensureFileSync(path_1.join(config_1.distPath, 'index.css'));
     return shell(`parcel build ${path_1.join(config_1.bundlePath, 'index.js')} --out-dir ${config_1.distPath}`);
 }
 function shell(cmd) {

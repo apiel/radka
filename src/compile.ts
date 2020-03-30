@@ -1,7 +1,7 @@
 import * as cp from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import { remove, ensureFileSync, copySync } from 'fs-extra';
+import { remove, ensureFileSync, copySync, ensureLinkSync } from 'fs-extra';
 
 import { srcPath, config, bundlePath, distPath } from './config';
 import { generatePages } from './generatePages';
@@ -32,6 +32,9 @@ function runBabel() {
 
 function runParcel() {
     info('Run parcel');
+
+    // ToDo: find better way, in generate file should only include CSS if file exist
+    ensureFileSync(join(distPath, 'index.css'));
 
     return shell(
         `parcel build ${join(bundlePath, 'index.js')} --out-dir ${distPath}`,
