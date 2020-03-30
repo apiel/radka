@@ -1,7 +1,7 @@
 import * as cp from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import { remove, ensureFileSync, copySync, ensureLinkSync } from 'fs-extra';
+import { remove, ensureFileSync } from 'fs-extra';
 
 import { srcPath, config, bundlePath, distPath } from './config';
 import { generatePages } from './generatePages';
