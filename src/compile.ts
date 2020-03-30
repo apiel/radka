@@ -10,6 +10,7 @@ import { info } from 'logol';
 const exec = promisify(cp.exec as any);
 
 export async function compile() {
+    // ToDo: is it good idea to remove distPath?
     await remove(distPath);
     await remove(config.tmpFolder);
 
