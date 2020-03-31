@@ -3,12 +3,9 @@ import { Hello } from '../components/Hello';
 import Item from './item/[id].page';
 import { readFileSync } from 'fs-extra';
 
+import './index.script';
+
 function Login() {
-    // should we move the script along page folder
-    // and only create page for jsx/tsx files?
-    // what about babel and transformation for borwser
-    // also need a folder for bundle / should it be done with webpack?
-    // will have as index.api.js for isomor
     return (
         <section>
             {/* instead we could just import './index.script.js'; and use ImportDeclaration */}

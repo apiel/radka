@@ -5,3 +5,5 @@
 - need hot reload
     + could use https://www.npmjs.com/package/light-server to hot reload
     + compile only necessary
+
+- will have as index.api.js for isomor

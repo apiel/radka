@@ -1,8 +1,7 @@
-import { ensureFileSync, readFileSync, outputFileSync } from 'fs-extra';
+import { ensureFileSync } from 'fs-extra';
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { ExportSpecifier } from '@babel/types';
-import { join } from 'path';
+import { join, dirname, extname } from 'path';
 import { appendFileSync } from 'fs';
 
 import { bundlePath } from './config';
@@ -19,6 +18,20 @@ export default function() {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
                     // ToDo: how to handle local import ./something // path.remove(); ?
+                } else if (state.filename.endsWith(`.jsx`)) {
+                    if (
+                        !path.node.specifiers.length &&
+                        (path.node.source.value.endsWith('.script') ||
+                            path.node.source.value.endsWith('.script.js'))
+                    ) {
+                        const ext = extname(path.node.source.value) === '.js' ? '' : '.js';
+                        const scriptFile = join(dirname(state.filename), `${path.node.source.value}${ext}`);
+                        console.log(
+                            'need a way to inject script',
+                            scriptFile,
+                        );
+                        path.remove();
+                    }
                 }
             },
             ExportDefaultDeclaration(

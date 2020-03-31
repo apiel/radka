@@ -13,6 +13,16 @@ function default_1() {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
                 }
+                else if (state.filename.endsWith(`.jsx`)) {
+                    if (!path.node.specifiers.length &&
+                        (path.node.source.value.endsWith('.script') ||
+                            path.node.source.value.endsWith('.script.js'))) {
+                        const ext = path_1.extname(path.node.source.value) === '.js' ? '' : '.js';
+                        const scriptFile = path_1.join(path_1.dirname(state.filename), `${path.node.source.value}${ext}`);
+                        console.log('need a way to inject script', scriptFile);
+                        path.remove();
+                    }
+                }
             },
             ExportDefaultDeclaration(path, state) {
                 if (state.filename.endsWith('.script.js')) {
