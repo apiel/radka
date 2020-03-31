@@ -1,6 +1,7 @@
 import { node } from 'jsx-pragmatic';
 import { readFileSync } from 'fs-extra';
 
+export { Fragment } from 'jsx-pragmatic';
 export const jsx = node;
 
 let linkIdSeq = 0;

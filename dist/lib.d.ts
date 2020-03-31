@@ -1,3 +1,4 @@
+export { Fragment } from 'jsx-pragmatic';
 export declare const jsx: any;
 export declare type LinkProps = {
     [key: string]: string | number;
@@ -16,4 +17,3 @@ export declare function page(component: Function, propsList?: PropsList): Page;
 export declare function Import({ src }: {
     src: string;
 }): any;
-export {};

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsx_pragmatic_1 = require("jsx-pragmatic");
 const fs_extra_1 = require("fs-extra");
+var jsx_pragmatic_2 = require("jsx-pragmatic");
+exports.Fragment = jsx_pragmatic_2.Fragment;
 exports.jsx = jsx_pragmatic_1.node;
 let linkIdSeq = 0;
 function page(component, propsList) {

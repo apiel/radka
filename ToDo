@@ -1,15 +1,7 @@
-- link page
-- page with multiple values [index].js
-
-- onClick should be included in html as script, this can be done with custom node function in jsx-pragmatic
-    + it should as well recognize that it is including a server function, like isomor (maybe later)
+- be able to use import instead of <Import>
 
 - <script> in html should be able to call server function isomor style
 
-- could use https://www.npmjs.com/package/light-server to hot reload
-
-
-
-No handling of onclick 
-Load async if contain require
-Else load normal 
+- need hot reload
+    + could use https://www.npmjs.com/package/light-server to hot reload
+    + compile only necessary
