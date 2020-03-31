@@ -22,7 +22,7 @@ export interface Page {
     link: (props?: LinkProps) => string;
 }
 
-// need to improve types
+// ToDo: need to improve types
 export function page(component: Function, propsList?: PropsList): Page {
     const linkId = `page-${linkIdSeq++}`;
     return {
@@ -35,7 +35,7 @@ export function page(component: Function, propsList?: PropsList): Page {
 
 function serialize(props?: LinkProps) {
     if (props) {
-        // should we remove % from value
+        // ToDo: should we remove % from value
         // we would anyway need a central place to generate url values
         // for the applyPropsToHtmlPath in compile.ts
         return Object.keys(props)
@@ -47,5 +47,7 @@ function serialize(props?: LinkProps) {
 
 export function Import({ src }: { src: string }) {
     const source = readFileSync(src).toString();
-    return node('script', { innerHTML: source });
+    // ToDo: should we only have the window.r_ka.push if source contain require?
+    // if (!source.includes('require')) return node('script', { innerHTML: source });
+    return node('script', { innerHTML: `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });` });
 }

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_extra_1 = require("fs-extra");
-const t = require("@babel/types");
 const path_1 = require("path");
 const fs_1 = require("fs");
 const config_1 = require("./config");
@@ -47,16 +46,6 @@ function addImportToBundle(path) {
     const bundleFile = path_1.join(config_1.bundlePath, 'index.js');
     fs_extra_1.ensureFileSync(bundleFile);
     fs_1.appendFileSync(bundleFile, output.code);
-}
-function convertImportToExport(path) {
-    path.node.type = t.exportNamedDeclaration().type;
-    path.node.specifiers.forEach((specifier) => {
-        specifier.type =
-            specifier.type === 'ImportSpecifier'
-                ? 'ExportSpecifier'
-                : 'ExportNamespaceSpecifier';
-    });
-    return path;
 }
 function JsonAst(node) {
     const skip = ['loc', 'range', 'start', 'end'];

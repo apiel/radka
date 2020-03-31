@@ -24,7 +24,7 @@ function serialize(props) {
 }
 function Import({ src }) {
     const source = fs_extra_1.readFileSync(src).toString();
-    return jsx_pragmatic_1.node('script', { innerHTML: source });
+    return jsx_pragmatic_1.node('script', { innerHTML: `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });` });
 }
 exports.Import = Import;
 //# sourceMappingURL=lib.js.map

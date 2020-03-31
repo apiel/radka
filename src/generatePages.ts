@@ -1,5 +1,6 @@
 import { log } from 'logol';
 import { promisify } from 'util';
+// ToDo: we could keep using the default jsx-pragmatic html since we dont customize
 // import { html } from 'jsx-pragmatic';
 import { html } from './html';
 import { join, basename, extname, dirname } from 'path';
@@ -47,8 +48,7 @@ function collectPageLinks(files: string[]): Links {
     return links;
 }
 
-// using this for link will be wrong on windows
-// need to fix
+// ToDo: using this for link will be wrong on windows, need to fix
 function getRoutePath(file: string) {
     const filename = basename(file, `${config.pagesSuffix}${extname(file)}`);
     return join(
@@ -100,18 +100,12 @@ function injectBundles(source: string) {
     const script = `
     <script src="/index.js"></script>
     <link rel="stylesheet" type="text/css" href="/index.css">`;
-    // ToDo: we shoudl find a way to had bundle in body to be able to show html asap
-    // right now it is not possible because of require
-    // either find a way to load require async
-    // or make onclick event set-able from JS with getElementById
-    // or separate bundle with require and rest
-    // document.querySelector("[onclick='handleClick(123)']").onclick = () => handleClick(123);
-    const tag = '</head>'; // </body>
+    const tag = '</body>';
     if (source.indexOf(tag) !== -1) {
         source = source.replace(tag, `${script}${tag}`);
     } else {
-        // source = `${script}${source}`; // if body
-        source = `${script}${source}`;
+        source = `${source}${script}`; // if body
+        // source = `${script}${source}`; // if head
     }
     return source;
 }

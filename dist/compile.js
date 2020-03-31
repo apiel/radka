@@ -25,7 +25,7 @@ function compile() {
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         const babelOutput = yield runBabel();
         process.stdout.write(babelOutput.stdout);
-        appendFile(path_1.join(config_1.bundlePath, 'index.js'), 'window.require = require;');
+        appendFile(path_1.join(config_1.bundlePath, 'index.js'), 'window.require = require;console.log(`window.r_ka`, window.r_ka); (window.r_ka || []).forEach(function(fn) { fn(); });');
         const parcelOutput = yield runParcel();
         process.stdout.write(parcelOutput.stdout);
         yield generatePages_1.generatePages();

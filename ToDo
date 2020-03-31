@@ -7,3 +7,9 @@
 - <script> in html should be able to call server function isomor style
 
 - could use https://www.npmjs.com/package/light-server to hot reload
+
+
+
+No handling of onclick 
+Load async if contain require
+Else load normal 

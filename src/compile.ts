@@ -12,14 +12,17 @@ const exec = promisify(cp.exec as any);
 const appendFile = promisify(fs.appendFile);
 
 export async function compile() {
-    // ToDo: is it good idea to remove distPath?
+    // ToDo: is it good idea to remove distPath? site folder might not only contain generated file?
     await remove(distPath);
     await remove(config.tmpFolder);
 
     const babelOutput = await runBabel();
     process.stdout.write(babelOutput.stdout);
 
-    appendFile(join(bundlePath, 'index.js'), 'window.require = require;');
+    appendFile(
+        join(bundlePath, 'index.js'),
+        'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });',
+    );
 
     const parcelOutput = await runParcel();
     process.stdout.write(parcelOutput.stdout);
@@ -38,7 +41,8 @@ function runBabel() {
 function runParcel() {
     info('Run parcel');
 
-    // ToDo: find better way, in generate file should only include CSS if file exist
+    // ToDo: find better way, in generate file should only include CSS if file exist 
+    // (in one way, shouldnt CSS always exist)
     ensureFileSync(join(distPath, 'index.css'));
 
     return shell(

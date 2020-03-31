@@ -16,7 +16,7 @@ function Login() {
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />
-            <button onclick="handleClick(123)">Log In</button>
+            <button id="login-btn">Log In</button>
             <a href={Item.link({ id: 3, b: 'c' })}>link</a>
             <a href={Item.link({ id: 2, b: 'e' })}>link</a>
         </section>
