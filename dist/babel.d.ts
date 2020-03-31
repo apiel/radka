@@ -1,5 +1,6 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
+export declare let scripts: any[];
 export default function (): {
     visitor: {
         ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: any): void;

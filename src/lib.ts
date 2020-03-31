@@ -2,7 +2,12 @@ import { node } from 'jsx-pragmatic';
 import { readFileSync } from 'fs-extra';
 
 export { Fragment } from 'jsx-pragmatic';
-export const jsx = node;
+
+// ToDo: simplify if custom node unecessary
+// export const jsx = node;
+export const jsx = (...params: any[]) => {
+    return node(...params);
+}
 
 let linkIdSeq = 0;
 

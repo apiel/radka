@@ -4,7 +4,9 @@ const jsx_pragmatic_1 = require("jsx-pragmatic");
 const fs_extra_1 = require("fs-extra");
 var jsx_pragmatic_2 = require("jsx-pragmatic");
 exports.Fragment = jsx_pragmatic_2.Fragment;
-exports.jsx = jsx_pragmatic_1.node;
+exports.jsx = (...params) => {
+    return jsx_pragmatic_1.node(...params);
+};
 let linkIdSeq = 0;
 function page(component, propsList) {
     const linkId = `page-${linkIdSeq++}`;

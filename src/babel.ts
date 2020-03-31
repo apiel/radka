@@ -24,12 +24,15 @@ export default function() {
                         (path.node.source.value.endsWith('.script') ||
                             path.node.source.value.endsWith('.script.js'))
                     ) {
-                        const ext = extname(path.node.source.value) === '.js' ? '' : '.js';
-                        const scriptFile = join(dirname(state.filename), `${path.node.source.value}${ext}`);
-                        console.log(
-                            'need a way to inject script',
-                            scriptFile,
+                        const ext =
+                            extname(path.node.source.value) === '.js'
+                                ? ''
+                                : '.js';
+                        const scriptFile = join(
+                            dirname(state.filename),
+                            `${path.node.source.value}${ext}`,
                         );
+                        console.log('need a way to inject script', scriptFile);
                         path.remove();
                     }
                 }
