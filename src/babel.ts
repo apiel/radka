@@ -32,8 +32,10 @@ export default function() {
                             dirname(state.filename),
                             `${path.node.source.value}${ext}`,
                         );
-                        console.log('need a way to inject script', scriptFile);
-                        path.remove();
+                        const ast = parse(
+                            `global.r_ka_scripts = [...(global.r_ka_scripts || []), '${scriptFile}'];`,
+                        );
+                        path.replaceWithMultiple(ast.program.body);
                     }
                 }
             },

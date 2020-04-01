@@ -64,8 +64,16 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         let source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
         source = applyPropsToLinks(source, links);
         source = injectBundles(source);
+        source = yield appendScriptToSource(source);
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
+    });
+}
+function appendScriptToSource(source) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const scripts = yield Promise.all(global.r_ka_scripts.map((script) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, script.substr(config_1.pagesPath.length)))));
+        global.r_ka_scripts = [];
+        return injectScript(source, scripts.map(s => s.toString()).join());
     });
 }
 function applyPropsToLinks(source, links) {
@@ -82,9 +90,14 @@ function injectBundles(source) {
     const script = `
     <script src="/index.js"></script>
     <link rel="stylesheet" type="text/css" href="/index.css">`;
-    const tag = '</body>';
+    return injectScript(source, script);
+}
+function injectScript(source, script, tag = '</body>') {
     if (source.indexOf(tag) !== -1) {
         source = source.replace(tag, `${script}${tag}`);
+    }
+    else if (tag === '</head>') {
+        source = `${script}${source}`;
     }
     else {
         source = `${source}${script}`;

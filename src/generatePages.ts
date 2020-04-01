@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import { html } from './html';
 import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
-import { ensureFile, outputFile } from 'fs-extra';
+import { ensureFile, outputFile, readFile } from 'fs-extra';
 
 import { distPath, config, pagesPath } from './config';
 import { Page, Props } from './lib';
@@ -76,9 +76,22 @@ async function saveComponentToHtml(
     let source = page.component(props).render(html({ transform }));
     source = applyPropsToLinks(source, links);
     source = injectBundles(source);
+    source = await appendScriptToSource(source);
 
     await ensureFile(htmlPath);
     await outputFile(htmlPath, source);
+}
+
+async function appendScriptToSource(source: string) {
+    const scripts = await Promise.all(
+        (global as any).r_ka_scripts.map((script: string) =>
+            readFile(join(config.tmpFolder, script.substr(pagesPath.length))),
+        ),
+    );
+    (global as any).r_ka_scripts = [];
+
+    const code = scripts.map(s => s.toString()).join();
+    return injectScript(source, `<script>${code}</script>`);
 }
 
 function applyPropsToLinks(source: string, links: Links) {
@@ -100,12 +113,17 @@ function injectBundles(source: string) {
     const script = `
     <script src="/index.js"></script>
     <link rel="stylesheet" type="text/css" href="/index.css">`;
-    const tag = '</body>';
+    return injectScript(source, script);
+    // return injectScript(source, script, '</head>');
+}
+
+function injectScript(source: string, script: string, tag = '</body>') {
     if (source.indexOf(tag) !== -1) {
         source = source.replace(tag, `${script}${tag}`);
+    } else if (tag === '</head>') {
+        source = `${script}${source}`;
     } else {
-        source = `${source}${script}`; // if body
-        // source = `${script}${source}`; // if head
+        source = `${source}${script}`;
     }
     return source;
 }

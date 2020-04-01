@@ -6,7 +6,6 @@ const fs_1 = require("fs");
 const config_1 = require("./config");
 const parser_1 = require("@babel/parser");
 const generator_1 = require("@babel/generator");
-exports.scripts = [];
 function default_1() {
     return {
         visitor: {
@@ -21,10 +20,9 @@ function default_1() {
                         const ext = path_1.extname(path.node.source.value) === '.js'
                             ? ''
                             : '.js';
-                        const scriptFile = require.resolve(path_1.join(path_1.dirname(state.filename), `${path.node.source.value}${ext}`));
-                        console.log('need a way to inject script', scriptFile);
-                        exports.scripts.push(scriptFile);
-                        path.remove();
+                        const scriptFile = path_1.join(path_1.dirname(state.filename), `${path.node.source.value}${ext}`);
+                        const ast = parser_1.parse(`global.r_ka_scripts = [...(global.r_ka_scripts || []), '${scriptFile}'];`);
+                        path.replaceWithMultiple(ast.program.body);
                     }
                 }
             },

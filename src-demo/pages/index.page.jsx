@@ -3,13 +3,13 @@ import { Hello } from '../components/Hello';
 import Item from './item/[id].page';
 import { readFileSync } from 'fs-extra';
 
+// inject script in html as a script tag
 import './index.script';
 
 function Login() {
     return (
         <section>
-            {/* instead we could just import './index.script.js'; and use ImportDeclaration */}
-            <Import src={require.resolve('./index.script.js')} />
+            {/* <Import src={require.resolve('./index.script.js')} /> */}
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />
