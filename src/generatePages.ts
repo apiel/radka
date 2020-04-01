@@ -108,7 +108,10 @@ function applyPropsToLinks(source: string, links: Links) {
             });
             return (
                 config.baseUrl +
-                applyPropsToPath(getRoutePath(links[linkId]), props)
+                applyPropsToPath(
+                    getRoutePath(links[linkId]).replace(/\/index.html$/g, ''),
+                    props,
+                )
             );
         },
     );
