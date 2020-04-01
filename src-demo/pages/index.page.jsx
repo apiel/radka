@@ -14,8 +14,8 @@ function Login() {
             <input type="text" placeholder="email" />
             <input type="password" placeholder="password" />
             <button id="login-btn">Log In</button>
-            <a href={Item.link({ id: 3, b: 'c' })}>link</a>
-            <a href={Item.link({ id: 2, b: 'e' })}>link</a>
+            <a href={Item.link({ id: 3 })}>link</a>
+            <a href={Item.link({ id: 2 })}>link</a>
         </section>
     );
 }

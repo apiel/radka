@@ -73,7 +73,8 @@ function appendScriptToSource(source) {
     return __awaiter(this, void 0, void 0, function* () {
         const scripts = yield Promise.all(global.r_ka_scripts.map((script) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, script.substr(config_1.pagesPath.length)))));
         global.r_ka_scripts = [];
-        return injectScript(source, scripts.map(s => s.toString()).join());
+        const code = scripts.map(s => s.toString()).join();
+        return injectScript(source, `<script>${code}</script>`);
     });
 }
 function applyPropsToLinks(source, links) {
