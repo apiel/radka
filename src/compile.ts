@@ -32,9 +32,8 @@ export async function compile() {
 
 function runBabel() {
     info('Run babel');
-    const configPath = join(__dirname, '..', '.babelrc.jsx.json');
     return shell(
-        `babel ${srcPath} --out-dir ${config.tmpFolder} --config-file ${configPath} --copy-files`,
+        `babel ${srcPath} --out-dir ${config.tmpFolder} --copy-files`,
     );
 }
 
