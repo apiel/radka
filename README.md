@@ -30,7 +30,7 @@ function Main() {
 export default page(Main);
 ```
 
-Every jsx files should import `jsx` from `radka` library, like you would do with React. This is necessary to be able to transform JSX to javascript after being transpiled by Babel.
+Every jsx file should import `jsx` from `radka` library, like you would do with React. This is necessary to be able to transform JSX to javascript after being transpiled by Babel.
 
 Let's create another page but with dynamic content. Create a file `src/pages/pet/[type].page.jsx`:
 
@@ -67,18 +67,18 @@ import { jsx, page } from 'radka';
 import Main from '../index.page.jsx';
 
 function Pet({ type, description }) {
-    return (
-        <div>
-            <h1>Pet {type}</h1>
-            <p>{description}</p>
-            <p><a href={Main.link()}>Go to homepage</a></p>
-        </div>
-    );
+   return (
+       <div>
+           <h1>Pet {type}</h1>
+           <p>{description}</p>
+           <p><a href={Main.link()}>Go to homepage</a></p>
+       </div>
+   );
 }
 ...
 ```
 
-Each page return a link function, providing the url to access the page. So if the page change of path, the route will be automatically updated.
+Each page returns a link function, providing the url to access the page. So if the page changes its path, the route will be automatically updated.
 
 Now let's create a script to inject in the page. Create a file `src/pages/index.script.js`:
 
@@ -112,7 +112,7 @@ function Main() {
 export default page(Main);
 ```
 
-Instead to inject the code directly in the page, you might want to have a share javascript between all pages. For this you can create a bundle. Create a new file `src/bundle/index.js`:
+Instead of injecting the code directly in the page, you might want to have a shared javascript file between all pages. For this you can create a bundle. Create a new file `src/bundle/index.js`:
 
 ```js
 import './index.css';
@@ -122,7 +122,7 @@ console.log('This is a shared script.');
 
 As you can see, in this example, we are also importing a css file. This is to include the CSS inside the shared bundle.
 
-We are still missing a way to create some shared component. Create a file `src/components/Hello.jsx`:
+We are still missing a way to create some shared components. Create a file `src/components/Hello.jsx`:
 
 ```jsx
 import { jsx } from 'radka';
@@ -165,3 +165,12 @@ export function Hello({ name }) {
     );
 }
 ```
+
+## Folder and file structure
+
+- pages are in `src/pages`
+    - page file should end by `.page.jsx`
+    - page can be named with `[name]` to create dynamic path e.g. `src/pages/[id].page.jsx`
+- components are in `src/components`
+- bundle files are in `src/bundle`
+- injected script files for pages and components must finish by `.script.js`
