@@ -13,7 +13,7 @@ npm init
 npm install radka --dev
 ```
 
-Now create a folder `src/pages`. This folder will contain the pages. Now create a file `src/pages/index.page.jsx`:
+Create a folder `src/pages`. This folder will contain the pages. Create a file `src/pages/index.page.jsx`:
 
 ```jsx
 import { jsx, page } from 'radka';
@@ -31,6 +31,14 @@ export default page(Main);
 ```
 
 Every jsx file should import `jsx` from `radka` library, like you would do with React. This is necessary to be able to transform JSX to javascript after being transpiled by Babel.
+
+Now you can transpile the jsx file. In you npm folder run:
+
+```
+npx radka
+```
+
+This will create a new `site` folder containing the generated html files.
 
 Let's create another page but with dynamic content. Create a file `src/pages/pet/[type].page.jsx`:
 
