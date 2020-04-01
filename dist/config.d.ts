@@ -6,6 +6,7 @@ export declare let config: {
     pagesFolder: string;
     pagesSuffix: string;
     bundleFolder: string;
+    baseUrl: string;
     tmpFolder: string;
 };
 export declare let distPath: string;

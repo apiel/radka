@@ -66,6 +66,7 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         source = injectBundles(source);
         source = yield appendImportToSource(source, '.js', 'script');
         source = yield appendImportToSource(source, '.css', 'style');
+        global.r_ka_imports = [];
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
     });
@@ -75,7 +76,6 @@ function appendImportToSource(source, ext, tag) {
         const imports = yield Promise.all(global.r_ka_imports
             .filter((path) => path.endsWith(ext))
             .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.pagesPath.length)))));
-        global.r_ka_imports = [];
         const code = imports.map(s => s.toString()).join();
         return injectScript(source, `<${tag}>${code}</${tag}>`);
     });
@@ -87,13 +87,14 @@ function applyPropsToLinks(source, links) {
             const [key, value] = prop.split('=');
             props[key] = value;
         });
-        return applyPropsToPath(getRoutePath(links[linkId]), props);
+        return (config_1.config.baseUrl +
+            applyPropsToPath(getRoutePath(links[linkId]), props));
     });
 }
 function injectBundles(source) {
     const script = `
-    <script src="/index.js"></script>
-    <link rel="stylesheet" type="text/css" href="/index.css">`;
+    <script src="${config_1.config.baseUrl}/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="${config_1.config.baseUrl}/index.css">`;
     return injectScript(source, script);
 }
 function injectScript(source, script, tag = '</body>') {

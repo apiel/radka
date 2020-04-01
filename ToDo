@@ -3,7 +3,7 @@
 
 - will have as index.api.js for isomor
 
-- add base url
+- improve path to dont include index.html file
 
 - make a smart way to pre-load pages
 

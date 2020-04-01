@@ -32,15 +32,13 @@ export async function compile() {
 
 function runBabel() {
     info('Run babel');
-    return shell(
-        `babel ${srcPath} --out-dir ${config.tmpFolder} --copy-files`,
-    );
+    return shell(`babel ${srcPath} --out-dir ${config.tmpFolder} --copy-files`);
 }
 
 function runParcel() {
     info('Run parcel');
 
-    // ToDo: find better way, in generate file should only include CSS if file exist 
+    // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
     ensureFileSync(join(distPath, 'index.css'));
 
@@ -53,6 +51,9 @@ function shell(cmd: string) {
     return exec(cmd, {
         stdio: 'inherit',
         shell: true,
-        env: { ...process.env, TEMP_FOLDER: config.tmpFolder },
+        env: {
+            ...process.env,
+            TEMP_FOLDER: config.tmpFolder,
+        },
     });
 }

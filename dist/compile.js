@@ -34,8 +34,7 @@ function compile() {
 exports.compile = compile;
 function runBabel() {
     logol_1.info('Run babel');
-    const configPath = path_1.join(__dirname, '..', '.babelrc.jsx.json');
-    return shell(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --config-file ${configPath} --copy-files`);
+    return shell(`babel ${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --copy-files`);
 }
 function runParcel() {
     logol_1.info('Run parcel');

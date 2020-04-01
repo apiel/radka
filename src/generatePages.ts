@@ -106,7 +106,10 @@ function applyPropsToLinks(source: string, links: Links) {
                 const [key, value] = prop.split('=');
                 props[key] = value;
             });
-            return applyPropsToPath(getRoutePath(links[linkId]), props);
+            return (
+                config.baseUrl +
+                applyPropsToPath(getRoutePath(links[linkId]), props)
+            );
         },
     );
 }
@@ -114,8 +117,8 @@ function applyPropsToLinks(source: string, links: Links) {
 function injectBundles(source: string) {
     // ToDo: we might want to had ?timestamp base on creation time
     const script = `
-    <script src="/index.js"></script>
-    <link rel="stylesheet" type="text/css" href="/index.css">`;
+    <script src="${config.baseUrl}/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="${config.baseUrl}/index.css">`;
     return injectScript(source, script);
     // return injectScript(source, script, '</head>');
 }

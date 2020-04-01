@@ -1,5 +1,6 @@
 import { node } from 'jsx-pragmatic';
 import { readFileSync } from 'fs-extra';
+import { config } from './config';
 
 export { Fragment } from 'jsx-pragmatic';
 

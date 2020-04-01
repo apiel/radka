@@ -12,6 +12,7 @@ exports.config = {
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
+    baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || tmp_1.dirSync().name,
 };
 exports.distPath = '';
