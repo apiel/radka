@@ -130,6 +130,24 @@ console.log('This is a shared script.');
 
 As you can see, in this example, we are also importing a css file. This is to include the CSS inside the shared bundle.
 
+If you don't want your CSS to be part of the bundle, you can inject the CSS directly in the page, in the same way as you do with React:
+
+```jsx
+import { jsx, page, Import } from 'radka';
+import './Main.css';
+
+function Main() {
+    return (
+        <div>
+            <h1>Main page</h1>
+            <p>This is an example</p>
+        </div>
+    );
+}
+
+export default page(Main);
+```
+
 We are still missing a way to create some shared components. Create a file `src/components/Hello.jsx`:
 
 ```jsx
