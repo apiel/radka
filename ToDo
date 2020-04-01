@@ -1,4 +1,6 @@
 
+- import css
+
 - <script> in html should be able to call server function isomor style
 
 - need hot reload
@@ -8,3 +10,5 @@
 - will have as index.api.js for isomor
 
 - add base url
+
+- make a smart way to pre-load pages

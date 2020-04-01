@@ -111,3 +111,57 @@ function Main() {
 
 export default page(Main);
 ```
+
+Instead to inject the code directly in the page, you might want to have a share javascript between all pages. For this you can create a bundle. Create a new file `src/bundle/index.js`:
+
+```js
+import './index.css';
+
+console.log('This is a shared script.');
+```
+
+As you can see, in this example, we are also importing a css file. This is to include the CSS inside the shared bundle.
+
+We are still missing a way to create some shared component. Create a file `src/components/Hello.jsx`:
+
+```jsx
+import { jsx } from 'radka';
+
+export function Hello({ name }) {
+    return <p>Hello {name}.</p>;
+}
+```
+
+Import this component in a page:
+
+```jsx
+import { jsx, page } from 'radka';
+import { Hello } from '../components/Hello';
+
+function Main() {
+    return (
+        <div>
+            <h1>Main page</h1>
+            <p>This is an example</p>
+            <Hello name="Alex" />
+        </div>
+    );
+}
+
+export default page(Main);
+```
+
+In case you need fragment like `React.fragment`, you can use `Fragment` from the `radka` library:
+
+```jsx
+import { jsx, Fragment } from 'radka';
+
+export function Hello({ name }) {
+    return (
+        <Fragment>
+            <p>Hello {name}.</p>
+            <p>Line 2.</p>
+        </Fragment>
+    );
+}
+```
