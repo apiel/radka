@@ -18,24 +18,20 @@ export default function() {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
                     // ToDo: how to handle local import ./something // path.remove(); ?
-                } else if (state.filename.endsWith(`.jsx`)) {
+                } else if (
+                    state.filename.endsWith(`.jsx`) &&
+                    !path.node.specifiers.length
+                ) {
                     if (
-                        !path.node.specifiers.length &&
-                        (path.node.source.value.endsWith('.script') ||
-                            path.node.source.value.endsWith('.script.js'))
+                        path.node.source.value.endsWith('.script') ||
+                        path.node.source.value.endsWith('.script.js')
                     ) {
-                        const ext =
-                            extname(path.node.source.value) === '.js'
-                                ? ''
-                                : '.js';
-                        const scriptFile = join(
-                            dirname(state.filename),
-                            `${path.node.source.value}${ext}`,
-                        );
-                        const ast = parse(
-                            `global.r_ka_scripts = [...(global.r_ka_scripts || []), '${scriptFile}'];`,
-                        );
-                        path.replaceWithMultiple(ast.program.body);
+                        let importPath = path.node.source.value;
+                        const ext = extname(importPath) === '.js' ? '' : '.js';
+                        pushImportFile(path, state, `${importPath}${ext}`);
+                    } else if (path.node.source.value.endsWith('.css')) {
+                        let importPath = path.node.source.value;
+                        pushImportFile(path, state, importPath);
                     }
                 }
             },
@@ -67,6 +63,18 @@ export default function() {
             },
         },
     };
+}
+
+function pushImportFile(
+    path: NodePath<t.ImportDeclaration>,
+    state: any,
+    importPath: string,
+) {
+    const file = join(dirname(state.filename), importPath);
+    const ast = parse(
+        `global.r_ka_imports = [...(global.r_ka_imports || []), '${file}'];`,
+    );
+    path.replaceWithMultiple(ast.program.body);
 }
 
 // should it go in the bundle only if it has been imported?

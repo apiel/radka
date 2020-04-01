@@ -5,10 +5,12 @@ import { readFileSync } from 'fs-extra';
 
 // inject script in html as a script tag
 import './index.script';
+import './index.css';
 
 function Login() {
     return (
         <section>
+            <h1>Homepage</h1>
             {/* <Import src={require.resolve('./index.script.js')} /> */}
             <Hello name="abc" num={{ count: 123 }} />
             <input type="text" placeholder="email" />

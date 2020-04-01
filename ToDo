@@ -1,14 +1,12 @@
 
-- import css
-
 - <script> in html should be able to call server function isomor style
-
-- need hot reload
-    + could use https://www.npmjs.com/package/light-server to hot reload
-    + compile only necessary
 
 - will have as index.api.js for isomor
 
 - add base url
 
 - make a smart way to pre-load pages
+
+- need hot reload
+    + could use https://www.npmjs.com/package/light-server to hot reload
+    + compile only necessary

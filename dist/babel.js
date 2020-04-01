@@ -13,16 +13,17 @@ function default_1() {
                 if (state.filename.endsWith('.script.js')) {
                     addImportToBundle(path);
                 }
-                else if (state.filename.endsWith(`.jsx`)) {
-                    if (!path.node.specifiers.length &&
-                        (path.node.source.value.endsWith('.script') ||
-                            path.node.source.value.endsWith('.script.js'))) {
-                        const ext = path_1.extname(path.node.source.value) === '.js'
-                            ? ''
-                            : '.js';
-                        const scriptFile = path_1.join(path_1.dirname(state.filename), `${path.node.source.value}${ext}`);
-                        const ast = parser_1.parse(`global.r_ka_scripts = [...(global.r_ka_scripts || []), '${scriptFile}'];`);
-                        path.replaceWithMultiple(ast.program.body);
+                else if (state.filename.endsWith(`.jsx`) &&
+                    !path.node.specifiers.length) {
+                    if (path.node.source.value.endsWith('.script') ||
+                        path.node.source.value.endsWith('.script.js')) {
+                        let importPath = path.node.source.value;
+                        const ext = path_1.extname(importPath) === '.js' ? '' : '.js';
+                        pushImportFile(path, state, `${importPath}${ext}`);
+                    }
+                    else if (path.node.source.value.endsWith('.css')) {
+                        let importPath = path.node.source.value;
+                        pushImportFile(path, state, importPath);
                     }
                 }
             },
@@ -50,6 +51,11 @@ function default_1() {
     };
 }
 exports.default = default_1;
+function pushImportFile(path, state, importPath) {
+    const file = path_1.join(path_1.dirname(state.filename), importPath);
+    const ast = parser_1.parse(`global.r_ka_imports = [...(global.r_ka_imports || []), '${file}'];`);
+    path.replaceWithMultiple(ast.program.body);
+}
 function addImportToBundle(path) {
     const emptyCode = '';
     const ast = parser_1.parse(emptyCode);

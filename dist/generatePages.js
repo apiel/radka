@@ -64,17 +64,20 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         let source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
         source = applyPropsToLinks(source, links);
         source = injectBundles(source);
-        source = yield appendScriptToSource(source);
+        source = yield appendImportToSource(source, '.js', 'script');
+        source = yield appendImportToSource(source, '.css', 'style');
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
     });
 }
-function appendScriptToSource(source) {
+function appendImportToSource(source, ext, tag) {
     return __awaiter(this, void 0, void 0, function* () {
-        const scripts = yield Promise.all(global.r_ka_scripts.map((script) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, script.substr(config_1.pagesPath.length)))));
-        global.r_ka_scripts = [];
-        const code = scripts.map(s => s.toString()).join();
-        return injectScript(source, `<script>${code}</script>`);
+        const imports = yield Promise.all(global.r_ka_imports
+            .filter((path) => path.endsWith(ext))
+            .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.pagesPath.length)))));
+        global.r_ka_imports = [];
+        const code = imports.map(s => s.toString()).join();
+        return injectScript(source, `<${tag}>${code}</${tag}>`);
     });
 }
 function applyPropsToLinks(source, links) {

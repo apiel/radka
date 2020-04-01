@@ -76,22 +76,25 @@ async function saveComponentToHtml(
     let source = page.component(props).render(html({ transform }));
     source = applyPropsToLinks(source, links);
     source = injectBundles(source);
-    source = await appendScriptToSource(source);
+    source = await appendImportToSource(source, '.js', 'script');
+    source = await appendImportToSource(source, '.css', 'style');
+    (global as any).r_ka_imports = []; // clean up after appending import
 
     await ensureFile(htmlPath);
     await outputFile(htmlPath, source);
 }
 
-async function appendScriptToSource(source: string) {
-    const scripts = await Promise.all(
-        (global as any).r_ka_scripts.map((script: string) =>
-            readFile(join(config.tmpFolder, script.substr(pagesPath.length))),
-        ),
+async function appendImportToSource(source: string, ext: string, tag: string) {
+    const imports = await Promise.all(
+        (global as any).r_ka_imports
+            .filter((path: string) => path.endsWith(ext))
+            .map((path: string) =>
+                readFile(join(config.tmpFolder, path.substr(pagesPath.length))),
+            ),
     );
-    (global as any).r_ka_scripts = [];
 
-    const code = scripts.map(s => s.toString()).join();
-    return injectScript(source, `<script>${code}</script>`);
+    const code = imports.map(s => s.toString()).join();
+    return injectScript(source, `<${tag}>${code}</${tag}>`);
 }
 
 function applyPropsToLinks(source: string, links: Links) {
