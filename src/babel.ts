@@ -88,6 +88,7 @@ function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     const bundleFile = join(bundlePath, 'index.js');
     ensureFileSync(bundleFile);
     appendFileSync(bundleFile, output.code);
+    // console.log('addImportToBundle', bundleFile, output.code);
 }
 
 // for debugging in console.log

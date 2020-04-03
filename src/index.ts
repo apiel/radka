@@ -33,7 +33,7 @@ ${Object.keys(globalConfig).map(k => `  --${k}=${globalConfig[k]}\n`).join('')}
             ? await cosmiconfig(CONFIG_FILE).load(configFile)
             : await cosmiconfig(CONFIG_FILE, cosmiconfigOptions).search();
 
-        setConfig(cosmic?.config);
+        setConfig(cosmic && cosmic.config);
         setConfig(config);
         info('Config', globalConfig);
         await compile();

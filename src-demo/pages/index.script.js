@@ -1,12 +1,15 @@
 import { info } from 'logol';
 import { error } from 'logol';
 
+/* import { getUptime } from '../api/uptime'; */
+
 console.log('load index.script.js');
 
-export const handleClick = param => {
-    info('yo');
+// export const handleClick = async (param) => {
+export const handleClick = (param) => {
     error('bad');
     console.log('click me', param);
+    // info('yo', await getUptime());
 };
 
 export function yo() {

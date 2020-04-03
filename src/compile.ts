@@ -23,7 +23,7 @@ export async function compile() {
         'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });',
     );
 
-    await runIsomor();
+    // await runIsomor();
     await runParcel();
 
     await generatePages();
@@ -71,6 +71,7 @@ function shell(
                 COLUMNS:
                     process.env.COLUMNS || process.stdout.columns.toString(),
                 LINES: process.env.LINES || process.stdout.rows.toString(),
+                TEMP_FOLDER: config.tmpFolder,
                 ...env,
                 ...process.env,
             },

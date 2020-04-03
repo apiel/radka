@@ -50,7 +50,7 @@ ${Object.keys(config_1.config).map(k => `  --${k}=${config_1.config[k]}\n`).join
             const cosmic = configFile
                 ? yield cosmiconfig_1.cosmiconfig(config_1.CONFIG_FILE).load(configFile)
                 : yield cosmiconfig_1.cosmiconfig(config_1.CONFIG_FILE, cosmiconfigOptions).search();
-            config_1.setConfig(cosmic ? .config : );
+            config_1.setConfig(cosmic && cosmic.config);
             config_1.setConfig(config);
             logol_1.info('Config', config_1.config);
             yield compile_1.compile();
