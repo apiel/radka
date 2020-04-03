@@ -14,6 +14,7 @@ import { transform } from './transform';
 const globAsync = promisify(glob);
 
 export async function generatePages() {
+    // console.log('yoyoy', join(pagesPath, '**', `*${config.pagesSuffix}.js`));
     const files = await globAsync(
         join(pagesPath, '**', `*${config.pagesSuffix}.js`),
     );

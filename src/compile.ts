@@ -24,6 +24,9 @@ export async function compile() {
         'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });',
     );
 
+    const isomorOutput = await runIsomor();
+    process.stdout.write(isomorOutput.stdout);
+
     const parcelOutput = await runParcel();
     process.stdout.write(parcelOutput.stdout);
 
@@ -44,6 +47,14 @@ function runParcel() {
 
     return shell(
         `parcel build ${join(bundlePath, 'index.js')} --out-dir ${distPath}`,
+    );
+}
+
+function runIsomor() {
+    info('Run isomor');
+
+    return shell(
+        `ISOMOR_DIST_APP_FOLDER=${config.tmpFolder} isomor-transpiler`,
     );
 }
 

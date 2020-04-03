@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -28,6 +27,8 @@ function compile() {
         appendFile(path_1.join(config_1.bundlePath, 'index.js'), 'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });');
         const parcelOutput = yield runParcel();
         process.stdout.write(parcelOutput.stdout);
+        const isomorOutput = yield runIsomor();
+        process.stdout.write(isomorOutput.stdout);
         yield generatePages_1.generatePages();
     });
 }
@@ -41,11 +42,15 @@ function runParcel() {
     fs_extra_1.ensureFileSync(path_1.join(config_1.distPath, 'index.css'));
     return shell(`parcel build ${path_1.join(config_1.bundlePath, 'index.js')} --out-dir ${config_1.distPath}`);
 }
+function runIsomor() {
+    logol_1.info('Run isomor');
+    return shell(`ISOMOR_DIST_APP_FOLDER=${config_1.distPath} isomor-transpiler`);
+}
 function shell(cmd) {
     return exec(cmd, {
         stdio: 'inherit',
         shell: true,
-        env: Object.assign(Object.assign({}, process.env), { TEMP_FOLDER: config_1.config.tmpFolder }),
+        env: Object.assign({}, process.env, { TEMP_FOLDER: config_1.config.tmpFolder }),
     });
 }
 //# sourceMappingURL=compile.js.map

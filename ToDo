@@ -8,3 +8,5 @@
 - need hot reload
     + could use https://www.npmjs.com/package/light-server to hot reload
     + compile only necessary
+
+- typescript

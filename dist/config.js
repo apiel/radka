@@ -21,7 +21,7 @@ exports.pagesPath = '';
 exports.bundlePath = '';
 initPath();
 function setConfig(newConfig = {}) {
-    exports.config = Object.assign(Object.assign({}, exports.config), newConfig);
+    exports.config = Object.assign({}, exports.config, newConfig);
     initPath();
 }
 exports.setConfig = setConfig;
