@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { remove, ensureFileSync } from 'fs-extra';
-import { info } from 'logol';
+import { info, debug } from 'logol';
 import * as fs from 'fs';
 import { gray, yellow, red } from 'chalk';
 
@@ -20,10 +20,10 @@ export async function compile() {
 
     appendFile(
         join(bundlePath, 'index.js'),
-        'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });',
+        'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");',
     );
 
-    // await runIsomor();
+    await runIsomor();
     await runParcel();
 
     await generatePages();
@@ -57,6 +57,7 @@ function runIsomor() {
 
     return shell('isomor-transpiler', [], {
         ISOMOR_DIST_APP_FOLDER: config.tmpFolder,
+        ISOMOR_NO_TYPES: 'true',
     });
 }
 
@@ -65,6 +66,7 @@ function shell(
     args?: ReadonlyArray<string>,
     env?: NodeJS.ProcessEnv,
 ) {
+    debug('shell', command, args.join(' '));
     return new Promise((resolve) => {
         const cmd = spawn(command, args, {
             env: {

@@ -13,3 +13,6 @@
 
 - comment can be a pb
 "use strict";require("./index.css"),console.log("Hello welcome");import { info } from 'logol';import { error } from 'logol'; // import { getUptime } from '../api/uptime';import { log } from 'logol';window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });
+
+- on error shell parcel does not throw error, maybe need to check exit code?
+    when type in api file
