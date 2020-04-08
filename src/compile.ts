@@ -30,7 +30,7 @@ export async function compile() {
     );
 
     // ToDo: use some config
-    await copy(join(config.tmpFolder, config.apiFolder), join(distServerPath, config.apiFolder));
+    await copy(join(srcPath, config.apiFolder), join(distServerPath, config.apiFolder));
 
     await runIsomor();
     await runParcel();
