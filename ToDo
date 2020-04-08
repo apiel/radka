@@ -16,3 +16,12 @@
 
 - on error shell parcel does not throw error, maybe need to check exit code?
     when type in api file
+
+- isomor server missing
+
+- FIX windows:
+    - use npx.cmd
+    - use url-join
+
+- deploy: zeit (server function), heroku, netlify, aws?
+

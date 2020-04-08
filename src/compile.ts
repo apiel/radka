@@ -1,19 +1,25 @@
 import { spawn } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import { remove, ensureFileSync } from 'fs-extra';
+import { remove, ensureFileSync, copy } from 'fs-extra';
 import { info, debug } from 'logol';
 import * as fs from 'fs';
 import { gray, yellow, red } from 'chalk';
 
-import { srcPath, config, bundlePath, distPath } from './config';
+import {
+    srcPath,
+    config,
+    bundlePath,
+    distStaticPath,
+    distApiPath,
+} from './config';
 import { generatePages } from './generatePages';
 
 const appendFile = promisify(fs.appendFile);
 
 export async function compile() {
-    // ToDo: is it good idea to remove distPath? site folder might not only contain generated file?
-    await remove(distPath);
+    // ToDo: is it good idea to remove distStaticPath? site folder might not only contain generated file?
+    await remove(distStaticPath);
     await remove(config.tmpFolder);
 
     await runBabel();
@@ -22,6 +28,9 @@ export async function compile() {
         join(bundlePath, 'index.js'),
         'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");',
     );
+
+    // ToDo: use some config
+    await copy(join(config.tmpFolder, config.apiFolder), distApiPath);
 
     await runIsomor();
     await runParcel();
@@ -42,13 +51,14 @@ function runParcel() {
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
-    ensureFileSync(join(distPath, 'index.css'));
+    ensureFileSync(join(distStaticPath, 'index.css'));
 
     return shell(
         'parcel',
-        `build ${join(bundlePath, 'index.js')} --out-dir ${distPath}`.split(
-            ' ',
-        ),
+        `build ${join(
+            bundlePath,
+            'index.js',
+        )} --out-dir ${distStaticPath}`.split(' '),
     );
 }
 
@@ -58,6 +68,11 @@ function runIsomor() {
     return shell('isomor-transpiler', [], {
         ISOMOR_DIST_APP_FOLDER: config.tmpFolder,
         ISOMOR_NO_TYPES: 'true',
+        ISOMOR_SKIP_COPY_SRC: 'true',
+        ISOMOR_SERVER_FOLDER: config.apiFolder,
+        ISOMOR_SRC_FOLDER: config.srcFolder,
+        ISOMOR_STATIC_FOLDER: distStaticPath,
+        ISOMOR_DIST_SERVER_FOLDER: distApiPath,
     });
 }
 

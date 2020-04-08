@@ -7,7 +7,7 @@ import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
 
-import { distPath, config, pagesPath } from './config';
+import { distStaticPath, config, pagesPath } from './config';
 import { Page, Props } from './lib';
 import { transform } from './transform';
 
@@ -21,7 +21,7 @@ export async function generatePages() {
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {
-        const htmlPath = join(distPath, getRoutePath(file));
+        const htmlPath = join(distStaticPath, getRoutePath(file));
         log('Load page component', file);
         const page: Page = require(file).default;
         if (page.propsList) {

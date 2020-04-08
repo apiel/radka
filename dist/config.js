@@ -8,14 +8,17 @@ exports.ROOT_FOLDER = process.env.ROOT_FOLDER
     : process.cwd();
 exports.config = {
     srcFolder: 'src',
-    distFolder: 'site',
+    distStaticFolder: path_1.join('site', 'static'),
+    distApiFolder: path_1.join('site', 'api'),
+    apiFolder: 'api',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
     baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || tmp_1.dirSync().name,
 };
-exports.distPath = '';
+exports.distStaticPath = '';
+exports.distApiPath = '';
 exports.srcPath = '';
 exports.pagesPath = '';
 exports.bundlePath = '';
@@ -26,7 +29,8 @@ function setConfig(newConfig = {}) {
 }
 exports.setConfig = setConfig;
 function initPath() {
-    exports.distPath = path_1.join(exports.ROOT_FOLDER, exports.config.distFolder);
+    exports.distStaticPath = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
+    exports.distApiPath = path_1.join(exports.ROOT_FOLDER, exports.config.distApiFolder);
     exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
     exports.pagesPath = path_1.join(exports.config.tmpFolder, exports.config.pagesFolder);
     exports.bundlePath = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);

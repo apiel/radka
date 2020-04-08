@@ -14,8 +14,10 @@
   },
   "scripts": {
     "fix-jsx-pragmatic": "cp jsx-pragmatic.js node_modules/jsx-pragmatic/dist/jsx-pragmatic.js",
+    "serv": "ISOMOR_STATIC_FOLDER=./site/static ISOMOR_DIST_SERVER_FOLDER=./site/api isomor-server",
+    "serv:dev": "nodemon --watch 'api/**/*' -e ts,js --exec 'yarn serv'",
     "dev": "yarn fix-jsx-pragmatic && ts-node src/index.ts",
-    "serv": "http-server ./site",
+    "httpd": "http-server ./site/static",
     "build": "rm -rf dist/ && tsc -p tsconfig.json && chmod +x dist/index.js",
     "build-babel": "babel src-demo --out-dir tmp",
     "build-isomor": "ISOMOR_DIST_APP_FOLDER=tmp isomor-transpiler"
@@ -35,10 +37,12 @@
     "cosmiconfig": "^6.0.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.6",
+    "isomor-server": "^2.5.5",
     "isomor-transpiler": "^2.5.2",
     "jsx-pragmatic": "^2.0.8",
     "logol": "^0.0.3",
     "minimist": "^1.2.5",
+    "nodemon": "^2.0.2",
     "parcel": "^1.12.4",
     "tmp": "^0.1.0",
     "ts-loader": "^6.2.2"

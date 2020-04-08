@@ -23,7 +23,7 @@ function generatePages() {
         const links = collectPageLinks(files);
         logol_1.log('Pages component founds', links);
         for (const file of files) {
-            const htmlPath = path_1.join(config_1.distPath, getRoutePath(file));
+            const htmlPath = path_1.join(config_1.distStaticPath, getRoutePath(file));
             logol_1.log('Load page component', file);
             const page = require(file).default;
             if (page.propsList) {

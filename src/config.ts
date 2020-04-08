@@ -8,7 +8,9 @@ export const ROOT_FOLDER = process.env.ROOT_FOLDER
 
 export let config = {
     srcFolder: 'src',
-    distFolder: 'site',
+    distStaticFolder: join('site', 'static'),
+    distApiFolder: join('site', 'api'),
+    apiFolder: 'api',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
@@ -16,7 +18,8 @@ export let config = {
     tmpFolder: process.env.TEMP_FOLDER || dirSync().name,
 };
 
-export let distPath = '';
+export let distStaticPath = '';
+export let distApiPath = '';
 export let srcPath = '';
 export let pagesPath = '';
 export let bundlePath = '';
@@ -28,7 +31,8 @@ export function setConfig(newConfig = {}) {
 }
 
 function initPath() {
-    distPath = join(ROOT_FOLDER, config.distFolder);
+    distStaticPath = join(ROOT_FOLDER, config.distStaticFolder);
+    distApiPath = join(ROOT_FOLDER, config.distApiFolder);
     srcPath = join(ROOT_FOLDER, config.srcFolder);
     pagesPath = join(config.tmpFolder, config.pagesFolder);
     bundlePath = join(config.tmpFolder, config.bundleFolder);
