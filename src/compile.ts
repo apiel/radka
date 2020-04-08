@@ -11,7 +11,7 @@ import {
     config,
     bundlePath,
     distStaticPath,
-    distApiPath,
+    distServerPath,
 } from './config';
 import { generatePages } from './generatePages';
 
@@ -30,7 +30,7 @@ export async function compile() {
     );
 
     // ToDo: use some config
-    await copy(join(config.tmpFolder, config.apiFolder), distApiPath);
+    await copy(join(config.tmpFolder, config.apiFolder), join(distServerPath, config.apiFolder));
 
     await runIsomor();
     await runParcel();
@@ -72,7 +72,7 @@ function runIsomor() {
         ISOMOR_SERVER_FOLDER: config.apiFolder,
         ISOMOR_SRC_FOLDER: config.srcFolder,
         ISOMOR_STATIC_FOLDER: distStaticPath,
-        ISOMOR_DIST_SERVER_FOLDER: distApiPath,
+        ISOMOR_DIST_SERVER_FOLDER: distServerPath,
     });
 }
 

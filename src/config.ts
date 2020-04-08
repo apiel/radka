@@ -9,7 +9,7 @@ export const ROOT_FOLDER = process.env.ROOT_FOLDER
 export let config = {
     srcFolder: 'src',
     distStaticFolder: join('site', 'static'),
-    distApiFolder: join('site', 'api'),
+    distServerFolder: join('site', 'server'),
     apiFolder: 'api',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
@@ -19,7 +19,7 @@ export let config = {
 };
 
 export let distStaticPath = '';
-export let distApiPath = '';
+export let distServerPath = '';
 export let srcPath = '';
 export let pagesPath = '';
 export let bundlePath = '';
@@ -32,7 +32,7 @@ export function setConfig(newConfig = {}) {
 
 function initPath() {
     distStaticPath = join(ROOT_FOLDER, config.distStaticFolder);
-    distApiPath = join(ROOT_FOLDER, config.distApiFolder);
+    distServerPath = join(ROOT_FOLDER, config.distServerFolder);
     srcPath = join(ROOT_FOLDER, config.srcFolder);
     pagesPath = join(config.tmpFolder, config.pagesFolder);
     bundlePath = join(config.tmpFolder, config.bundleFolder);
