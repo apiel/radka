@@ -1,9 +1,7 @@
 
-- make a smart way to pre-load pages
-    + https://github.com/turbolinks/turbolinks
-    + https://github.com/ftlabs/fastclick
-    + https://github.com/dieulot/instantclick/
-    + pjax https://github.com/defunkt/jquery-pjax
+- turbolinks look more in details https://www.npmjs.com/package/turbolinks#loading-your-applications-javascript-bundle
+
+- stop using pragmatic since issues are not solved
 
 - need hot reload
     + could use https://www.npmjs.com/package/light-server to hot reload

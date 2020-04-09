@@ -41,16 +41,12 @@ function injectBaseCodeToBundle() {
         'require("@babel/polyfill");',
     ];
     if (config.turbolinks === 'true') {
-        codes.push('require("turbolinks").start();');
+        codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
     }
     return appendFile(
         join(bundlePath, 'index.js'),
         codes.join(''),
     );
-    // return appendFile(
-    //     join(bundlePath, 'index.js'),
-    //     'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");',
-    // );
 }
 
 function copyApiToServer() {

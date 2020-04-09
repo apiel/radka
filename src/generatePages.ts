@@ -121,7 +121,7 @@ function applyPropsToLinks(source: string, links: Links) {
 function injectBundles(source: string) {
     // ToDo: we might want to had ?timestamp base on creation time
     const script = `
-    <script src="${config.baseUrl}/index.js"></script>
+    <script src="${config.baseUrl}/index.js" data-turbolinks-suppress-warning></script>
     <link rel="stylesheet" type="text/css" href="${config.baseUrl}/index.css">`;
     return injectScript(source, script);
     // return injectScript(source, script, '</head>');

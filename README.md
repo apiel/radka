@@ -2,7 +2,7 @@
 
 Radka is a transpiler to generate static html websites using JSX without React. CSS and VanillaJs become more and more powerful providing a lot of features, slowly the complexity of tools like React and Angular become questionable. Static html pages are as well coming back to the trend, with some frameworks like Gatsby or NextJs, mainly to improve SEO and performance. Unfortunately those frameworks are heavily dependent on React. Is React really meant to generate HTML on the server? Why would we have to deal with `useState`, `useEffect` and all those things for state management on the server? Of course, some part of the React logic is also used in the browser, for the dynamic part of the UI but all this logic can easily be done in CSS and VanillaJs, especially since WebComponent is available.
 
-Radka is a set of popular libraries packed together. Under the hood it is using Babel with the JSX transpiler from React, JSX pragmatic from Paypal and Parcel to generate the bundle. The routing concept is inspired by NextJs.
+Radka is a set of popular libraries packed together. Under the hood it is using Babel with the JSX transpiler from React, JSX pragmatic from Paypal, Turbolinks and Parcel to generate the bundle. The routing concept is inspired by NextJs.
 
 ## Getting started
 
