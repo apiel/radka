@@ -37,11 +37,12 @@ export async function compile() {
 function injectBaseCodeToBundle() {
     const codes = [
         'window.require = require;',
-        '(window.r_ka || []).forEach(function(fn) { fn(); });',
+        '(window.r_ka || []).forEach(function(fn) { fn(); });window.r_ka=[];',
         'require("@babel/polyfill");',
     ];
     if (config.turbolinks === 'true') {
-        codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
+        // then fn(); should be load only once for the same page
+        // codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
     }
     return appendFile(
         join(bundlePath, 'index.js'),

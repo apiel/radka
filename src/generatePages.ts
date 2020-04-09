@@ -8,7 +8,7 @@ import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
 
 import { distStaticPath, config, pagesPath } from './config';
-import { Page, Props } from './lib';
+import { Page, Props, rkaLoader } from './lib';
 import { transform } from './transform';
 
 const globAsync = promisify(glob);
@@ -76,9 +76,9 @@ async function saveComponentToHtml(
     log('Generate page', htmlPath);
     let source = page.component(props).render(html({ transform }));
     source = applyPropsToLinks(source, links);
-    source = injectBundles(source);
     source = await appendImportToSource(source, '.js', 'script');
     source = await appendImportToSource(source, '.css', 'style');
+    source = injectBundles(source);
     (global as any).r_ka_imports = []; // clean up after appending import
 
     await ensureFile(htmlPath);
@@ -94,7 +94,10 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
             ),
     );
 
-    const code = imports.map(s => s.toString()).join();
+    let code = imports.map(s => s.toString()).join();
+    if (ext === '.js') {
+        code = rkaLoader(code);
+    }
     return injectScript(source, `<${tag}>${code}</${tag}>`);
 }
 
@@ -110,7 +113,7 @@ function applyPropsToLinks(source: string, links: Links) {
             return (
                 config.baseUrl +
                 applyPropsToPath(
-                    getRoutePath(links[linkId]).replace(/\/index.html$/g, ''),
+                    getRoutePath(links[linkId]).replace(/\/index.html$/g, '') || '/',
                     props,
                 )
             );

@@ -56,5 +56,9 @@ export function Import({ src }: { src: string }) {
     const source = readFileSync(src).toString();
     // ToDo: should we only have the window.r_ka.push if source contain require?
     // if (!source.includes('require')) return node('script', { innerHTML: source });
-    return node('script', { innerHTML: `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });` });
+    return node('script', { innerHTML: rkaLoader(source) });
+}
+
+export function rkaLoader(source: string) {
+    return `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });`
 }

@@ -7,7 +7,7 @@ import { readFileSync } from 'fs-extra';
 import './index.script';
 import './index.css';
 
-function Login() {
+function Home() {
     return (
         <section>
             <h1>Homepage</h1>
@@ -22,4 +22,4 @@ function Login() {
     );
 }
 
-export default page(Login);
+export default page(Home);

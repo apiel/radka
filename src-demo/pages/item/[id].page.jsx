@@ -1,9 +1,11 @@
 import { jsx, page } from '../../../dist/lib';
+import Home from '../index.page';
 
 function Item({ id }) {
     return (
         <div>
             <h1>Item {id}</h1>
+            <a href={Home.link()}>home</a>
         </div>
     );
 }
