@@ -16,6 +16,7 @@ export let config = {
     bundleFolder: 'bundle',
     baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || dirSync().name,
+    turbolinks: 'true',
 };
 
 export let distStaticPath = '';

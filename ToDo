@@ -1,9 +1,9 @@
 
-- <script> in html should be able to call server function isomor style
-
-- will have as index.api.js for isomor
-
 - make a smart way to pre-load pages
+    + https://github.com/turbolinks/turbolinks
+    + https://github.com/ftlabs/fastclick
+    + https://github.com/dieulot/instantclick/
+    + pjax https://github.com/defunkt/jquery-pjax
 
 - need hot reload
     + could use https://www.npmjs.com/package/light-server to hot reload
@@ -17,11 +17,11 @@
 - on error shell parcel does not throw error, maybe need to check exit code?
     when type in api file
 
-- isomor server missing
-
 - FIX windows:
     - use npx.cmd
+    - use cross-spawn
     - use url-join
 
 - deploy: zeit (server function), heroku, netlify, aws?
 
+- how to handle asset

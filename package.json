@@ -46,7 +46,8 @@
     "nodemon": "^2.0.3",
     "parcel": "^1.12.4",
     "tmp": "^0.1.0",
-    "ts-loader": "^6.2.2"
+    "ts-loader": "^6.2.2",
+    "turbolinks": "^5.2.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.7",

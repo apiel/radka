@@ -24,18 +24,37 @@ export async function compile() {
 
     await runBabel();
 
-    appendFile(
-        join(bundlePath, 'index.js'),
-        'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");',
-    );
+    await injectBaseCodeToBundle();
 
-    // ToDo: use some config
-    await copy(join(srcPath, config.apiFolder), join(distServerPath, config.apiFolder));
+    await copyApiToServer();
 
     await runIsomor();
     await runParcel();
 
     await generatePages();
+}
+
+function injectBaseCodeToBundle() {
+    const codes = [
+        'window.require = require;',
+        '(window.r_ka || []).forEach(function(fn) { fn(); });',
+        'require("@babel/polyfill");',
+    ];
+    if (config.turbolinks === 'true') {
+        codes.push('require("turbolinks").start();');
+    }
+    return appendFile(
+        join(bundlePath, 'index.js'),
+        codes.join(''),
+    );
+    // return appendFile(
+    //     join(bundlePath, 'index.js'),
+    //     'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");',
+    // );
+}
+
+function copyApiToServer() {
+    return copy(join(srcPath, config.apiFolder), join(distServerPath, config.apiFolder));
 }
 
 function runBabel() {

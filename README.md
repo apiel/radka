@@ -1,6 +1,6 @@
 # RADKA.js
 
-Radka is a transpiler to generate static html websites using JSX without React. CSS and VanillaJs become more and more powerful providing a lot of features, slowly the complexity of tools like React and Angular become questionable. Static html pages are as well coming back to the trend, with some frameworks like Gastby or NextJs, mainly to improve SEO and performance. Unfortunately those frameworks are heavily dependent on React. Is React really meant to generate HTML on the server? Why would we have to deal with `useState`, `useEffect` and all those things for state management on the server? Of course, some part of the React logic is also used in the browser, for the dynamic part of the UI but all this logic can easily be done in CSS and VanillaJs, especially since WebComponent is available.
+Radka is a transpiler to generate static html websites using JSX without React. CSS and VanillaJs become more and more powerful providing a lot of features, slowly the complexity of tools like React and Angular become questionable. Static html pages are as well coming back to the trend, with some frameworks like Gatsby or NextJs, mainly to improve SEO and performance. Unfortunately those frameworks are heavily dependent on React. Is React really meant to generate HTML on the server? Why would we have to deal with `useState`, `useEffect` and all those things for state management on the server? Of course, some part of the React logic is also used in the browser, for the dynamic part of the UI but all this logic can easily be done in CSS and VanillaJs, especially since WebComponent is available.
 
 Radka is a set of popular libraries packed together. Under the hood it is using Babel with the JSX transpiler from React, JSX pragmatic from Paypal and Parcel to generate the bundle. The routing concept is inspired by NextJs.
 
@@ -200,3 +200,46 @@ export function Hello({ name }) {
 - components are in `src/components`
 - bundle files are in `src/bundle`
 - injected script files for pages and components must finish by `.script.js`
+
+# API routes
+
+API routes provide a straightforward solution to build your API with Radka.js.
+
+Any file inside the **root** of the folder `src/api` will be treated as an API endpoint. You don't need to create any server or request. Just import the api function in your frontend script and call it directly. The only requirement, is to make your function returning a Promise. All the mapping between the frontend and the backend will be automatically be generated.
+
+For example, create a file `src/api/uptime.js`:
+
+```js
+// This function return the time since the server started
+// It is an async function even if doesn't contain any await
+export async function getUptime() {
+    return process.uptime();
+}
+```
+
+Now, in the file `src/pages/index.script.js`:
+
+```js
+import { getUptime } from '../api/uptime';
+
+// everytime your mouse pass over the page title, the server uptime will be updated
+document.querySelector('h1').onmouseover = async () => {
+    document.querySelector('h1').textContent = await getUptime();
+};
+```
+
+To understand how it works under the hood, see the [isomor](https://github.com/apiel/isomor) transpiler.
+
+## Preloading pages
+
+RADKA.js is using [turbolinks](https://github.com/turbolinks/turbolinks) to preload pages. Turbolinks makes navigating your web application faster. Get the performance benefits of a single-page application without the added complexity of a client-side JavaScript framework.
+
+Turbolinks is activated by default but can be deactivated: `npx radka --turbolinks=false`.
+
+Using this feature can have some unexpected side effect, see [here](https://www.npmjs.com/package/turbolinks#building-your-turbolinks-application)
+
+>Turbolinks is fast because it doesn’t reload the page when you follow a link. Instead, your application becomes a persistent, long-running process in the browser. This requires you to rethink the way you structure your JavaScript.
+>
+>In particular, you can no longer depend on a full page load to reset your environment every time you navigate. The JavaScript window and document objects retain their state across page changes, and any other objects you leave in memory will stay in memory.
+>
+>With awareness and a little extra care, you can design your application to gracefully handle this constraint without tightly coupling it to Turbolinks.

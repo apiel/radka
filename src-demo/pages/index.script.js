@@ -8,7 +8,9 @@ console.log('load index.script.js');
 export const handleClick = async (param) => {
     error('bad');
     console.log('click me', param);
-    info('yo', await getUptime());
+    // info('yo', await getUptime());
+    const { uptime } = await getUptime();
+    document.querySelector('h1').textContent = uptime;
 };
 
 export function yo() {
