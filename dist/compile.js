@@ -9,28 +9,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const util_1 = require("util");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const logol_1 = require("logol");
-const fs = require("fs");
 const chalk_1 = require("chalk");
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
-const appendFile = util_1.promisify(fs.appendFile);
+const lib_1 = require("./lib");
 function compile() {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_extra_1.remove(config_1.distStaticPath);
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         yield runBabel();
-        appendFile(path_1.join(config_1.bundlePath, 'index.js'), 'window.require = require;(window.r_ka || []).forEach(function(fn) { fn(); });require("@babel/polyfill");');
-        yield fs_extra_1.copy(path_1.join(config_1.config.tmpFolder, 'api'), path_1.join(config_1.config.tmpFolder, 'api'));
+        yield injectBaseCodeToBundle();
+        yield copyApiToServer();
         yield runIsomor();
         yield runParcel();
         yield generatePages_1.generatePages();
     });
 }
 exports.compile = compile;
+function read(file) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield fs_extra_1.ensureFile(file);
+        const content = yield fs_extra_1.readFile(file);
+        return content.toString();
+    });
+}
+function injectBaseCodeToBundle() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const bundleFile = path_1.join(config_1.bundlePath, 'index.js');
+        const codes = [
+            lib_1.rkaLoader('r_ka_bundle', yield read(bundleFile)),
+            yield read(path_1.join(config_1.bundlePath, config_1.RKA_IMPORT_FILE)),
+            'window.require = require;',
+            'require("@babel/polyfill");',
+        ];
+        if (config_1.config.turbolinks === 'true') {
+            codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
+            codes.push('if (window.r_ka_last !== window.location.href) { window.r_ka_last=window.location.href; Object.keys(window.r_ka || {}).forEach(function(k) { window.r_ka[k](); }); };');
+            codes.push('window.r_ka={};');
+        }
+        else {
+            codes.push('Object.keys(window.r_ka || {}).forEach(function(k) { window.r_ka[k](); });');
+        }
+        yield fs_extra_1.writeFile(bundleFile, codes.join(';'));
+    });
+}
+function copyApiToServer() {
+    return fs_extra_1.copy(path_1.join(config_1.srcPath, config_1.config.apiFolder), path_1.join(config_1.distServerPath, config_1.config.apiFolder));
+}
 function runBabel() {
     logol_1.info('Run babel');
     return shell('babel', `${config_1.srcPath} --out-dir ${config_1.config.tmpFolder} --copy-files`.split(' '));
@@ -49,7 +77,7 @@ function runIsomor() {
         ISOMOR_SERVER_FOLDER: config_1.config.apiFolder,
         ISOMOR_SRC_FOLDER: config_1.config.srcFolder,
         ISOMOR_STATIC_FOLDER: config_1.distStaticPath,
-        ISOMOR_DIST_SERVER_FOLDER: config_1.distApiPath,
+        ISOMOR_DIST_SERVER_FOLDER: config_1.distServerPath,
     });
 }
 function shell(command, args, env) {

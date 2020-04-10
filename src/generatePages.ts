@@ -6,6 +6,8 @@ import { html } from './html';
 import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
+import urlJoin from 'url-join';
+import * as md5 from 'md5';
 
 import { distStaticPath, config, pagesPath } from './config';
 import { Page, Props, rkaLoader } from './lib';
@@ -42,17 +44,16 @@ export async function generatePages() {
 type Links = { [linkId: string]: string };
 function collectPageLinks(files: string[]): Links {
     const links = {};
-    files.forEach(file => {
+    files.forEach((file) => {
         const page: Page = require(file).default;
         links[page.linkId] = file;
     });
     return links;
 }
 
-// ToDo: using this for link will be wrong on windows, need to fix
-function getRoutePath(file: string) {
+function getRoutePath(file: string, glue = join) {
     const filename = basename(file, `${config.pagesSuffix}${extname(file)}`);
-    return join(
+    return glue(
         dirname(file),
         filename === 'index' ? '' : filename,
         'index.html',
@@ -61,7 +62,7 @@ function getRoutePath(file: string) {
 
 function applyPropsToPath(path: string, props: Props) {
     let pathWithProps = path;
-    Object.keys(props).forEach(key => {
+    Object.keys(props).forEach((key) => {
         pathWithProps = pathWithProps.replace(`[${key}]`, props[key]);
     });
     return pathWithProps;
@@ -78,7 +79,7 @@ async function saveComponentToHtml(
     source = applyPropsToLinks(source, links);
     source = await appendImportToSource(source, '.js', 'script');
     source = await appendImportToSource(source, '.css', 'style');
-    source = injectBundles(source);
+    source = await injectBundles(source);
     (global as any).r_ka_imports = []; // clean up after appending import
 
     await ensureFile(htmlPath);
@@ -94,9 +95,9 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
             ),
     );
 
-    let code = imports.map(s => s.toString()).join();
+    let code = imports.map((s) => s.toString()).join();
     if (ext === '.js') {
-        code = rkaLoader(code);
+        code = rkaLoader('r_ka_imports', code);
     }
     return injectScript(source, `<${tag}>${code}</${tag}>`);
 }
@@ -106,14 +107,17 @@ function applyPropsToLinks(source: string, links: Links) {
         /%link%([^%]+)%([^%]*)%/g, // [^%] = all exepct %
         (match, linkId, propsStr) => {
             const props = {};
-            propsStr.split(';').forEach(prop => {
+            propsStr.split(';').forEach((prop) => {
                 const [key, value] = prop.split('=');
                 props[key] = value;
             });
             return (
                 config.baseUrl +
                 applyPropsToPath(
-                    getRoutePath(links[linkId]).replace(/\/index.html$/g, '') || '/',
+                    getRoutePath(links[linkId], urlJoin).replace(
+                        /\/index.html$/g,
+                        '',
+                    ) || '/',
                     props,
                 )
             );
@@ -121,13 +125,20 @@ function applyPropsToLinks(source: string, links: Links) {
     );
 }
 
-function injectBundles(source: string) {
-    // ToDo: we might want to had ?timestamp base on creation time
+async function injectBundles(source: string) {
     const script = `
-    <script src="${config.baseUrl}/index.js" data-turbolinks-suppress-warning></script>
-    <link rel="stylesheet" type="text/css" href="${config.baseUrl}/index.css">`;
+    <script src="${config.baseUrl}/index.js?${await getCacheParam(
+        'index.js',
+    )}" data-turbolinks-suppress-warning></script>
+    <link rel="stylesheet" type="text/css" href="${
+        config.baseUrl
+    }/index.css?${await getCacheParam('index.css')}">`;
     return injectScript(source, script);
     // return injectScript(source, script, '</head>');
+}
+
+async function getCacheParam(filename: string) {
+    return md5((await readFile(join(distStaticPath, filename))).toString());
 }
 
 function injectScript(source: string, script: string, tag = '</body>') {

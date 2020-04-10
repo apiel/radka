@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const tmp_1 = require("tmp");
+exports.RKA_IMPORT_FILE = 'r_ka-import.js';
 exports.CONFIG_FILE = 'radka.config';
 exports.ROOT_FOLDER = process.env.ROOT_FOLDER
     ? path_1.resolve(process.env.ROOT_FOLDER)
@@ -9,16 +10,17 @@ exports.ROOT_FOLDER = process.env.ROOT_FOLDER
 exports.config = {
     srcFolder: 'src',
     distStaticFolder: path_1.join('site', 'static'),
-    distApiFolder: path_1.join('site', 'api'),
+    distServerFolder: path_1.join('site', 'server'),
     apiFolder: 'api',
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
     baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || tmp_1.dirSync().name,
+    turbolinks: 'true',
 };
 exports.distStaticPath = '';
-exports.distApiPath = '';
+exports.distServerPath = '';
 exports.srcPath = '';
 exports.pagesPath = '';
 exports.bundlePath = '';
@@ -30,7 +32,7 @@ function setConfig(newConfig = {}) {
 exports.setConfig = setConfig;
 function initPath() {
     exports.distStaticPath = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
-    exports.distApiPath = path_1.join(exports.ROOT_FOLDER, exports.config.distApiFolder);
+    exports.distServerPath = path_1.join(exports.ROOT_FOLDER, exports.config.distServerFolder);
     exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
     exports.pagesPath = path_1.join(exports.config.tmpFolder, exports.config.pagesFolder);
     exports.bundlePath = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);

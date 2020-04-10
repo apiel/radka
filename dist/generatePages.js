@@ -15,6 +15,7 @@ const path_1 = require("path");
 const glob = require("glob");
 const fs_extra_1 = require("fs-extra");
 const config_1 = require("./config");
+const lib_1 = require("./lib");
 const transform_1 = require("./transform");
 const globAsync = util_1.promisify(glob);
 function generatePages() {
@@ -62,9 +63,9 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         logol_1.log('Generate page', htmlPath);
         let source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
         source = applyPropsToLinks(source, links);
-        source = injectBundles(source);
         source = yield appendImportToSource(source, '.js', 'script');
         source = yield appendImportToSource(source, '.css', 'style');
+        source = injectBundles(source);
         global.r_ka_imports = [];
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
@@ -75,7 +76,10 @@ function appendImportToSource(source, ext, tag) {
         const imports = yield Promise.all(global.r_ka_imports
             .filter((path) => path.endsWith(ext))
             .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.pagesPath.length)))));
-        const code = imports.map(s => s.toString()).join();
+        let code = imports.map(s => s.toString()).join();
+        if (ext === '.js') {
+            code = lib_1.rkaLoader('r_ka_imports', code);
+        }
         return injectScript(source, `<${tag}>${code}</${tag}>`);
     });
 }
@@ -87,12 +91,12 @@ function applyPropsToLinks(source, links) {
             props[key] = value;
         });
         return (config_1.config.baseUrl +
-            applyPropsToPath(getRoutePath(links[linkId]).replace(/\/index.html$/g, ''), props));
+            applyPropsToPath(getRoutePath(links[linkId]).replace(/\/index.html$/g, '') || '/', props));
     });
 }
 function injectBundles(source) {
     const script = `
-    <script src="${config_1.config.baseUrl}/index.js"></script>
+    <script src="${config_1.config.baseUrl}/index.js" data-turbolinks-suppress-warning></script>
     <link rel="stylesheet" type="text/css" href="${config_1.config.baseUrl}/index.css">`;
     return injectScript(source, script);
 }

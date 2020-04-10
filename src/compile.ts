@@ -1,9 +1,14 @@
-import { spawn } from 'child_process';
-import { promisify } from 'util';
+import * as spawn from 'cross-spawn';
 import { join } from 'path';
-import { remove, ensureFileSync, copy } from 'fs-extra';
+import {
+    remove,
+    ensureFileSync,
+    copy,
+    readFile,
+    writeFile,
+    ensureFile,
+} from 'fs-extra';
 import { info, debug } from 'logol';
-import * as fs from 'fs';
 import { gray, yellow, red } from 'chalk';
 
 import {
@@ -12,10 +17,10 @@ import {
     bundlePath,
     distStaticPath,
     distServerPath,
+    RKA_IMPORT_FILE,
 } from './config';
 import { generatePages } from './generatePages';
-
-const appendFile = promisify(fs.appendFile);
+import { rkaLoader } from './lib';
 
 export async function compile() {
     // ToDo: is it good idea to remove distStaticPath? site folder might not only contain generated file?
@@ -34,24 +39,42 @@ export async function compile() {
     await generatePages();
 }
 
-function injectBaseCodeToBundle() {
+async function read(file: string) {
+    await ensureFile(file);
+    const content = await readFile(file);
+    return content.toString();
+}
+
+async function injectBaseCodeToBundle() {
+    const bundleFile = join(bundlePath, 'index.js');
+
     const codes = [
+        rkaLoader('r_ka_bundle', await read(bundleFile)),
+        await read(join(bundlePath, RKA_IMPORT_FILE)),
         'window.require = require;',
-        '(window.r_ka || []).forEach(function(fn) { fn(); });window.r_ka=[];',
         'require("@babel/polyfill");',
     ];
     if (config.turbolinks === 'true') {
-        // then fn(); should be load only once for the same page
-        // codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
+        codes.push(
+            'if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};',
+        );
+        codes.push(
+            'if (window.r_ka_last !== window.location.href) { window.r_ka_last=window.location.href; Object.keys(window.r_ka || {}).forEach(function(k) { window.r_ka[k](); }); };',
+        );
+        codes.push('window.r_ka={};');
+    } else {
+        codes.push(
+            'Object.keys(window.r_ka || {}).forEach(function(k) { window.r_ka[k](); });',
+        );
     }
-    return appendFile(
-        join(bundlePath, 'index.js'),
-        codes.join(''),
-    );
+    await writeFile(bundleFile, codes.join(';'));
 }
 
 function copyApiToServer() {
-    return copy(join(srcPath, config.apiFolder), join(distServerPath, config.apiFolder));
+    return copy(
+        join(srcPath, config.apiFolder),
+        join(distServerPath, config.apiFolder),
+    );
 }
 
 function runBabel() {
@@ -120,6 +143,6 @@ function shell(
                 process.stdout.write(red(data.toString()));
             }
         });
-        cmd.on('close', resolve);
+        cmd.on('close', (code) => (code ? process.exit(code) : resolve()));
     });
 }

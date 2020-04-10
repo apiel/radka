@@ -2,6 +2,7 @@ import { info } from 'logol';
 import { error } from 'logol';
 
 import { getUptime } from '../api/uptime';
+import { getCounter } from '../api/counter';
 
 console.log('load index.script.js');
 
@@ -18,3 +19,5 @@ export function yo() {
 }
 
 document.querySelector('#login-btn').onclick = () => handleClick(123);
+
+getCounter().then(count => document.querySelector('#counter').textContent = count);

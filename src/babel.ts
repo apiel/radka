@@ -4,7 +4,7 @@ import * as t from '@babel/types';
 import { join, dirname, extname } from 'path';
 import { appendFileSync } from 'fs';
 
-import { bundlePath } from './config';
+import { bundlePath, RKA_IMPORT_FILE } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 
@@ -85,10 +85,9 @@ function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     ast.program.body.push(path.node);
     const output = generate(ast, {}, emptyCode);
 
-    const bundleFile = join(bundlePath, 'index.js');
-    ensureFileSync(bundleFile);
-    appendFileSync(bundleFile, output.code);
-    // console.log('addImportToBundle', bundleFile, output.code);
+    const rkaImportFile = join(bundlePath, RKA_IMPORT_FILE);
+    ensureFileSync(rkaImportFile);
+    appendFileSync(rkaImportFile, output.code + '\n');
 }
 
 // for debugging in console.log

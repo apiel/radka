@@ -21,14 +21,18 @@ exports.page = page;
 function serialize(props) {
     if (props) {
         return Object.keys(props)
-            .map(k => `${k}=${props[k]}`)
+            .map((k) => `${k}=${props[k]}`)
             .join(';');
     }
     return '';
 }
 function Import({ src }) {
     const source = fs_extra_1.readFileSync(src).toString();
-    return jsx_pragmatic_1.node('script', { innerHTML: `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });` });
+    return jsx_pragmatic_1.node('script', { innerHTML: rkaLoader(src, source) });
 }
 exports.Import = Import;
+function rkaLoader(id, source) {
+    return `if (!window.r_ka) window.r_ka = {}; window.r_ka["${id}"] = function () { ${source} };`;
+}
+exports.rkaLoader = rkaLoader;
 //# sourceMappingURL=lib.js.map

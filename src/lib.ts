@@ -1,6 +1,6 @@
 import { node } from 'jsx-pragmatic';
 import { readFileSync } from 'fs-extra';
-import { config } from './config';
+import * as md5 from 'md5';
 
 export { Fragment } from 'jsx-pragmatic';
 
@@ -8,7 +8,7 @@ export { Fragment } from 'jsx-pragmatic';
 // export const jsx = node;
 export const jsx = (...params: any[]) => {
     return node(...params);
-}
+};
 
 let linkIdSeq = 0;
 
@@ -46,7 +46,7 @@ function serialize(props?: LinkProps) {
         // we would anyway need a central place to generate url values
         // for the applyPropsToHtmlPath in compile.ts
         return Object.keys(props)
-            .map(k => `${k}=${props[k]}`)
+            .map((k) => `${k}=${props[k]}`)
             .join(';');
     }
     return '';
@@ -54,11 +54,9 @@ function serialize(props?: LinkProps) {
 
 export function Import({ src }: { src: string }) {
     const source = readFileSync(src).toString();
-    // ToDo: should we only have the window.r_ka.push if source contain require?
-    // if (!source.includes('require')) return node('script', { innerHTML: source });
-    return node('script', { innerHTML: rkaLoader(source) });
+    return node('script', { innerHTML: rkaLoader(md5(src), source) });
 }
 
-export function rkaLoader(source: string) {
-    return `if (!window.r_ka) window.r_ka = []; window.r_ka.push(function () { ${source} });`
+export function rkaLoader(id: string, source: string) {
+    return `if (!window.r_ka) window.r_ka = {}; window.r_ka["${id}"] = function () { ${source} };`;
 }

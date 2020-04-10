@@ -17,3 +17,4 @@ export declare function page(component: Function, propsList?: PropsList): Page;
 export declare function Import({ src }: {
     src: string;
 }): any;
+export declare function rkaLoader(id: string, source: string): string;

@@ -61,9 +61,9 @@ function addImportToBundle(path) {
     const ast = parser_1.parse(emptyCode);
     ast.program.body.push(path.node);
     const output = generator_1.default(ast, {}, emptyCode);
-    const bundleFile = path_1.join(config_1.bundlePath, 'index.js');
-    fs_extra_1.ensureFileSync(bundleFile);
-    fs_1.appendFileSync(bundleFile, output.code);
+    const rkaImportFile = path_1.join(config_1.bundlePath, config_1.RKA_IMPORT_FILE);
+    fs_extra_1.ensureFileSync(rkaImportFile);
+    fs_1.appendFileSync(rkaImportFile, output.code + '\n');
 }
 function JsonAst(node) {
     const skip = ['loc', 'range', 'start', 'end'];
