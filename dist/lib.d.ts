@@ -1,5 +1,8 @@
 export { Fragment } from 'jsx-pragmatic';
-export declare const jsx: (...params: any[]) => any;
+export declare const jsx: {
+    asset: (dir: string, href: string) => void;
+    render: any;
+};
 export declare type LinkProps = {
     [key: string]: string | number;
 };

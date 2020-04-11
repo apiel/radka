@@ -8,6 +8,7 @@ import './index.script';
 import './index.css';
 
 function Home() {
+    const myTestAssetFolder = '..' + '/' + 'assets' + '/';
     return (
         <section>
             <h1>Homepage</h1>
@@ -19,6 +20,9 @@ function Home() {
             <a href={Item.link({ id: 3 })}>link</a>
             <a href={Item.link({ id: 2 })}>link</a>
             <p id="counter">none</p>
+            <img src={require('../assets/radkajs.png')} alt=""/>
+            <img src={require('..' + '/' + 'assets' + '/' + 'radkajs.png')} alt=""/>
+            <img src={require(myTestAssetFolder + 'radkajs.png')} alt=""/>
         </section>
     );
 }

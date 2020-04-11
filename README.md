@@ -228,7 +228,7 @@ document.querySelector('h1').onmouseover = async () => {
 };
 ```
 
-To understand how it works under the hood, see the [isomor](https://github.com/apiel/isomor) transpiler.
+To understand how it works under the hood, see [isomor](https://github.com/apiel/isomor).
 
 ## Preloading pages
 

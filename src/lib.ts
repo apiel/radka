@@ -4,10 +4,10 @@ import * as md5 from 'md5';
 
 export { Fragment } from 'jsx-pragmatic';
 
-// ToDo: simplify if custom node unecessary
-// export const jsx = node;
-export const jsx = (...params: any[]) => {
-    return node(...params);
+export const jsx = {
+    asset: (dir: string, href: string) =>
+        console.log('assssssset', { dir, href }),
+    render: node,
 };
 
 let linkIdSeq = 0;

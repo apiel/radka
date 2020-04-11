@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = require("child_process");
+const spawn = require("cross-spawn");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const logol_1 = require("logol");
@@ -83,7 +83,7 @@ function runIsomor() {
 function shell(command, args, env) {
     logol_1.debug('shell', command, args.join(' '));
     return new Promise((resolve) => {
-        const cmd = child_process_1.spawn(command, args, {
+        const cmd = spawn(command, args, {
             env: Object.assign({ COLUMNS: process.env.COLUMNS || process.stdout.columns.toString(), LINES: process.env.LINES || process.stdout.rows.toString(), TEMP_FOLDER: config_1.config.tmpFolder }, env, process.env),
         });
         cmd.stdout.on('data', (data) => {
@@ -98,7 +98,7 @@ function shell(command, args, env) {
                 process.stdout.write(chalk_1.red(data.toString()));
             }
         });
-        cmd.on('close', resolve);
+        cmd.on('close', (code) => (code ? process.exit(code) : resolve()));
     });
 }
 //# sourceMappingURL=compile.js.map

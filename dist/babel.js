@@ -47,10 +47,36 @@ function default_1() {
                     }
                 }
             },
+            CallExpression(path, state) {
+                if (path.node.callee.type === 'Identifier' &&
+                    path.node.callee.name === 'require') {
+                    handleRequire(path, state);
+                }
+            },
         },
     };
 }
 exports.default = default_1;
+function handleRequire(path, state) {
+    if (path.node.arguments[0].type === 'StringLiteral' &&
+        isAssetArgument(path.node.arguments[0])) {
+        const { value } = path.node.arguments[0];
+        handleAsset(path, state, `'${value}'`);
+    }
+    else if (path.node.arguments[0].type === 'BinaryExpression' &&
+        path.node.arguments[0].right.type === 'StringLiteral' &&
+        isAssetArgument(path.node.arguments[0].right)) {
+        const href = generator_1.default(path.node.arguments[0], {}, '').code;
+        handleAsset(path, state, href);
+    }
+}
+function handleAsset(path, state, href) {
+    const ast = parser_1.parse(`jsx.asset('${path_1.dirname(state.filename)}', ${href});`);
+    path.replaceWithMultiple(ast.program.body);
+}
+function isAssetArgument({ value }) {
+    return ['.png', '.jpg', '.gif'].includes(path_1.extname(value));
+}
 function pushImportFile(path, state, importPath) {
     const file = path_1.join(path_1.dirname(state.filename), importPath);
     const ast = parser_1.parse(`global.r_ka_imports = [...(global.r_ka_imports || []), '${file}'];`);

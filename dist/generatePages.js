@@ -14,6 +14,8 @@ const html_1 = require("./html");
 const path_1 = require("path");
 const glob = require("glob");
 const fs_extra_1 = require("fs-extra");
+const url_join_1 = require("url-join");
+const md5 = require("md5");
 const config_1 = require("./config");
 const lib_1 = require("./lib");
 const transform_1 = require("./transform");
@@ -41,19 +43,19 @@ function generatePages() {
 exports.generatePages = generatePages;
 function collectPageLinks(files) {
     const links = {};
-    files.forEach(file => {
+    files.forEach((file) => {
         const page = require(file).default;
         links[page.linkId] = file;
     });
     return links;
 }
-function getRoutePath(file) {
+function getRoutePath(file, glue = path_1.join) {
     const filename = path_1.basename(file, `${config_1.config.pagesSuffix}${path_1.extname(file)}`);
-    return path_1.join(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.pagesPath.length);
+    return glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.pagesPath.length);
 }
 function applyPropsToPath(path, props) {
     let pathWithProps = path;
-    Object.keys(props).forEach(key => {
+    Object.keys(props).forEach((key) => {
         pathWithProps = pathWithProps.replace(`[${key}]`, props[key]);
     });
     return pathWithProps;
@@ -65,7 +67,7 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         source = applyPropsToLinks(source, links);
         source = yield appendImportToSource(source, '.js', 'script');
         source = yield appendImportToSource(source, '.css', 'style');
-        source = injectBundles(source);
+        source = yield injectBundles(source);
         global.r_ka_imports = [];
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
@@ -76,7 +78,7 @@ function appendImportToSource(source, ext, tag) {
         const imports = yield Promise.all(global.r_ka_imports
             .filter((path) => path.endsWith(ext))
             .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.pagesPath.length)))));
-        let code = imports.map(s => s.toString()).join();
+        let code = imports.map((s) => s.toString()).join();
         if (ext === '.js') {
             code = lib_1.rkaLoader('r_ka_imports', code);
         }
@@ -86,19 +88,26 @@ function appendImportToSource(source, ext, tag) {
 function applyPropsToLinks(source, links) {
     return source.replace(/%link%([^%]+)%([^%]*)%/g, (match, linkId, propsStr) => {
         const props = {};
-        propsStr.split(';').forEach(prop => {
+        propsStr.split(';').forEach((prop) => {
             const [key, value] = prop.split('=');
             props[key] = value;
         });
         return (config_1.config.baseUrl +
-            applyPropsToPath(getRoutePath(links[linkId]).replace(/\/index.html$/g, '') || '/', props));
+            applyPropsToPath(getRoutePath(links[linkId], url_join_1.default).replace(/\/index.html$/g, '') || '/', props));
     });
 }
 function injectBundles(source) {
-    const script = `
-    <script src="${config_1.config.baseUrl}/index.js" data-turbolinks-suppress-warning></script>
-    <link rel="stylesheet" type="text/css" href="${config_1.config.baseUrl}/index.css">`;
-    return injectScript(source, script);
+    return __awaiter(this, void 0, void 0, function* () {
+        const script = `
+    <script src="${config_1.config.baseUrl}/index.js?${yield getCacheParam('index.js')}" data-turbolinks-suppress-warning></script>
+    <link rel="stylesheet" type="text/css" href="${config_1.config.baseUrl}/index.css?${yield getCacheParam('index.css')}">`;
+        return injectScript(source, script);
+    });
+}
+function getCacheParam(filename) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return md5((yield fs_extra_1.readFile(path_1.join(config_1.distStaticPath, filename))).toString());
+    });
 }
 function injectScript(source, script, tag = '</body>') {
     if (source.indexOf(tag) !== -1) {

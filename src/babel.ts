@@ -8,7 +8,7 @@ import { bundlePath, RKA_IMPORT_FILE } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 
-export default function() {
+export default function () {
     return {
         // node_modules/@babel/core/lib/config/full.js:199
         // pre: () => console.log('pre'),
@@ -61,8 +61,91 @@ export default function() {
                     }
                 }
             },
+            CallExpression(path: NodePath<t.CallExpression>, state: any) {
+                if (
+                    path.node.callee.type === 'Identifier' &&
+                    path.node.callee.name === 'require'
+                ) {
+                    handleRequire(path, state);
+                }
+            },
         },
     };
+}
+
+// {
+//     "type": "CallExpression",
+//     "callee": {
+//         "type": "Identifier",
+//         "name": "require"
+//     },
+//     "arguments": [
+//         {
+//             "type": "BinaryExpression",
+//             "left": {
+//                 "type": "BinaryExpression",
+//                 "left": {
+//                     "type": "StringLiteral",
+//                     "extra": {
+//                         "rawValue": "../",
+//                         "raw": "'../'"
+//                     },
+//                     "value": "../"
+//                 },
+//                 "operator": "+",
+//                 "right": {
+//                     "type": "StringLiteral",
+//                     "extra": {
+//                         "rawValue": "blah",
+//                         "raw": "'blah'"
+//                     },
+//                     "value": "blah"
+//                 }
+//             },
+//             "operator": "+",
+//             "right": {
+//                 "type": "StringLiteral",
+//                 "extra": {
+//                     "rawValue": "radkajs.png",
+//                     "raw": "'radkajs.png'"
+//                 },
+//                 "value": "radkajs.png"
+//             }
+//         }
+//     ]
+// }
+
+function handleRequire(path: NodePath<t.CallExpression>, state: any) {
+    if (
+        path.node.arguments[0].type === 'StringLiteral' &&
+        isAssetArgument(path.node.arguments[0] as t.StringLiteral)
+    ) {
+        const { value } = path.node.arguments[0] as t.StringLiteral;
+        handleAsset(path, state, `'${value}'`);
+    } else if (
+        path.node.arguments[0].type === 'BinaryExpression' &&
+        (path.node.arguments[0] as any).right.type === 'StringLiteral' &&
+        isAssetArgument((path.node.arguments[0] as any).right)
+    ) {
+        const href = generate(path.node.arguments[0], {}, '').code;
+        handleAsset(path, state, href);
+    }
+    //  else if (state.filename.includes('index.page.js')) {
+    //     console.log('blah', JsonAst(path.node));
+    // }
+}
+
+function handleAsset(
+    path: NodePath<t.CallExpression>,
+    state: any,
+    href: string,
+) {
+    const ast = parse(`jsx.asset('${dirname(state.filename)}', ${href});`);
+    path.replaceWithMultiple(ast.program.body);
+}
+
+function isAssetArgument({ value }: t.StringLiteral) {
+    return ['.png', '.jpg', '.gif'].includes(extname(value));
 }
 
 function pushImportFile(
