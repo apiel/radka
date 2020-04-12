@@ -7,6 +7,7 @@ import { appendFileSync } from 'fs';
 import { bundlePath, RKA_IMPORT_FILE } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
+import { isAssetFilename } from './lib';
 
 export default function () {
     return {
@@ -73,79 +74,17 @@ export default function () {
     };
 }
 
-// {
-//     "type": "CallExpression",
-//     "callee": {
-//         "type": "Identifier",
-//         "name": "require"
-//     },
-//     "arguments": [
-//         {
-//             "type": "BinaryExpression",
-//             "left": {
-//                 "type": "BinaryExpression",
-//                 "left": {
-//                     "type": "StringLiteral",
-//                     "extra": {
-//                         "rawValue": "../",
-//                         "raw": "'../'"
-//                     },
-//                     "value": "../"
-//                 },
-//                 "operator": "+",
-//                 "right": {
-//                     "type": "StringLiteral",
-//                     "extra": {
-//                         "rawValue": "blah",
-//                         "raw": "'blah'"
-//                     },
-//                     "value": "blah"
-//                 }
-//             },
-//             "operator": "+",
-//             "right": {
-//                 "type": "StringLiteral",
-//                 "extra": {
-//                     "rawValue": "radkajs.png",
-//                     "raw": "'radkajs.png'"
-//                 },
-//                 "value": "radkajs.png"
-//             }
-//         }
-//     ]
-// }
-
 function handleRequire(path: NodePath<t.CallExpression>, state: any) {
     if (
-        path.node.arguments[0].type === 'StringLiteral' &&
-        isAssetArgument(path.node.arguments[0] as t.StringLiteral)
-    ) {
-        const { value } = path.node.arguments[0] as t.StringLiteral;
-        handleAsset(path, state, `'${value}'`);
-    } else if (
-        path.node.arguments[0].type === 'BinaryExpression' &&
-        (path.node.arguments[0] as any).right.type === 'StringLiteral' &&
-        isAssetArgument((path.node.arguments[0] as any).right)
+        path.node.arguments[0].type !== 'StringLiteral' ||
+        isAssetFilename((path.node.arguments[0] as t.StringLiteral).value)
     ) {
         const href = generate(path.node.arguments[0], {}, '').code;
-        handleAsset(path, state, href);
+        const ast = parse(
+            `jsx.require('${dirname(state.filename)}', ${href});`,
+        );
+        path.replaceWithMultiple(ast.program.body);
     }
-    //  else if (state.filename.includes('index.page.js')) {
-    //     console.log('blah', JsonAst(path.node));
-    // }
-}
-
-function handleAsset(
-    path: NodePath<t.CallExpression>,
-    state: any,
-    href: string,
-) {
-    const ast = parse(`jsx.asset('${dirname(state.filename)}', ${href});`);
-    path.replaceWithMultiple(ast.program.body);
-}
-
-function isAssetArgument({ value }: t.StringLiteral) {
-    return ['.png', '.jpg', '.gif'].includes(extname(value));
 }
 
 function pushImportFile(

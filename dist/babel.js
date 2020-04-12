@@ -6,6 +6,7 @@ const fs_1 = require("fs");
 const config_1 = require("./config");
 const parser_1 = require("@babel/parser");
 const generator_1 = require("@babel/generator");
+const lib_1 = require("./lib");
 function default_1() {
     return {
         visitor: {
@@ -58,24 +59,12 @@ function default_1() {
 }
 exports.default = default_1;
 function handleRequire(path, state) {
-    if (path.node.arguments[0].type === 'StringLiteral' &&
-        isAssetArgument(path.node.arguments[0])) {
-        const { value } = path.node.arguments[0];
-        handleAsset(path, state, `'${value}'`);
-    }
-    else if (path.node.arguments[0].type === 'BinaryExpression' &&
-        path.node.arguments[0].right.type === 'StringLiteral' &&
-        isAssetArgument(path.node.arguments[0].right)) {
+    if (path.node.arguments[0].type !== 'StringLiteral' ||
+        lib_1.isAssetFilename(path.node.arguments[0].value)) {
         const href = generator_1.default(path.node.arguments[0], {}, '').code;
-        handleAsset(path, state, href);
+        const ast = parser_1.parse(`jsx.require('${path_1.dirname(state.filename)}', ${href});`);
+        path.replaceWithMultiple(ast.program.body);
     }
-}
-function handleAsset(path, state, href) {
-    const ast = parser_1.parse(`jsx.asset('${path_1.dirname(state.filename)}', ${href});`);
-    path.replaceWithMultiple(ast.program.body);
-}
-function isAssetArgument({ value }) {
-    return ['.png', '.jpg', '.gif'].includes(path_1.extname(value));
 }
 function pushImportFile(path, state, importPath) {
     const file = path_1.join(path_1.dirname(state.filename), importPath);

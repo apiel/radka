@@ -1,7 +1,8 @@
+import { join } from 'path';
+
 import { jsx, page, Import } from '../../dist/lib';
 import { Hello } from '../components/Hello';
 import Item from './item/[id].page';
-import { readFileSync } from 'fs-extra';
 
 // inject script in html as a script tag
 import './index.script';
@@ -23,6 +24,7 @@ function Home() {
             <img src={require('../assets/radkajs.png')} alt=""/>
             <img src={require('..' + '/' + 'assets' + '/' + 'radkajs.png')} alt=""/>
             <img src={require(myTestAssetFolder + 'radkajs.png')} alt=""/>
+            <img src={require(join('..', '/', 'assets', '/', 'radkajs.png'))} alt=""/>
         </section>
     );
 }

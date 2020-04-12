@@ -1,7 +1,7 @@
 export { Fragment } from 'jsx-pragmatic';
 export declare const jsx: {
-    asset: (dir: string, href: string) => void;
     render: any;
+    require: (dir: string, href: string) => any;
 };
 export declare type LinkProps = {
     [key: string]: string | number;
@@ -21,3 +21,4 @@ export declare function Import({ src }: {
     src: string;
 }): any;
 export declare function rkaLoader(id: string, source: string): string;
+export declare function isAssetFilename(href: string): boolean;
