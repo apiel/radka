@@ -1,7 +1,8 @@
 import { resolve, join } from 'path';
 import { dirSync } from 'tmp';
 
-export const ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf'];
+export let DEV = false;
+export const ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf', '.ico'];
 export const RKA_IMPORT_FILE = 'r_ka-import.js';
 export const CONFIG_FILE = 'radka.config';
 export const ROOT_FOLDER = process.env.ROOT_FOLDER
@@ -47,4 +48,8 @@ function initPaths() {
         bundle: join(config.tmpFolder, config.bundleFolder),
         assets: join(distStatic, config.assetsFolder),
     };
+}
+
+export function setDev() {
+    DEV = true;
 }

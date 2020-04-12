@@ -11,11 +11,11 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import { config, paths, RKA_IMPORT_FILE } from './config';
+import { config, paths, RKA_IMPORT_FILE, setDev } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 
-export async function compile() {
+export async function build() {
     // ToDo: is it good idea to remove distStaticPath? site folder might not only contain generated file?
     await remove(paths.distStatic);
     await remove(config.tmpFolder);
@@ -28,6 +28,23 @@ export async function compile() {
 
     await runIsomor();
     await runParcel();
+
+    await generatePages();
+}
+
+export async function dev() {
+    info('Run Radka.js in dev mode');
+    setDev();
+    await remove(paths.distStatic);
+    await remove(config.tmpFolder);
+
+    await runBabel();
+
+    await injectBaseCodeToBundle();
+
+    await copyApiToServer();
+
+    await runIsomor();
 
     await generatePages();
 }

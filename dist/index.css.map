@@ -1,0 +1,1 @@
+{"version":3,"sources":["another.css","index.css"],"names":[],"mappings":"AAAA;AACA;AACA;ACAA;IACI,sBAAsB;AAC1B","file":"index.css","sourceRoot":"../src-demo/bundle","sourcesContent":["a {\n    color: red;\n}","@import './another.css';\n\nbutton {\n    border: 1px solid blue;\n}"]}

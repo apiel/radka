@@ -9,7 +9,7 @@ import { ensureFile, outputFile, readFile } from 'fs-extra';
 import urlJoin from 'url-join';
 import * as md5 from 'md5';
 
-import { paths, config } from './config';
+import { paths, config, DEV } from './config';
 import { Page, Props, rkaLoader } from './lib';
 import { transform } from './transform';
 
@@ -92,7 +92,9 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
         (global as any).r_ka_imports
             .filter((path: string) => path.endsWith(ext))
             .map((path: string) =>
-                readFile(join(config.tmpFolder, path.substr(paths.pages.length))),
+                readFile(
+                    join(config.tmpFolder, path.substr(paths.pages.length)),
+                ),
             ),
     );
 
@@ -127,18 +129,22 @@ function applyPropsToLinks(source: string, links: Links) {
 }
 
 async function injectBundles(source: string) {
+    const baseUrl = DEV ? 'http://localhost:1234' : config.baseUrl;
     const script = `
-    <script src="${config.baseUrl}/index.js?${await getCacheParam(
+    <script src="${baseUrl}/index.js?${await getCacheParam(
         'index.js',
     )}" data-turbolinks-suppress-warning></script>
-    <link rel="stylesheet" type="text/css" href="${
-        config.baseUrl
-    }/index.css?${await getCacheParam('index.css')}">`;
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/index.css?${await getCacheParam(
+        'index.css',
+    )}">`;
     return injectScript(source, script);
     // return injectScript(source, script, '</head>');
 }
 
 async function getCacheParam(filename: string) {
+    if (DEV) {
+        return '';
+    }
     return md5((await readFile(join(paths.distStatic, filename))).toString());
 }
 

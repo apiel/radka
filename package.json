@@ -17,7 +17,7 @@
     "fix-jsx-pragmatic": "cp jsx-pragmatic.js node_modules/jsx-pragmatic/dist/jsx-pragmatic.js",
     "serv": "ISOMOR_STATIC_FOLDER=./site/static ISOMOR_DIST_SERVER_FOLDER=./site/server ISOMOR_SERVER_FOLDER=/api isomor-server",
     "serv:dev": "nodemon --watch 'api/**/*' -e ts,js --exec 'yarn serv'",
-    "dev": "yarn fix-jsx-pragmatic && ts-node src/index.ts",
+    "start": "yarn fix-jsx-pragmatic && ts-node src/index.ts",
     "httpd": "http-server ./site/static",
     "build": "rm -rf dist/ && tsc -p tsconfig.json && chmod +x dist/index.js",
     "build-babel": "babel src-demo --out-dir tmp",
