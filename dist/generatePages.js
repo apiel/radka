@@ -22,13 +22,14 @@ const transform_1 = require("./transform");
 const globAsync = util_1.promisify(glob);
 function generatePages() {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield globAsync(path_1.join(config_1.pagesPath, '**', `*${config_1.config.pagesSuffix}.js`));
+        const files = yield globAsync(path_1.join(config_1.paths.pages, '**', `*${config_1.config.pagesSuffix}.js`));
         const links = collectPageLinks(files);
         logol_1.log('Pages component founds', links);
         for (const file of files) {
-            const htmlPath = path_1.join(config_1.distStaticPath, getRoutePath(file));
+            const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
             logol_1.log('Load page component', file);
             const page = require(file).default;
+            page.setPaths(config_1.paths);
             if (page.propsList) {
                 for (const props of page.propsList) {
                     yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), links, props);
@@ -51,7 +52,7 @@ function collectPageLinks(files) {
 }
 function getRoutePath(file, glue = path_1.join) {
     const filename = path_1.basename(file, `${config_1.config.pagesSuffix}${path_1.extname(file)}`);
-    return glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.pagesPath.length);
+    return glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.paths.pages.length);
 }
 function applyPropsToPath(path, props) {
     let pathWithProps = path;
@@ -77,7 +78,7 @@ function appendImportToSource(source, ext, tag) {
     return __awaiter(this, void 0, void 0, function* () {
         const imports = yield Promise.all(global.r_ka_imports
             .filter((path) => path.endsWith(ext))
-            .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.pagesPath.length)))));
+            .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.paths.pages.length)))));
         let code = imports.map((s) => s.toString()).join();
         if (ext === '.js') {
             code = lib_1.rkaLoader('r_ka_imports', code);
@@ -106,7 +107,7 @@ function injectBundles(source) {
 }
 function getCacheParam(filename) {
     return __awaiter(this, void 0, void 0, function* () {
-        return md5((yield fs_extra_1.readFile(path_1.join(config_1.distStaticPath, filename))).toString());
+        return md5((yield fs_extra_1.readFile(path_1.join(config_1.paths.distStatic, filename))).toString());
     });
 }
 function injectScript(source, script, tag = '</body>') {

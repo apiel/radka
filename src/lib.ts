@@ -1,16 +1,35 @@
 import { node } from 'jsx-pragmatic';
-import { readFileSync } from 'fs-extra';
+import { readFileSync, copySync } from 'fs-extra';
 import * as md5 from 'md5';
-import { extname } from 'path';
+import { extname, join, sep } from 'path';
+// import urlJoin from 'url-join';
+const urlJoin = require('url-join');
+
+import { ASSETS_EXT, paths as pathsDefault } from './config';
 
 export { Fragment } from 'jsx-pragmatic';
+
+let paths = pathsDefault;
 
 export const jsx = {
     render: node,
     require: (dir: string, href: string) => {
         if (isAssetFilename(href)) {
-            console.log('assssssset', { dir, href });
-            return 'myasset.jpg';
+            const srcImgPath = join(dir, href);
+            const filename = srcImgPath
+                .substr(paths.src.length)
+                .split(sep)
+                .filter((p) => p)
+                .join('-');
+            const distImgPath = join(paths.assets, filename);
+            // could use config.assetsFolder instead of substr but then need to pass in params
+            const url = urlJoin(
+                paths.assets.substr(paths.distStatic.length),
+                filename,
+            );
+            // should we copy only if file does not exist?
+            copySync(srcImgPath, distImgPath);
+            return url;
         } else {
             return require(href);
         }
@@ -34,6 +53,7 @@ export interface Page {
     component: Function;
     linkId: string;
     link: (props?: LinkProps) => string;
+    setPaths: (values: any) => void;
 }
 
 // ToDo: need to improve types
@@ -44,6 +64,9 @@ export function page(component: Function, propsList?: PropsList): Page {
         component,
         linkId,
         link: (props?: LinkProps) => `%link%${linkId}%${serialize(props)}%`,
+        setPaths: (values = pathsDefault) => {
+            paths = values;
+        },
     };
 }
 
@@ -69,5 +92,5 @@ export function rkaLoader(id: string, source: string) {
 }
 
 export function isAssetFilename(href: string) {
-    return ['.png', '.jpg', '.gif'].includes(extname(href));
+    return ASSETS_EXT.includes(extname(href));
 }

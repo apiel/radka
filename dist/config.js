@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const tmp_1 = require("tmp");
+exports.ASSETS_EXT = ['.png', '.jpg', '.gif'];
 exports.RKA_IMPORT_FILE = 'r_ka-import.js';
 exports.CONFIG_FILE = 'radka.config';
 exports.ROOT_FOLDER = process.env.ROOT_FOLDER
@@ -15,26 +16,34 @@ exports.config = {
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
+    assetsFolder: 'r-ka-assets',
     baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || tmp_1.dirSync().name,
     turbolinks: 'true',
 };
-exports.distStaticPath = '';
-exports.distServerPath = '';
-exports.srcPath = '';
-exports.pagesPath = '';
-exports.bundlePath = '';
-initPath();
+exports.paths = {
+    distStatic: '',
+    distServer: '',
+    src: '',
+    pages: '',
+    bundle: '',
+    assets: '',
+};
+initPaths();
 function setConfig(newConfig = {}) {
     exports.config = Object.assign({}, exports.config, newConfig);
-    initPath();
+    initPaths();
 }
 exports.setConfig = setConfig;
-function initPath() {
-    exports.distStaticPath = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
-    exports.distServerPath = path_1.join(exports.ROOT_FOLDER, exports.config.distServerFolder);
-    exports.srcPath = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
-    exports.pagesPath = path_1.join(exports.config.tmpFolder, exports.config.pagesFolder);
-    exports.bundlePath = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);
+function initPaths() {
+    const distStatic = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
+    exports.paths = {
+        distStatic,
+        distServer: path_1.join(exports.ROOT_FOLDER, exports.config.distServerFolder),
+        src: path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder),
+        pages: path_1.join(exports.config.tmpFolder, exports.config.pagesFolder),
+        bundle: path_1.join(exports.config.tmpFolder, exports.config.bundleFolder),
+        assets: path_1.join(distStatic, exports.config.assetsFolder),
+    };
 }
 //# sourceMappingURL=config.js.map

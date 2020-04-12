@@ -11,20 +11,13 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import {
-    srcPath,
-    config,
-    bundlePath,
-    distStaticPath,
-    distServerPath,
-    RKA_IMPORT_FILE,
-} from './config';
+import { config, paths, RKA_IMPORT_FILE } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 
 export async function compile() {
     // ToDo: is it good idea to remove distStaticPath? site folder might not only contain generated file?
-    await remove(distStaticPath);
+    await remove(paths.distStatic);
     await remove(config.tmpFolder);
 
     await runBabel();
@@ -46,11 +39,11 @@ async function read(file: string) {
 }
 
 async function injectBaseCodeToBundle() {
-    const bundleFile = join(bundlePath, 'index.js');
+    const bundleFile = join(paths.bundle, 'index.js');
 
     const codes = [
         rkaLoader('r_ka_bundle', await read(bundleFile)),
-        await read(join(bundlePath, RKA_IMPORT_FILE)),
+        await read(join(paths.bundle, RKA_IMPORT_FILE)),
         'window.require = require;',
         'require("@babel/polyfill");',
     ];
@@ -72,8 +65,8 @@ async function injectBaseCodeToBundle() {
 
 function copyApiToServer() {
     return copy(
-        join(srcPath, config.apiFolder),
-        join(distServerPath, config.apiFolder),
+        join(paths.src, config.apiFolder),
+        join(paths.distServer, config.apiFolder),
     );
 }
 
@@ -81,7 +74,7 @@ function runBabel() {
     info('Run babel');
     return shell(
         'babel',
-        `${srcPath} --out-dir ${config.tmpFolder} --copy-files`.split(' '),
+        `${paths.src} --out-dir ${config.tmpFolder} --copy-files`.split(' '),
     );
 }
 
@@ -90,14 +83,13 @@ function runParcel() {
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
-    ensureFileSync(join(distStaticPath, 'index.css'));
+    ensureFileSync(join(paths.distStatic, 'index.css'));
 
     return shell(
         'parcel',
-        `build ${join(
-            bundlePath,
-            'index.js',
-        )} --out-dir ${distStaticPath}`.split(' '),
+        `build ${join(paths.bundle, 'index.js')} --out-dir ${
+            paths.distStatic
+        }`.split(' '),
     );
 }
 
@@ -110,8 +102,8 @@ function runIsomor() {
         ISOMOR_SKIP_COPY_SRC: 'true',
         ISOMOR_SERVER_FOLDER: config.apiFolder,
         ISOMOR_SRC_FOLDER: config.srcFolder,
-        ISOMOR_STATIC_FOLDER: distStaticPath,
-        ISOMOR_DIST_SERVER_FOLDER: distServerPath,
+        ISOMOR_STATIC_FOLDER: paths.distStatic,
+        ISOMOR_DIST_SERVER_FOLDER: paths.distServer,
     });
 }
 

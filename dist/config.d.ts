@@ -1,3 +1,4 @@
+export declare const ASSETS_EXT: string[];
 export declare const RKA_IMPORT_FILE = "r_ka-import.js";
 export declare const CONFIG_FILE = "radka.config";
 export declare const ROOT_FOLDER: string;
@@ -9,13 +10,17 @@ export declare let config: {
     pagesFolder: string;
     pagesSuffix: string;
     bundleFolder: string;
+    assetsFolder: string;
     baseUrl: string;
     tmpFolder: string;
     turbolinks: string;
 };
-export declare let distStaticPath: string;
-export declare let distServerPath: string;
-export declare let srcPath: string;
-export declare let pagesPath: string;
-export declare let bundlePath: string;
+export declare let paths: {
+    distStatic: string;
+    distServer: string;
+    src: string;
+    pages: string;
+    bundle: string;
+    assets: string;
+};
 export declare function setConfig(newConfig?: {}): void;

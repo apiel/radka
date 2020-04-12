@@ -76,7 +76,7 @@ function addImportToBundle(path) {
     const ast = parser_1.parse(emptyCode);
     ast.program.body.push(path.node);
     const output = generator_1.default(ast, {}, emptyCode);
-    const rkaImportFile = path_1.join(config_1.bundlePath, config_1.RKA_IMPORT_FILE);
+    const rkaImportFile = path_1.join(config_1.paths.bundle, config_1.RKA_IMPORT_FILE);
     fs_extra_1.ensureFileSync(rkaImportFile);
     fs_1.appendFileSync(rkaImportFile, output.code + '\n');
 }

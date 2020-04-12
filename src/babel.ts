@@ -4,7 +4,7 @@ import * as t from '@babel/types';
 import { join, dirname, extname } from 'path';
 import { appendFileSync } from 'fs';
 
-import { bundlePath, RKA_IMPORT_FILE } from './config';
+import { paths, RKA_IMPORT_FILE } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { isAssetFilename } from './lib';
@@ -107,7 +107,7 @@ function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     ast.program.body.push(path.node);
     const output = generate(ast, {}, emptyCode);
 
-    const rkaImportFile = join(bundlePath, RKA_IMPORT_FILE);
+    const rkaImportFile = join(paths.bundle, RKA_IMPORT_FILE);
     ensureFileSync(rkaImportFile);
     appendFileSync(rkaImportFile, output.code + '\n');
 }

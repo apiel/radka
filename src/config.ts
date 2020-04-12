@@ -1,6 +1,7 @@
 import { resolve, join } from 'path';
 import { dirSync } from 'tmp';
 
+export const ASSETS_EXT = ['.png', '.jpg', '.gif'];
 export const RKA_IMPORT_FILE = 'r_ka-import.js';
 export const CONFIG_FILE = 'radka.config';
 export const ROOT_FOLDER = process.env.ROOT_FOLDER
@@ -15,27 +16,35 @@ export let config = {
     pagesFolder: 'pages',
     pagesSuffix: '.page',
     bundleFolder: 'bundle',
+    assetsFolder: 'r-ka-assets',
     baseUrl: '',
     tmpFolder: process.env.TEMP_FOLDER || dirSync().name,
     turbolinks: 'true',
 };
 
-export let distStaticPath = '';
-export let distServerPath = '';
-export let srcPath = '';
-export let pagesPath = '';
-export let bundlePath = '';
-initPath();
+export let paths = {
+    distStatic: '',
+    distServer: '',
+    src: '',
+    pages: '',
+    bundle: '',
+    assets: '',
+};
+initPaths();
 
 export function setConfig(newConfig = {}) {
     config = { ...config, ...newConfig };
-    initPath();
+    initPaths();
 }
 
-function initPath() {
-    distStaticPath = join(ROOT_FOLDER, config.distStaticFolder);
-    distServerPath = join(ROOT_FOLDER, config.distServerFolder);
-    srcPath = join(ROOT_FOLDER, config.srcFolder);
-    pagesPath = join(config.tmpFolder, config.pagesFolder);
-    bundlePath = join(config.tmpFolder, config.bundleFolder);
+function initPaths() {
+    const distStatic = join(ROOT_FOLDER, config.distStaticFolder);
+    paths = {
+        distStatic,
+        distServer: join(ROOT_FOLDER, config.distServerFolder),
+        src: join(ROOT_FOLDER, config.srcFolder),
+        pages: join(config.tmpFolder, config.pagesFolder),
+        bundle: join(config.tmpFolder, config.bundleFolder),
+        assets: join(distStatic, config.assetsFolder),
+    };
 }

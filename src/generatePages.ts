@@ -9,7 +9,7 @@ import { ensureFile, outputFile, readFile } from 'fs-extra';
 import urlJoin from 'url-join';
 import * as md5 from 'md5';
 
-import { distStaticPath, config, pagesPath } from './config';
+import { paths, config } from './config';
 import { Page, Props, rkaLoader } from './lib';
 import { transform } from './transform';
 
@@ -18,14 +18,15 @@ const globAsync = promisify(glob);
 export async function generatePages() {
     // console.log('yoyoy', join(pagesPath, '**', `*${config.pagesSuffix}.js`));
     const files = await globAsync(
-        join(pagesPath, '**', `*${config.pagesSuffix}.js`),
+        join(paths.pages, '**', `*${config.pagesSuffix}.js`),
     );
     const links = collectPageLinks(files);
     log('Pages component founds', links);
     for (const file of files) {
-        const htmlPath = join(distStaticPath, getRoutePath(file));
+        const htmlPath = join(paths.distStatic, getRoutePath(file));
         log('Load page component', file);
         const page: Page = require(file).default;
+        page.setPaths(paths);
         if (page.propsList) {
             for (const props of page.propsList) {
                 await saveComponentToHtml(
@@ -57,7 +58,7 @@ function getRoutePath(file: string, glue = join) {
         dirname(file),
         filename === 'index' ? '' : filename,
         'index.html',
-    ).substr(pagesPath.length);
+    ).substr(paths.pages.length);
 }
 
 function applyPropsToPath(path: string, props: Props) {
@@ -91,7 +92,7 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
         (global as any).r_ka_imports
             .filter((path: string) => path.endsWith(ext))
             .map((path: string) =>
-                readFile(join(config.tmpFolder, path.substr(pagesPath.length))),
+                readFile(join(config.tmpFolder, path.substr(paths.pages.length))),
             ),
     );
 
@@ -138,7 +139,7 @@ async function injectBundles(source: string) {
 }
 
 async function getCacheParam(filename: string) {
-    return md5((await readFile(join(distStaticPath, filename))).toString());
+    return md5((await readFile(join(paths.distStatic, filename))).toString());
 }
 
 function injectScript(source: string, script: string, tag = '</body>') {

@@ -15,6 +15,7 @@ export interface Page {
     component: Function;
     linkId: string;
     link: (props?: LinkProps) => string;
+    setPaths: (values: any) => void;
 }
 export declare function page(component: Function, propsList?: PropsList): Page;
 export declare function Import({ src }: {
