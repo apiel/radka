@@ -1,7 +1,7 @@
 import { resolve, join } from 'path';
 import { dirSync } from 'tmp';
 
-export const ASSETS_EXT = ['.png', '.jpg', '.gif'];
+export const ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf'];
 export const RKA_IMPORT_FILE = 'r_ka-import.js';
 export const CONFIG_FILE = 'radka.config';
 export const ROOT_FOLDER = process.env.ROOT_FOLDER

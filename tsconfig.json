@@ -1,21 +1,17 @@
 {
-  "compilerOptions": {
-    "types": [
-      "node"
-    ],
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es6",
-    "lib": [
-      "es2019"
-    ],
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./"
-  },
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "types": ["node"],
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es6",
+        "lib": ["es2019"],
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./"
+    },
+    "exclude": ["node_modules"]
 }

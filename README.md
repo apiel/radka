@@ -230,6 +230,29 @@ document.querySelector('h1').onmouseover = async () => {
 
 To understand how it works under the hood, see [isomor](https://github.com/apiel/isomor).
 
+## Assets
+
+To use assets with Radka.js, simply use `require` in the jsx component. For example, if you have an image located in `src/images/example.png`, to load it in the page `src/pages/index.page.js` do:
+
+```jsx
+import { jsx, page } from 'radka';
+import { join } from 'path';
+
+function Main() {
+    return (
+        <div>
+            <h1>Main page</h1>
+            <p>This is an example</p>
+            <img src={require('../images/example.png')} alt=""/>
+            or
+            <img src={require(join('..', 'images', 'example.png'))} alt=""/>
+        </div>
+    );
+}
+
+export default page(Main);
+```
+
 ## Preloading pages
 
 RADKA.js is using [turbolinks](https://github.com/turbolinks/turbolinks) to preload pages. Turbolinks makes navigating your web application faster. Get the performance benefits of a single-page application without the added complexity of a client-side JavaScript framework.
