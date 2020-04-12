@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const tmp_1 = require("tmp");
-exports.ASSETS_EXT = ['.png', '.jpg', '.gif'];
+exports.ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf'];
 exports.RKA_IMPORT_FILE = 'r_ka-import.js';
 exports.CONFIG_FILE = 'radka.config';
 exports.ROOT_FOLDER = process.env.ROOT_FOLDER

@@ -1,6 +1,6 @@
 {
   "name": "radka",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "license": "MIT",
   "bin": "dist/index.js",
   "main": "dist/lib.js",
@@ -13,6 +13,7 @@
     "node": ">=11"
   },
   "scripts": {
+    "prepublishOnly": "yarn build",
     "fix-jsx-pragmatic": "cp jsx-pragmatic.js node_modules/jsx-pragmatic/dist/jsx-pragmatic.js",
     "serv": "ISOMOR_STATIC_FOLDER=./site/static ISOMOR_DIST_SERVER_FOLDER=./site/server ISOMOR_SERVER_FOLDER=/api isomor-server",
     "serv:dev": "nodemon --watch 'api/**/*' -e ts,js --exec 'yarn serv'",
