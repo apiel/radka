@@ -6,6 +6,7 @@ import { join } from 'path';
 import { setDev, paths, config } from './config';
 import { build, runIsomor, runBabel, runParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
+import { generatePages } from './generatePages';
 
 export async function dev(rebuild: boolean) {
     info('Run Radka.js in dev mode');
@@ -42,9 +43,16 @@ function watcher() {
 async function handleFile(filePath: string) {
     if (filePath.startsWith(config.apiFolder)) {
         await handleApiFile(filePath);
+    } else if (filePath.startsWith(config.bundleFolder)) {
+        await buildStatic(true);
     } else {
-        console.log('another file');
+        await handleOtherFile(filePath);
     }
+}
+
+async function handleOtherFile(filePath: string) {
+    await buildStatic();
+    await generatePages();
 }
 
 async function handleApiFile(filePath: string) {
@@ -56,7 +64,7 @@ async function handleApiFile(filePath: string) {
     await copy(join(paths.src, filePath), join(paths.distServer, filePath));
 }
 
-async function buildStatic() {
+async function buildStatic(forceParcel = false) {
     const md5RkaImport = await fileToMd5(paths.rkaImport);
     await remove(config.tmpFolder);
     await runBabel();
@@ -77,4 +85,7 @@ watch for file changes:
     + think to a way to limit pages generation on dynamic pages
     + if new import then build bundle again (by file comparison, md5)
 - if changes in bundle folder: build bundle
+
+- need to reload page automatically
+- need to serve
 */
