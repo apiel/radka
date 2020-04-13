@@ -12,6 +12,7 @@ import * as md5 from 'md5';
 import { paths, config, DEV } from './config';
 import { Page, Props, rkaLoader } from './lib';
 import { transform } from './transform';
+import { fileToMd5 } from './utils';
 
 const globAsync = promisify(glob);
 
@@ -129,23 +130,16 @@ function applyPropsToLinks(source: string, links: Links) {
 }
 
 async function injectBundles(source: string) {
-    const baseUrl = DEV ? 'http://localhost:1234' : config.baseUrl;
+    const { baseUrl } = config;
     const script = `
-    <script src="${baseUrl}/index.js?${await getCacheParam(
-        'index.js',
+    <script src="${baseUrl}/index.js?${await fileToMd5(
+        join(paths.distStatic, 'index.js'),
     )}" data-turbolinks-suppress-warning></script>
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/index.css?${await getCacheParam(
-        'index.css',
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/index.css?${await fileToMd5(
+        join(paths.distStatic, 'index.css'),
     )}">`;
     return injectScript(source, script);
     // return injectScript(source, script, '</head>');
-}
-
-async function getCacheParam(filename: string) {
-    if (DEV) {
-        return '';
-    }
-    return md5((await readFile(join(paths.distStatic, filename))).toString());
 }
 
 function injectScript(source: string, script: string, tag = '</body>') {

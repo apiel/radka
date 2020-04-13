@@ -11,7 +11,7 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import { config, paths, RKA_IMPORT_FILE, setDev } from './config';
+import { config, paths, RKA_IMPORT_FILE } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 
@@ -28,23 +28,6 @@ export async function build() {
 
     await runIsomor();
     await runParcel();
-
-    await generatePages();
-}
-
-export async function dev() {
-    info('Run Radka.js in dev mode');
-    setDev();
-    await remove(paths.distStatic);
-    await remove(config.tmpFolder);
-
-    await runBabel();
-
-    await injectBaseCodeToBundle();
-
-    await copyApiToServer();
-
-    await runIsomor();
 
     await generatePages();
 }
@@ -80,14 +63,17 @@ async function injectBaseCodeToBundle() {
     await writeFile(bundleFile, codes.join(';'));
 }
 
-function copyApiToServer() {
+export function copyApiToServer() {
     return copy(
         join(paths.src, config.apiFolder),
         join(paths.distServer, config.apiFolder),
+        {
+            recursive: true,
+        },
     );
 }
 
-function runBabel() {
+export function runBabel() {
     info('Run babel');
     return shell(
         'babel',
@@ -95,7 +81,7 @@ function runBabel() {
     );
 }
 
-function runParcel() {
+export function runParcel() {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
@@ -110,7 +96,7 @@ function runParcel() {
     );
 }
 
-function runIsomor() {
+export function runIsomor() {
     info('Run isomor');
 
     return shell('isomor-transpiler', [], {
@@ -121,6 +107,7 @@ function runIsomor() {
         ISOMOR_SRC_FOLDER: config.srcFolder,
         ISOMOR_STATIC_FOLDER: paths.distStatic,
         ISOMOR_DIST_SERVER_FOLDER: paths.distServer,
+        ISOMOR_NO_VALIDATION: 'true',
     });
 }
 
