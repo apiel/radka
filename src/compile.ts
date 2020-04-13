@@ -11,7 +11,7 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import { config, paths, RKA_IMPORT_FILE } from './config';
+import { config, paths } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 
@@ -43,7 +43,7 @@ async function injectBaseCodeToBundle() {
 
     const codes = [
         rkaLoader('r_ka_bundle', await read(bundleFile)),
-        await read(join(paths.bundle, RKA_IMPORT_FILE)),
+        await read(paths.rkaImport),
         'window.require = require;',
         'require("@babel/polyfill");',
     ];

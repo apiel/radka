@@ -1,11 +1,11 @@
 import { info } from 'logol';
-import { pathExists, copy } from 'fs-extra';
+import { pathExists, copy, remove } from 'fs-extra';
 import { watch } from 'chokidar';
 import { join } from 'path';
 
 import { setDev, paths, config } from './config';
-import { build, runIsomor, runBabel } from './compile';
-import { fileIsInRoot } from './utils';
+import { build, runIsomor, runBabel, runParcel } from './compile';
+import { fileIsInRoot, fileToMd5 } from './utils';
 
 export async function dev(rebuild: boolean) {
     info('Run Radka.js in dev mode');
@@ -48,25 +48,29 @@ async function handleFile(filePath: string) {
 }
 
 async function handleApiFile(filePath: string) {
-    console.log('api file');
     if (fileIsInRoot(filePath, config.apiFolder)) {
-        console.log('fileIsInRoot');
         await runIsomor();
         // we could build babel and bundle only if api definition changed
-        // need build babel and bundle
+        await buildStatic();
     }
     await copy(join(paths.src, filePath), join(paths.distServer, filePath));
 }
 
 async function buildStatic() {
+    const md5RkaImport = await fileToMd5(paths.rkaImport);
+    await remove(config.tmpFolder);
     await runBabel();
+    if (md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
+        console.log('new import, need to run parcel', md5RkaImport, (await fileToMd5(paths.rkaImport)));
+        // After having some issue with `parcel serve` (build loop forever)
+        // let just rebuild everything till with find a solution
+        await runParcel();
+    }
 }
-
-
 
 /*
 watch for file changes:
-- if api files: then isomor transpile and build bundle only if new api endpoint (compare file to before, md5)
+- done. if api files: then isomor transpile and build bundle only if new api endpoint (compare file to before, md5)
 - if others files: build babel and generate pages
     + if possible generate only page changed: might be difficult since there is
       child component, unless we make a tree dependency of each component

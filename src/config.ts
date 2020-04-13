@@ -30,6 +30,7 @@ export let paths = {
     pages: '',
     bundle: '',
     assets: '',
+    rkaImport: '',
 };
 initPaths();
 
@@ -40,13 +41,15 @@ export function setConfig(newConfig = {}) {
 
 function initPaths() {
     const distStatic = join(ROOT_FOLDER, config.distStaticFolder);
+    const bundle = join(config.tmpFolder, config.bundleFolder);
     paths = {
+        bundle,
         distStatic,
         distServer: join(ROOT_FOLDER, config.distServerFolder),
         src: join(ROOT_FOLDER, config.srcFolder),
         pages: join(config.tmpFolder, config.pagesFolder),
-        bundle: join(config.tmpFolder, config.bundleFolder),
         assets: join(distStatic, config.assetsFolder),
+        rkaImport: join(bundle, RKA_IMPORT_FILE),
     };
 }
 
