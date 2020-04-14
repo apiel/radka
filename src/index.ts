@@ -7,6 +7,7 @@ import { cosmiconfig } from 'cosmiconfig';
 import { CONFIG_FILE, setConfig, config as globalConfig } from './config';
 import { build } from './compile';
 import { dev } from './dev';
+import { server } from './server';
 
 const cosmiconfigOptions = {
     searchPlaces: [
@@ -21,7 +22,7 @@ const cosmiconfigOptions = {
 async function run() {
     const { configFile, _, rebuild, ...config } = minimist(process.argv.slice(2));
     if (config.help || config.h) {
-        console.log(`Usage: radka
+        console.log(`Usage: radka [dev|server|build]
 
 Options:
   --configFile=./config.json
@@ -41,6 +42,8 @@ ${Object.keys(globalConfig)
         info('Config', globalConfig);
         if (_.includes('dev')) {
             await dev(rebuild);
+        } else if (_.includes('server')) {
+            await server();
         } else {
             await build();
         }
