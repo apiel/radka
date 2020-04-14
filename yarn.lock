@@ -1029,10 +1029,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/md5@^2.1.33":
-  version "2.1.33"
-  resolved "https://registry.yarnpkg.com/@types/md5/-/md5-2.1.33.tgz#8c8dba30df4ad0e92296424f08c4898dd808e8df"
-  integrity sha512-8+X960EtKLoSblhauxLKy3zzotagjoj3Jt1Tx9oaxUdZEPIBl+mkrUz6PNKpzJgkrKSN9YgkWTA29c0KnLshmA==
+"@types/md5@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/md5/-/md5-2.2.0.tgz#cd82e16b95973f94bb03dee40c5b6be4a7fb7fb4"
+  integrity sha512-JN8OVL/wiDlCWTPzplsgMPu0uE9Q6blwp68rYsfk2G8aokRUQ8XD9MEhZwihfAiQvoyE+m31m6i3GFXwYWomKQ==
   dependencies:
     "@types/node" "*"
 
@@ -3737,10 +3737,10 @@ isomor-json-schema-generator@^2.0.1:
     json-stable-stringify "^1.0.1"
     typescript "~3.5.1"
 
-isomor-server@^2.6.2:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/isomor-server/-/isomor-server-2.6.2.tgz#75015c13d07dad4c82931d8a2adea33c5fd6c8ec"
-  integrity sha512-bfkry3ADqb1Yd5rde8Sf58ti9RYUcXbaeVgU14UZOU7PUhzjL1Dwcsy5q73fynbSG6Px8k02tyq8Olk+Is112g==
+isomor-server@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/isomor-server/-/isomor-server-2.7.0.tgz#6eed77873f71e3adf1427a50b58ed8720cb4b377"
+  integrity sha512-YnKkvhVJL7vsA9GB8L8m2GCICLuodSMTRIJbrSxnfnDOLZ4uWOqkeTEq7pZdTUZe4joCDcQbK6pZBhls3Wsx8g==
   dependencies:
     "@types/fs-extra" "^8.0.1"
     "@types/morgan" "^1.7.37"
@@ -3751,7 +3751,7 @@ isomor-server@^2.6.2:
     esm "^3.2.25"
     express "^4.17.1"
     fs-extra "^8.1.0"
-    isomor "^2.6.2"
+    isomor "^2.7.0"
     isomor-core "^2.5.2"
     logol "^0.0.3"
     morgan "^1.9.1"
@@ -3760,10 +3760,10 @@ isomor-server@^2.6.2:
     typescript "^3.7.5"
     ws "^7.2.1"
 
-isomor-transpiler@^2.5.5:
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/isomor-transpiler/-/isomor-transpiler-2.5.5.tgz#ec649e1a96eaddd406277555976d349ce880ddeb"
-  integrity sha512-As5qFtoxuBBUjHnT6v1YOW7tdaHlAE7Y6Yl44SPYfTlCyQLTGJG4P4H9w89xE7ofWyh5b1e4CX9aKo9ttlyEfw==
+isomor-transpiler@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/isomor-transpiler/-/isomor-transpiler-2.7.0.tgz#6911eb2331f86e42db00d458970b3e001980df63"
+  integrity sha512-cskrQv+EXt5tSSluoGfMVvsLveIGXoqPxIwJRgyUTdxaWyqcy/Y76rWs21LE6Y39Riidmj+Ql+0Isss3/1RTyg==
   dependencies:
     "@babel/generator" "^7.8.4"
     "@babel/parser" "^7.8.4"
@@ -3773,7 +3773,7 @@ isomor-transpiler@^2.5.5:
     chokidar "^3.3.1"
     debug "^4.1.1"
     fs-extra "^8.1.0"
-    isomor "^2.5.5"
+    isomor "^2.7.0"
     isomor-core "^2.5.2"
     isomor-json-schema-generator "^2.0.1"
     logol "^0.0.3"
@@ -3782,15 +3782,16 @@ isomor-transpiler@^2.5.5:
     ts-node "^8.6.2"
     typescript "^3.7.5"
 
-isomor@^2.5.5, isomor@^2.6.2:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/isomor/-/isomor-2.6.2.tgz#ba9803c9337c84131d685ef95856ce3724551c93"
-  integrity sha512-hhm+P4/YGSVdvW5sdDI03GxFm9KwU5DrmrAhusaGRl22271t6WQ4nZ1clg9RJ8OWXSWm9my+HNLjp8AiqN9DGA==
+isomor@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/isomor/-/isomor-2.7.0.tgz#27a799b31a3c988fc03009c691ad0cea3ede78b3"
+  integrity sha512-hMX20I3RbUS7eZsIj80As6oxygqqw1jgCZbyjRj+lXCjr1sfvoiL2ic0eC/B1tfbkAyT6vGh1Cn/bnV83o8MXg==
   dependencies:
     chalk "^3.0.0"
+    cross-spawn "^7.0.2"
     inquirer "^7.0.4"
-    isomor-server "^2.6.2"
-    isomor-transpiler "^2.5.5"
+    isomor-server "^2.7.0"
+    isomor-transpiler "^2.7.0"
     typescript "^3.7.5"
 
 isstream@~0.1.2:
