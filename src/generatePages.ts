@@ -7,7 +7,6 @@ import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
 import urlJoin from 'url-join';
-import * as md5 from 'md5';
 
 import { paths, config, DEV } from './config';
 import { Page, Props, rkaLoader } from './lib';
@@ -17,34 +16,39 @@ import { fileToMd5 } from './utils';
 const globAsync = promisify(glob);
 
 export async function generatePages() {
-    // console.log('yoyoy', join(pagesPath, '**', `*${config.pagesSuffix}.js`));
-    const files = await globAsync(
-        join(paths.pages, '**', `*${config.pagesSuffix}.js`),
-    );
-    const links = collectPageLinks(files);
-    log('Pages component founds', links);
-    for (const file of files) {
-        const htmlPath = join(paths.distStatic, getRoutePath(file));
-        log('Load page component', file);
-        const page: Page = require(file).default;
-        page.setPaths(paths);
-        if (page.propsList) {
-            for (const props of page.propsList) {
-                await saveComponentToHtml(
-                    page,
-                    applyPropsToPath(htmlPath, props),
-                    links,
-                    props,
-                );
-            }
-        } else {
-            await saveComponentToHtml(page, htmlPath, links);
-        }
+    const pagePaths = await collectPagePaths();
+    log('Pages component founds', pagePaths);
+    for (const pagePath of Object.values(pagePaths)) {
+        await generatePage(pagePath, pagePaths);
     }
 }
 
-type Links = { [linkId: string]: string };
-function collectPageLinks(files: string[]): Links {
+export async function generatePage(pagePath: string, pagePaths: PagePaths) {
+    const htmlPath = join(paths.distStatic, getRoutePath(pagePath));
+    log('Load page component', pagePath);
+    delete require.cache[pagePath];
+    (global as any).r_ka_imports = []; // clean up before appending import
+    const page: Page = require(pagePath).default;
+    page.setPaths(paths);
+    if (page.propsList) {
+        for (const props of page.propsList) {
+            await saveComponentToHtml(
+                page,
+                applyPropsToPath(htmlPath, props),
+                pagePaths,
+                props,
+            );
+        }
+    } else {
+        await saveComponentToHtml(page, htmlPath, pagePaths);
+    }
+}
+
+type PagePaths = { [pathId: string]: string };
+export async function collectPagePaths(): Promise<PagePaths> {
+    const files = await globAsync(
+        join(paths.pages, '**', `*${config.pagesSuffix}.js`),
+    );
     const links = {};
     files.forEach((file) => {
         const page: Page = require(file).default;
@@ -73,16 +77,16 @@ function applyPropsToPath(path: string, props: Props) {
 async function saveComponentToHtml(
     page: Page,
     htmlPath: string,
-    links: Links,
+    links: PagePaths,
     props?: Props,
 ) {
     log('Generate page', htmlPath);
     let source = page.component(props).render(html({ transform }));
     source = applyPropsToLinks(source, links);
+    // console.log('r_ka_imports', (global as any).r_ka_imports);
     source = await appendImportToSource(source, '.js', 'script');
     source = await appendImportToSource(source, '.css', 'style');
     source = await injectBundles(source);
-    (global as any).r_ka_imports = []; // clean up after appending import
 
     await ensureFile(htmlPath);
     await outputFile(htmlPath, source);
@@ -106,7 +110,7 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
     return injectScript(source, `<${tag}>${code}</${tag}>`);
 }
 
-function applyPropsToLinks(source: string, links: Links) {
+function applyPropsToLinks(source: string, links: PagePaths) {
     return source.replace(
         /%link%([^%]+)%([^%]*)%/g, // [^%] = all exepct %
         (match, linkId, propsStr) => {

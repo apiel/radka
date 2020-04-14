@@ -1,12 +1,12 @@
 import { info } from 'logol';
 import { pathExists, copy, remove } from 'fs-extra';
 import { watch } from 'chokidar';
-import { join } from 'path';
+import { join, basename, extname, dirname } from 'path';
 
 import { setDev, paths, config } from './config';
 import { build, runIsomor, runBabel, runParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
-import { generatePages } from './generatePages';
+import { generatePages, generatePage, collectPagePaths } from './generatePages';
 
 export async function dev(rebuild: boolean) {
     info('Run Radka.js in dev mode');
@@ -52,7 +52,14 @@ async function handleFile(filePath: string) {
 
 async function handleOtherFile(filePath: string) {
     await buildStatic();
-    await generatePages();
+    if (filePath.startsWith(config.pagesFolder)) {
+        const pagePaths = await collectPagePaths();
+        // this might be too dangerous, maybe better to just generate all pages
+        const file = join(paths.pages, basename(filePath, extname(filePath)) + '.js');
+        await generatePage(file, pagePaths);
+    } else {
+        await generatePages();
+    }
 }
 
 async function handleApiFile(filePath: string) {
