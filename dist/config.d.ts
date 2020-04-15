@@ -1,3 +1,4 @@
+export declare let DEV: boolean;
 export declare const ASSETS_EXT: string[];
 export declare const RKA_IMPORT_FILE = "r_ka-import.js";
 export declare const CONFIG_FILE = "radka.config";
@@ -22,5 +23,8 @@ export declare let paths: {
     pages: string;
     bundle: string;
     assets: string;
+    rkaImport: string;
 };
 export declare function setConfig(newConfig?: {}): void;
+export declare function setDev(): void;
+export declare const getBundleFile: () => string;

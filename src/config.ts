@@ -56,3 +56,5 @@ function initPaths() {
 export function setDev() {
     DEV = true;
 }
+
+export const getBundleFile = () => join(paths.bundle, 'index.js');

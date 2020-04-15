@@ -1,13 +1,17 @@
 import { info } from 'logol';
-import { pathExists, copy, remove } from 'fs-extra';
+import { pathExists, copy, remove, writeFile } from 'fs-extra';
 import { watch } from 'chokidar';
 import { join, basename, extname } from 'path';
+import { Server } from 'http';
 
-import { setDev, paths, config } from './config';
+import { setDev, paths, config, getBundleFile } from './config';
 import { build, runIsomor, runBabel, runParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
 import { generatePages, generatePage, collectPagePaths } from './generatePages';
 import { server } from './server';
+import { rkaLoader } from './lib';
+
+let serv: Server;
 
 export async function dev(rebuild: boolean) {
     info('Run Radka.js in dev mode');
@@ -17,9 +21,16 @@ export async function dev(rebuild: boolean) {
         await build();
     }
     watcher();
+    await startServer();
+}
 
-    // if server files changed, need to reload
-    await server();
+async function startServer() {
+    if (serv) {
+        serv.close();
+    }
+    // skip timeout for hot reloading
+    const skipTimeout = true;
+    serv = (await server(skipTimeout)).server;
 }
 
 function watcher() {
@@ -63,7 +74,9 @@ async function handleOtherFile(filePath: string) {
             paths.pages,
             basename(filePath, extname(filePath)) + '.js',
         );
-        await generatePage(file, pagePaths);
+        // need to improve page id with babel, and use md5 of the relative path
+        const pagePath = Object.values(pagePaths).find(p => p.file === file);
+        await generatePage(pagePath, pagePaths);
     } else {
         await generatePages();
     }
@@ -76,27 +89,31 @@ async function handleApiFile(filePath: string) {
         await buildStatic();
     }
     await copy(join(paths.src, filePath), join(paths.distServer, filePath));
+    await startServer();
 }
 
 async function buildStatic(forceParcel = false) {
     const md5RkaImport = await fileToMd5(paths.rkaImport);
     await remove(config.tmpFolder);
     await runBabel();
-    if (md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
-        console.log(
-            'new import, need to run parcel',
-            md5RkaImport,
-            await fileToMd5(paths.rkaImport),
-        );
+    if (forceParcel || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
+        // ToDo: fix, might be missing the first time
+        // await injectHotReloadToBundle();
         // After having some issue with `parcel serve` (build loop forever)
         // let just rebuild everything till with find a solution
         await runParcel();
     }
 }
 
+function injectHotReloadToBundle() {
+    const code = `const { subscribe } = require("isomor");
+    console.log('sub to hot reload');
+    subscribe((payload) => payload === "r_ka_reload" && location.reload());`;
+    return writeFile(getBundleFile(), rkaLoader('r_ka_reload', code));
+}
+
 /*
 + think to a way to limit pages generation on dynamic pages
 
 - need to reload page automatically
-- need to serve
 */

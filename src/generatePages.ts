@@ -8,7 +8,7 @@ import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
 import urlJoin from 'url-join';
 
-import { paths, config, DEV } from './config';
+import { paths, config } from './config';
 import { Page, Props, rkaLoader } from './lib';
 import { transform } from './transform';
 import { fileToMd5 } from './utils';
@@ -17,18 +17,17 @@ const globAsync = promisify(glob);
 
 export async function generatePages() {
     const pagePaths = await collectPagePaths();
-    log('Pages component founds', pagePaths);
     for (const pagePath of Object.values(pagePaths)) {
         await generatePage(pagePath, pagePaths);
     }
 }
 
-export async function generatePage(pagePath: string, pagePaths: PagePaths) {
-    const htmlPath = join(paths.distStatic, getRoutePath(pagePath));
-    log('Load page component', pagePath);
-    delete require.cache[pagePath];
-    (global as any).r_ka_imports = []; // clean up before appending import
-    const page: Page = require(pagePath).default;
+export async function generatePage(
+    { page, file }: PagePath,
+    pagePaths: PagePaths,
+) {
+    const htmlPath = join(paths.distStatic, getRoutePath(file));
+    log('Load page component', file);
     page.setPaths(paths);
     if (page.propsList) {
         for (const props of page.propsList) {
@@ -44,17 +43,26 @@ export async function generatePage(pagePath: string, pagePaths: PagePaths) {
     }
 }
 
-type PagePaths = { [pathId: string]: string };
+interface PagePath {
+    file: string;
+    page: Page;
+}
+type PagePaths = { [pathId: string]: PagePath };
+
 export async function collectPagePaths(): Promise<PagePaths> {
     const files = await globAsync(
         join(paths.pages, '**', `*${config.pagesSuffix}.js`),
     );
-    const links = {};
+    log('Pages component founds', files);
+    const pagePaths = {};
+    // First cleanup cache separetly else it will interfer with page-ids
+    files.forEach((file) => delete require.cache[file]);
+    (global as any).r_ka_imports = []; // clean up before appending import
     files.forEach((file) => {
         const page: Page = require(file).default;
-        links[page.linkId] = file;
+        pagePaths[page.linkId] = { file, page };
     });
-    return links;
+    return pagePaths;
 }
 
 function getRoutePath(file: string, glue = join) {
@@ -122,7 +130,7 @@ function applyPropsToLinks(source: string, links: PagePaths) {
             return (
                 config.baseUrl +
                 applyPropsToPath(
-                    getRoutePath(links[linkId], urlJoin).replace(
+                    getRoutePath(links[linkId].file, urlJoin).replace(
                         /\/index.html$/g,
                         '',
                     ) || '/',

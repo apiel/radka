@@ -15,41 +15,49 @@ const path_1 = require("path");
 const glob = require("glob");
 const fs_extra_1 = require("fs-extra");
 const url_join_1 = require("url-join");
-const md5 = require("md5");
 const config_1 = require("./config");
 const lib_1 = require("./lib");
 const transform_1 = require("./transform");
+const utils_1 = require("./utils");
 const globAsync = util_1.promisify(glob);
 function generatePages() {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield globAsync(path_1.join(config_1.paths.pages, '**', `*${config_1.config.pagesSuffix}.js`));
-        const links = collectPageLinks(files);
-        logol_1.log('Pages component founds', links);
-        for (const file of files) {
-            const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
-            logol_1.log('Load page component', file);
-            const page = require(file).default;
-            page.setPaths(config_1.paths);
-            if (page.propsList) {
-                for (const props of page.propsList) {
-                    yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), links, props);
-                }
-            }
-            else {
-                yield saveComponentToHtml(page, htmlPath, links);
-            }
+        const pagePaths = yield collectPagePaths();
+        for (const pagePath of Object.values(pagePaths)) {
+            yield generatePage(pagePath, pagePaths);
         }
     });
 }
 exports.generatePages = generatePages;
-function collectPageLinks(files) {
-    const links = {};
-    files.forEach((file) => {
-        const page = require(file).default;
-        links[page.linkId] = file;
+function generatePage({ page, file }, pagePaths) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
+        logol_1.log('Load page component', file);
+        global.r_ka_imports = [];
+        page.setPaths(config_1.paths);
+        if (page.propsList) {
+            for (const props of page.propsList) {
+                yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), pagePaths, props);
+            }
+        }
+        else {
+            yield saveComponentToHtml(page, htmlPath, pagePaths);
+        }
     });
-    return links;
 }
+exports.generatePage = generatePage;
+function collectPagePaths() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const files = yield globAsync(path_1.join(config_1.paths.pages, '**', `*${config_1.config.pagesSuffix}.js`));
+        const pagePaths = {};
+        files.forEach((file) => {
+            const page = require(file).default;
+            pagePaths[page.linkId] = { file, page };
+        });
+        return pagePaths;
+    });
+}
+exports.collectPagePaths = collectPagePaths;
 function getRoutePath(file, glue = path_1.join) {
     const filename = path_1.basename(file, `${config_1.config.pagesSuffix}${path_1.extname(file)}`);
     return glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.paths.pages.length);
@@ -69,7 +77,6 @@ function saveComponentToHtml(page, htmlPath, links, props) {
         source = yield appendImportToSource(source, '.js', 'script');
         source = yield appendImportToSource(source, '.css', 'style');
         source = yield injectBundles(source);
-        global.r_ka_imports = [];
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
     });
@@ -93,21 +100,18 @@ function applyPropsToLinks(source, links) {
             const [key, value] = prop.split('=');
             props[key] = value;
         });
+        console.log('applyPropsToLinks', linkId, links, source);
         return (config_1.config.baseUrl +
-            applyPropsToPath(getRoutePath(links[linkId], url_join_1.default).replace(/\/index.html$/g, '') || '/', props));
+            applyPropsToPath(getRoutePath(links[linkId].file, url_join_1.default).replace(/\/index.html$/g, '') || '/', props));
     });
 }
 function injectBundles(source) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { baseUrl } = config_1.config;
         const script = `
-    <script src="${config_1.config.baseUrl}/index.js?${yield getCacheParam('index.js')}" data-turbolinks-suppress-warning></script>
-    <link rel="stylesheet" type="text/css" href="${config_1.config.baseUrl}/index.css?${yield getCacheParam('index.css')}">`;
+    <script src="${baseUrl}/index.js?${yield utils_1.fileToMd5(path_1.join(config_1.paths.distStatic, 'index.js'))}" data-turbolinks-suppress-warning></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/index.css?${yield utils_1.fileToMd5(path_1.join(config_1.paths.distStatic, 'index.css'))}">`;
         return injectScript(source, script);
-    });
-}
-function getCacheParam(filename) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return md5((yield fs_extra_1.readFile(path_1.join(config_1.paths.distStatic, filename))).toString());
     });
 }
 function injectScript(source, script, tag = '</body>') {

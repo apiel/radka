@@ -16,7 +16,7 @@ const chalk_1 = require("chalk");
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
 const lib_1 = require("./lib");
-function compile() {
+function build() {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_extra_1.remove(config_1.paths.distStatic);
         yield fs_extra_1.remove(config_1.config.tmpFolder);
@@ -28,7 +28,7 @@ function compile() {
         yield generatePages_1.generatePages();
     });
 }
-exports.compile = compile;
+exports.build = build;
 function read(file) {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_extra_1.ensureFile(file);
@@ -38,10 +38,10 @@ function read(file) {
 }
 function injectBaseCodeToBundle() {
     return __awaiter(this, void 0, void 0, function* () {
-        const bundleFile = path_1.join(config_1.paths.bundle, 'index.js');
+        const bundleFile = config_1.getBundleFile();
         const codes = [
             lib_1.rkaLoader('r_ka_bundle', yield read(bundleFile)),
-            yield read(path_1.join(config_1.paths.bundle, config_1.RKA_IMPORT_FILE)),
+            yield read(config_1.paths.rkaImport),
             'window.require = require;',
             'require("@babel/polyfill");',
         ];
@@ -57,17 +57,22 @@ function injectBaseCodeToBundle() {
     });
 }
 function copyApiToServer() {
-    return fs_extra_1.copy(path_1.join(config_1.paths.src, config_1.config.apiFolder), path_1.join(config_1.paths.distServer, config_1.config.apiFolder));
+    return fs_extra_1.copy(path_1.join(config_1.paths.src, config_1.config.apiFolder), path_1.join(config_1.paths.distServer, config_1.config.apiFolder), {
+        recursive: true,
+    });
 }
+exports.copyApiToServer = copyApiToServer;
 function runBabel() {
     logol_1.info('Run babel');
     return shell('babel', `${config_1.paths.src} --out-dir ${config_1.config.tmpFolder} --copy-files`.split(' '));
 }
+exports.runBabel = runBabel;
 function runParcel() {
     logol_1.info('Run parcel');
     fs_extra_1.ensureFileSync(path_1.join(config_1.paths.distStatic, 'index.css'));
     return shell('parcel', `build ${path_1.join(config_1.paths.bundle, 'index.js')} --out-dir ${config_1.paths.distStatic}`.split(' '));
 }
+exports.runParcel = runParcel;
 function runIsomor() {
     logol_1.info('Run isomor');
     return shell('isomor-transpiler', [], {
@@ -78,8 +83,10 @@ function runIsomor() {
         ISOMOR_SRC_FOLDER: config_1.config.srcFolder,
         ISOMOR_STATIC_FOLDER: config_1.paths.distStatic,
         ISOMOR_DIST_SERVER_FOLDER: config_1.paths.distServer,
+        ISOMOR_NO_VALIDATION: 'true',
     });
 }
+exports.runIsomor = runIsomor;
 function shell(command, args, env) {
     logol_1.debug('shell', command, args.join(' '));
     return new Promise((resolve) => {

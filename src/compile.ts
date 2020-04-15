@@ -11,7 +11,7 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import { config, paths } from './config';
+import { config, paths, getBundleFile } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 
@@ -39,7 +39,7 @@ async function read(file: string) {
 }
 
 async function injectBaseCodeToBundle() {
-    const bundleFile = join(paths.bundle, 'index.js');
+    const bundleFile = getBundleFile();
 
     const codes = [
         rkaLoader('r_ka_bundle', await read(bundleFile)),

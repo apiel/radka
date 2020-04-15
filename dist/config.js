@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const tmp_1 = require("tmp");
-exports.ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf'];
+exports.DEV = false;
+exports.ASSETS_EXT = ['.png', '.jpg', '.gif', '.otf', '.ttc', '.ttf', '.pdf', '.ico'];
 exports.RKA_IMPORT_FILE = 'r_ka-import.js';
 exports.CONFIG_FILE = 'radka.config';
 exports.ROOT_FOLDER = process.env.ROOT_FOLDER
@@ -28,6 +29,7 @@ exports.paths = {
     pages: '',
     bundle: '',
     assets: '',
+    rkaImport: '',
 };
 initPaths();
 function setConfig(newConfig = {}) {
@@ -37,13 +39,20 @@ function setConfig(newConfig = {}) {
 exports.setConfig = setConfig;
 function initPaths() {
     const distStatic = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
+    const bundle = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);
     exports.paths = {
+        bundle,
         distStatic,
         distServer: path_1.join(exports.ROOT_FOLDER, exports.config.distServerFolder),
         src: path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder),
         pages: path_1.join(exports.config.tmpFolder, exports.config.pagesFolder),
-        bundle: path_1.join(exports.config.tmpFolder, exports.config.bundleFolder),
         assets: path_1.join(distStatic, exports.config.assetsFolder),
+        rkaImport: path_1.join(bundle, exports.RKA_IMPORT_FILE),
     };
 }
+function setDev() {
+    exports.DEV = true;
+}
+exports.setDev = setDev;
+exports.getBundleFile = () => path_1.join(exports.paths.bundle, 'index.js');
 //# sourceMappingURL=config.js.map
