@@ -3,6 +3,7 @@ import { pathExists, copy, remove, writeFile } from 'fs-extra';
 import { watch } from 'chokidar';
 import { join, basename, extname } from 'path';
 import { Server } from 'http';
+import * as md5 from 'md5';
 
 import { setDev, paths, config, getBundleFile } from './config';
 import { build, runIsomor, runBabel, runParcel } from './compile';
@@ -69,13 +70,7 @@ async function handleOtherFile(filePath: string) {
     await buildStatic();
     if (filePath.startsWith(config.pagesFolder)) {
         const pagePaths = await collectPagePaths();
-        // this might be too dangerous, maybe better to just generate all pages
-        const file = join(
-            paths.pages,
-            basename(filePath, extname(filePath)) + '.js',
-        );
-        // need to improve page id with babel, and use md5 of the relative path
-        const pagePath = Object.values(pagePaths).find(p => p.file === file);
+        const pagePath = pagePaths[md5(join(paths.src, filePath))];
         await generatePage(pagePath, pagePaths);
     } else {
         await generatePages();

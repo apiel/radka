@@ -30,8 +30,7 @@ exports.jsx = {
     },
 };
 let linkIdSeq = 0;
-function page(component, propsList) {
-    const linkId = `page-${linkIdSeq++}`;
+function page(component, propsList, linkId = `page-${linkIdSeq++}`) {
     return {
         propsList,
         component,

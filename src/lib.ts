@@ -57,8 +57,7 @@ export interface Page {
 }
 
 // ToDo: need to improve types
-export function page(component: Function, propsList?: PropsList): Page {
-    const linkId = `page-${linkIdSeq++}`;
+export function page(component: Function, propsList?: PropsList, linkId = `page-${linkIdSeq++}`): Page {
     return {
         propsList,
         component,

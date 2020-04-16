@@ -33,7 +33,6 @@ function generatePage({ page, file }, pagePaths) {
     return __awaiter(this, void 0, void 0, function* () {
         const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
         logol_1.log('Load page component', file);
-        global.r_ka_imports = [];
         page.setPaths(config_1.paths);
         if (page.propsList) {
             for (const props of page.propsList) {
@@ -49,11 +48,15 @@ exports.generatePage = generatePage;
 function collectPagePaths() {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield globAsync(path_1.join(config_1.paths.pages, '**', `*${config_1.config.pagesSuffix}.js`));
+        logol_1.log('Pages component founds', files);
         const pagePaths = {};
+        files.forEach((file) => delete require.cache[file]);
+        global.r_ka_imports = [];
         files.forEach((file) => {
             const page = require(file).default;
             pagePaths[page.linkId] = { file, page };
         });
+        console.log('keys', Object.keys(pagePaths));
         return pagePaths;
     });
 }
@@ -100,7 +103,6 @@ function applyPropsToLinks(source, links) {
             const [key, value] = prop.split('=');
             props[key] = value;
         });
-        console.log('applyPropsToLinks', linkId, links, source);
         return (config_1.config.baseUrl +
             applyPropsToPath(getRoutePath(links[linkId].file, url_join_1.default).replace(/\/index.html$/g, '') || '/', props));
     });

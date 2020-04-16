@@ -79,7 +79,8 @@ function handleOtherFile(filePath) {
         if (filePath.startsWith(config_1.config.pagesFolder)) {
             const pagePaths = yield generatePages_1.collectPagePaths();
             const file = path_1.join(config_1.paths.pages, path_1.basename(filePath, path_1.extname(filePath)) + '.js');
-            console.log('revert generatePage');
+            const pagePath = Object.values(pagePaths).find(p => p.file === file);
+            yield generatePages_1.generatePage(pagePath, pagePaths);
         }
         else {
             yield generatePages_1.generatePages();

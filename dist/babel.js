@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 const fs_1 = require("fs");
+const md5 = require("md5");
 const config_1 = require("./config");
 const parser_1 = require("@babel/parser");
 const generator_1 = require("@babel/generator");
@@ -37,6 +38,9 @@ function default_1() {
                         path.remove();
                     }
                 }
+                else if (state.filename.endsWith('.page.jsx')) {
+                    handlePage(path, state);
+                }
             },
             ExportNamedDeclaration(path, state) {
                 if (state.filename.endsWith('.script.js')) {
@@ -49,15 +53,34 @@ function default_1() {
                 }
             },
             CallExpression(path, state) {
-                if (path.node.callee.type === 'Identifier' &&
-                    path.node.callee.name === 'require') {
-                    handleRequire(path, state);
+                if (path.node.callee.type === 'Identifier') {
+                    if (path.node.callee.name === 'require') {
+                        handleRequire(path, state);
+                    }
                 }
             },
         },
     };
 }
 exports.default = default_1;
+function handlePage(path, state) {
+    if (path.node.declaration.type === 'CallExpression' &&
+        path.node.declaration.callee.type === 'Identifier' &&
+        path.node.declaration.callee.name === 'page') {
+        if (path.node.declaration.arguments.length === 1) {
+            path.node.declaration.arguments.push({
+                type: 'Identifier',
+                name: 'undefined',
+            });
+        }
+        if (path.node.declaration.arguments.length === 2) {
+            path.node.declaration.arguments.push({
+                type: 'StringLiteral',
+                value: md5(state.filename),
+            });
+        }
+    }
+}
 function handleRequire(path, state) {
     if (path.node.arguments[0].type !== 'StringLiteral' ||
         lib_1.isAssetFilename(path.node.arguments[0].value)) {

@@ -3,8 +3,9 @@ import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { join, dirname, extname } from 'path';
 import { appendFileSync } from 'fs';
+import * as md5 from 'md5';
 
-import { paths, RKA_IMPORT_FILE } from './config';
+import { paths, RKA_IMPORT_FILE, config } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { isAssetFilename } from './lib';
@@ -46,6 +47,8 @@ export default function () {
                     } else {
                         path.remove();
                     }
+                } else if (state.filename.endsWith('.page.jsx')) {
+                    handlePage(path, state);
                 }
             },
             ExportNamedDeclaration(
@@ -63,15 +66,38 @@ export default function () {
                 }
             },
             CallExpression(path: NodePath<t.CallExpression>, state: any) {
-                if (
-                    path.node.callee.type === 'Identifier' &&
-                    path.node.callee.name === 'require'
-                ) {
-                    handleRequire(path, state);
+                if (path.node.callee.type === 'Identifier') {
+                    if (path.node.callee.name === 'require') {
+                        handleRequire(path, state);
+                        // } else if (path.node.callee.name === 'page' && state.filename.endsWith('.page.jsx')) {
+                        //     // should better use the default export version
+                        //     console.log('page function found', state.filename, JsonAst(path.node));
+                    }
                 }
             },
         },
     };
+}
+
+function handlePage(path: NodePath<t.ExportDefaultDeclaration>, state: any) {
+    if (
+        path.node.declaration.type === 'CallExpression' &&
+        path.node.declaration.callee.type === 'Identifier' &&
+        path.node.declaration.callee.name === 'page'
+    ) {
+        if (path.node.declaration.arguments.length === 1) {
+            path.node.declaration.arguments.push({
+                type: 'Identifier',
+                name: 'undefined',
+            } as t.Identifier);
+        }
+        if (path.node.declaration.arguments.length === 2) {
+            path.node.declaration.arguments.push({
+                type: 'StringLiteral',
+                value: md5(state.filename),
+            } as t.StringLiteral);
+        }
+    }
 }
 
 function handleRequire(path: NodePath<t.CallExpression>, state: any) {
