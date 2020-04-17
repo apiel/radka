@@ -10,8 +10,9 @@ function Item({ id }) {
     );
 }
 
-export default page(Item, [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-]);
+export default page(
+    Item,
+    global.DEV
+        ? [{ id: 1 }, { id: 2 }, { id: 3 }]
+        : [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+);

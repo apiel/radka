@@ -55,6 +55,8 @@ function initPaths() {
 
 export function setDev() {
     DEV = true;
+    // ToDo: set some type for typescript
+    (global as any).DEV = DEV;
 }
 
 export const getBundleFile = () => join(paths.bundle, 'index.js');

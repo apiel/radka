@@ -127,9 +127,3 @@ function triggerClientReload() {
         wsClient.send(msg);
     }
 }
-
-/*
-+ think to a way to limit pages generation on dynamic pages
-
-- need to reload page automatically
-*/

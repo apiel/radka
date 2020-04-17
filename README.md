@@ -40,6 +40,8 @@ npx radka
 
 This will create a new `site` folder containing the generated html files.
 
+You can use `npx radka server` to run a server for your site.
+
 Let's create another page but with dynamic content. Create a file `src/pages/pet/[type].page.jsx`:
 
 ```jsx
@@ -251,6 +253,36 @@ function Main() {
 }
 
 export default page(Main);
+```
+
+## Hot reloading
+
+In development mode, it might be useful to reload automatically page while you are updating the source code. To do this, you can use hot reloading:
+
+```
+npx radka dev
+```
+
+This will watch files and automatically rebuild when a change is detected. It will also run a server, so you can access your pages without to setup your own environment. Everything should be ready out of the box for dev purpose.
+
+By default, RADKA.js doesn't rebuild the whole site when dev mode start. But you can force it, by adding the parameter `--rebuild`.
+
+> Hot reloading is still work in progress and not very simple, right now it is quiet slow. We still need to find some way to run properly Parcel in dev mode and to improve the babel transpiling. Of course, some help would be really welcome on this topic.
+
+In some previous example, we have been speak about pages with dynamic content. For those use-case it might important to only load a fragment of data in dev mode, instead to load the full dataset. To solve this, there a global variable available to know if we are in dev mode `global.DEV`:
+
+```jsx
+//...
+function Pet({ type, description }) {
+    return (
+        <div>
+            <h1>Pet {type}</h1>
+            <p>{description}</p>
+        </div>
+    );
+}
+
+export default page(Pet, getMyPetsFromDb(global.DEV && { limit: 3}));
 ```
 
 ## Preloading pages
