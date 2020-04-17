@@ -11,9 +11,10 @@ import {
 import { info, debug } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
-import { config, paths, getBundleFile } from './config';
+import { config, paths, getBundleFile, DEV } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
+import { injectHotReloadToBundle } from './dev';
 
 export async function build() {
     // ToDo: is it good idea to remove distStaticPath? site folder might not only contain generated file?
@@ -47,6 +48,10 @@ async function injectBaseCodeToBundle() {
         'window.require = require;',
         'require("@babel/polyfill");',
     ];
+    if (DEV) {
+        // we should move this in dev, by injecting in the page while serving
+        codes.push(injectHotReloadToBundle());
+    }
     if (config.turbolinks === 'true') {
         codes.push(
             'if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};',

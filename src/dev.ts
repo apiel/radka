@@ -1,8 +1,11 @@
 import { info } from 'logol';
-import { pathExists, copy, remove, writeFile } from 'fs-extra';
+import { pathExists, copy, remove } from 'fs-extra';
 import { watch } from 'chokidar';
-import { join, basename, extname } from 'path';
+import { join } from 'path';
 import { Server } from 'http';
+import { isomorWsEvent } from 'isomor-server';
+import { WsServerAction } from 'isomor';
+import * as WebSocket from 'ws';
 import * as md5 from 'md5';
 
 import { setDev, paths, config, getBundleFile } from './config';
@@ -64,6 +67,7 @@ async function handleFile(filePath: string) {
     } else {
         await handleOtherFile(filePath);
     }
+    triggerClientReload();
 }
 
 async function handleOtherFile(filePath: string) {
@@ -92,19 +96,36 @@ async function buildStatic(forceParcel = false) {
     await remove(config.tmpFolder);
     await runBabel();
     if (forceParcel || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
-        // ToDo: fix, might be missing the first time
-        // await injectHotReloadToBundle();
         // After having some issue with `parcel serve` (build loop forever)
         // let just rebuild everything till with find a solution
         await runParcel();
     }
 }
 
-function injectHotReloadToBundle() {
-    const code = `const { subscribe } = require("isomor");
-    console.log('sub to hot reload');
-    subscribe((payload) => payload === "r_ka_reload" && location.reload());`;
-    return writeFile(getBundleFile(), rkaLoader('r_ka_reload', code));
+export function injectHotReloadToBundle() {
+    // ToDo: get url from config?
+    const code = `const { subscribe, openWS } = require("isomor");
+    subscribe((payload) => payload === "r_ka_reload" && location.reload());
+    openWS("ws://127.0.0.1:3005");`;
+    // return writeFile(getBundleFile(), rkaLoader('r_ka_reload', code));
+
+    return rkaLoader('r_ka_reload', code);
+}
+
+// right now we support only one instance at once for hot reload
+// to support multiple, we would have to create an array of open connection
+let wsClient: WebSocket;
+isomorWsEvent.on('connection', (ws) => {
+    wsClient = ws;
+    // we should think to set wsClient to null when connect got close
+});
+function triggerClientReload() {
+    if (wsClient) {
+        // ToDo: use wsSend from isomor, need to export first
+        // WsServerAction.PUSH
+        const msg = JSON.stringify({ action: WsServerAction.PUSH, id: 'HR', payload: 'r_ka_reload' });
+        wsClient.send(msg);
+    }
 }
 
 /*
