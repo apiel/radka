@@ -16,6 +16,7 @@ const chalk_1 = require("chalk");
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
 const lib_1 = require("./lib");
+const dev_1 = require("./dev");
 function build() {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_extra_1.remove(config_1.paths.distStatic);
@@ -45,6 +46,9 @@ function injectBaseCodeToBundle() {
             'window.require = require;',
             'require("@babel/polyfill");',
         ];
+        if (config_1.DEV) {
+            codes.push(dev_1.injectHotReloadToBundle());
+        }
         if (config_1.config.turbolinks === 'true') {
             codes.push('if(!window.tb_link){require("turbolinks").start();window.tb_link=1;};');
             codes.push('if (window.r_ka_last !== window.location.href) { window.r_ka_last=window.location.href; Object.keys(window.r_ka || {}).forEach(function(k) { window.r_ka[k](); }); };');

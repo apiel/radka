@@ -56,7 +56,6 @@ function collectPagePaths() {
             const page = require(file).default;
             pagePaths[page.linkId] = { file, page };
         });
-        console.log('keys', Object.keys(pagePaths));
         return pagePaths;
     });
 }

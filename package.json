@@ -1,6 +1,6 @@
 {
   "name": "radka",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "bin": "dist/index.js",
   "main": "dist/lib.js",

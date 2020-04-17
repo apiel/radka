@@ -52,6 +52,7 @@ function initPaths() {
 }
 function setDev() {
     exports.DEV = true;
+    global.DEV = exports.DEV;
 }
 exports.setDev = setDev;
 exports.getBundleFile = () => path_1.join(exports.paths.bundle, 'index.js');

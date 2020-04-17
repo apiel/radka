@@ -12,6 +12,9 @@ const logol_1 = require("logol");
 const fs_extra_1 = require("fs-extra");
 const chokidar_1 = require("chokidar");
 const path_1 = require("path");
+const isomor_server_1 = require("isomor-server");
+const isomor_1 = require("isomor");
+const md5 = require("md5");
 const config_1 = require("./config");
 const compile_1 = require("./compile");
 const utils_1 = require("./utils");
@@ -71,6 +74,7 @@ function handleFile(filePath) {
         else {
             yield handleOtherFile(filePath);
         }
+        triggerClientReload();
     });
 }
 function handleOtherFile(filePath) {
@@ -78,8 +82,7 @@ function handleOtherFile(filePath) {
         yield buildStatic();
         if (filePath.startsWith(config_1.config.pagesFolder)) {
             const pagePaths = yield generatePages_1.collectPagePaths();
-            const file = path_1.join(config_1.paths.pages, path_1.basename(filePath, path_1.extname(filePath)) + '.js');
-            const pagePath = Object.values(pagePaths).find(p => p.file === file);
+            const pagePath = pagePaths[md5(path_1.join(config_1.paths.src, filePath))];
             yield generatePages_1.generatePage(pagePath, pagePaths);
         }
         else {
@@ -108,9 +111,20 @@ function buildStatic(forceParcel = false) {
     });
 }
 function injectHotReloadToBundle() {
-    const code = `const { subscribe } = require("isomor");
-    console.log('sub to hot reload');
-    subscribe((payload) => payload === "r_ka_reload" && location.reload());`;
-    return fs_extra_1.writeFile(config_1.getBundleFile(), lib_1.rkaLoader('r_ka_reload', code));
+    const code = `const { subscribe, openWS } = require("isomor");
+    subscribe((payload) => payload === "r_ka_reload" && location.reload());
+    openWS("ws://127.0.0.1:3005");`;
+    return lib_1.rkaLoader('r_ka_reload', code);
+}
+exports.injectHotReloadToBundle = injectHotReloadToBundle;
+let wsClient;
+isomor_server_1.isomorWsEvent.on('connection', (ws) => {
+    wsClient = ws;
+});
+function triggerClientReload() {
+    if (wsClient) {
+        const msg = JSON.stringify({ action: isomor_1.WsServerAction.PUSH, id: 'HR', payload: 'r_ka_reload' });
+        wsClient.send(msg);
+    }
 }
 //# sourceMappingURL=dev.js.map
