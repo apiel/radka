@@ -1,9 +1,11 @@
+- update isomor
+
 - typescript
 
 - use config in babel file
 
-- stop using pragmatic since issues are not solved
-    -> create a copy called jsx-renderer
+- ~~stop using pragmatic since issues are not solved~~
+    -> PR has been merged so we can now use pragmatic
 
 - deploy: zeit (server function), heroku, netlify, aws?
 
