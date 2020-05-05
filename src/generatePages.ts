@@ -1,8 +1,6 @@
 import { log } from 'logol';
 import { promisify } from 'util';
-// ToDo: we could keep using the default jsx-pragmatic html since we dont customize
-// import { html } from 'jsx-pragmatic';
-import { html } from './html';
+import { html } from 'jsx-pragmatic';
 import { join, basename, extname, dirname } from 'path';
 import * as glob from 'glob';
 import { ensureFile, outputFile, readFile } from 'fs-extra';
@@ -10,7 +8,6 @@ import urlJoin from 'url-join';
 
 import { paths, config } from './config';
 import { Page, Props, rkaLoader } from './lib';
-import { transform } from './transform';
 import { fileToMd5 } from './utils';
 
 const globAsync = promisify(glob);
@@ -90,7 +87,7 @@ async function saveComponentToHtml(
     props?: Props,
 ) {
     log('Generate page', htmlPath);
-    let source = page.component(props).render(html({ transform }));
+    let source = page.component(props).render(html());
     source = applyPropsToLinks(source, links);
     // console.log('r_ka_imports', (global as any).r_ka_imports);
     source = await appendImportToSource(source, '.js', 'script');
