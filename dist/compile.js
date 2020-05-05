@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -80,14 +81,10 @@ exports.runParcel = runParcel;
 function runIsomor() {
     logol_1.info('Run isomor');
     return shell('isomor-transpiler', [], {
-        ISOMOR_DIST_APP_FOLDER: config_1.config.tmpFolder,
-        ISOMOR_NO_TYPES: 'true',
-        ISOMOR_SKIP_COPY_SRC: 'true',
-        ISOMOR_SERVER_FOLDER: config_1.config.apiFolder,
-        ISOMOR_SRC_FOLDER: config_1.config.srcFolder,
+        ISOMOR_MODULE_FOLDER: path_1.join(config_1.config.tmpFolder, config_1.config.apiFolder),
+        ISOMOR_SRC_FOLDER: path_1.join(config_1.config.srcFolder, config_1.config.apiFolder),
         ISOMOR_STATIC_FOLDER: config_1.paths.distStatic,
-        ISOMOR_DIST_SERVER_FOLDER: config_1.paths.distServer,
-        ISOMOR_NO_VALIDATION: 'true',
+        ISOMOR_SERVER_FOLDER: config_1.paths.distServer,
     });
 }
 exports.runIsomor = runIsomor;
@@ -95,7 +92,7 @@ function shell(command, args, env) {
     logol_1.debug('shell', command, args.join(' '));
     return new Promise((resolve) => {
         const cmd = spawn(command, args, {
-            env: Object.assign({ COLUMNS: process.env.COLUMNS || process.stdout.columns.toString(), LINES: process.env.LINES || process.stdout.rows.toString(), TEMP_FOLDER: config_1.config.tmpFolder }, env, process.env),
+            env: Object.assign(Object.assign({ COLUMNS: process.env.COLUMNS || process.stdout.columns.toString(), LINES: process.env.LINES || process.stdout.rows.toString(), TEMP_FOLDER: config_1.config.tmpFolder }, env), process.env),
         });
         cmd.stdout.on('data', (data) => {
             process.stdout.write(chalk_1.gray(data.toString()));

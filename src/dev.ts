@@ -8,7 +8,7 @@ import { WsServerAction } from 'isomor';
 import * as WebSocket from 'ws';
 import * as md5 from 'md5';
 
-import { setDev, paths, config, getBundleFile } from './config';
+import { setDev, paths, config } from './config';
 import { build, runIsomor, runBabel, runParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
 import { generatePages, generatePage, collectPagePaths } from './generatePages';

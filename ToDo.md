@@ -1,5 +1,7 @@
 - update isomor
 
+- if api folder empty then problem...
+
 - typescript
 
 - use config in babel file

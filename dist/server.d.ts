@@ -1,5 +1,5 @@
 /// <reference types="node" />
 export declare function server(skipTimeout?: boolean): Promise<{
-    app: import("express").Express;
+    app: any;
     server: import("http").Server;
 }>;

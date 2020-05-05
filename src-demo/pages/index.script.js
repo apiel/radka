@@ -1,8 +1,11 @@
 import { info } from 'logol';
 import { error } from 'logol';
 
-import { getUptime } from '../api/uptime';
-import { getCounter } from '../api/counter';
+import getUptime from '../api/uptime';
+import getCounter from '../api/counter';
+
+// import getUptime from 'api/uptime';
+// import getCounter from 'api/counter';
 
 console.log('load index.script.js');
 

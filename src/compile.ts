@@ -105,14 +105,10 @@ export function runIsomor() {
     info('Run isomor');
 
     return shell('isomor-transpiler', [], {
-        ISOMOR_DIST_APP_FOLDER: config.tmpFolder,
-        ISOMOR_NO_TYPES: 'true',
-        ISOMOR_SKIP_COPY_SRC: 'true',
-        ISOMOR_SERVER_FOLDER: config.apiFolder,
-        ISOMOR_SRC_FOLDER: config.srcFolder,
+        ISOMOR_MODULE_FOLDER: join(config.tmpFolder, config.apiFolder),
+        ISOMOR_SRC_FOLDER: join(config.srcFolder, config.apiFolder),
         ISOMOR_STATIC_FOLDER: paths.distStatic,
-        ISOMOR_DIST_SERVER_FOLDER: paths.distServer,
-        ISOMOR_NO_VALIDATION: 'true',
+        ISOMOR_SERVER_FOLDER: paths.distServer,
     });
 }
 

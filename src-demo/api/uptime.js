@@ -1,3 +1,3 @@
-export async function getUptime() {
+export default async function () {
     return { uptime: process.uptime() };
 }

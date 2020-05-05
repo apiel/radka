@@ -1,5 +1,5 @@
 let count = 0;
 
-export async function getCounter() {
+export default async function () {
     return count++;
 }

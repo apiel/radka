@@ -33,7 +33,7 @@ exports.paths = {
 };
 initPaths();
 function setConfig(newConfig = {}) {
-    exports.config = Object.assign({}, exports.config, newConfig);
+    exports.config = Object.assign(Object.assign({}, exports.config), newConfig);
     initPaths();
 }
 exports.setConfig = setConfig;
