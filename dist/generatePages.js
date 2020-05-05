@@ -10,14 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const logol_1 = require("logol");
 const util_1 = require("util");
-const html_1 = require("./html");
+const jsx_pragmatic_1 = require("jsx-pragmatic");
 const path_1 = require("path");
 const glob = require("glob");
 const fs_extra_1 = require("fs-extra");
 const url_join_1 = require("url-join");
 const config_1 = require("./config");
 const lib_1 = require("./lib");
-const transform_1 = require("./transform");
 const utils_1 = require("./utils");
 const globAsync = util_1.promisify(glob);
 function generatePages() {
@@ -74,7 +73,7 @@ function applyPropsToPath(path, props) {
 function saveComponentToHtml(page, htmlPath, links, props) {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.log('Generate page', htmlPath);
-        let source = page.component(props).render(html_1.html({ transform: transform_1.transform }));
+        let source = page.component(props).render(jsx_pragmatic_1.html());
         source = applyPropsToLinks(source, links);
         source = yield appendImportToSource(source, '.js', 'script');
         source = yield appendImportToSource(source, '.css', 'style');
