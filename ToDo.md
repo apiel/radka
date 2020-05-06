@@ -1,5 +1,3 @@
-- update isomor
-
 - if api folder empty then problem...
 
 - typescript

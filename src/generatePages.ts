@@ -48,7 +48,7 @@ type PagePaths = { [pathId: string]: PagePath };
 
 export async function collectPagePaths(): Promise<PagePaths> {
     const files = await globAsync(
-        join(paths.pages, '**', `*${config.pagesSuffix}.js`),
+        join(paths.tmpPages, '**', `*${config.pagesSuffix}.js`),
     );
     log('Pages component founds', files);
     const pagePaths = {};
@@ -65,11 +65,13 @@ export async function collectPagePaths(): Promise<PagePaths> {
 
 function getRoutePath(file: string, glue = join) {
     const filename = basename(file, `${config.pagesSuffix}${extname(file)}`);
-    return glue(
+    const path = glue(
         dirname(file),
         filename === 'index' ? '' : filename,
         'index.html',
-    ).substr(paths.pages.length);
+    ).substr(paths.tmpPages.length);
+
+    return path;
 }
 
 function applyPropsToPath(path: string, props: Props) {
@@ -104,7 +106,7 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
             .filter((path: string) => path.endsWith(ext))
             .map((path: string) =>
                 readFile(
-                    join(config.tmpFolder, path.substr(paths.pages.length)),
+                    join(config.tmpFolder, path.substr(paths.src.length)),
                 ),
             ),
     );

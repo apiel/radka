@@ -27,7 +27,8 @@ export let paths = {
     distStatic: '',
     distServer: '',
     src: '',
-    pages: '',
+    tmpPages: '',
+    srcPages: '',
     bundle: '',
     assets: '',
     rkaImport: '',
@@ -42,12 +43,14 @@ export function setConfig(newConfig = {}) {
 function initPaths() {
     const distStatic = join(ROOT_FOLDER, config.distStaticFolder);
     const bundle = join(config.tmpFolder, config.bundleFolder);
+    const src = join(ROOT_FOLDER, config.srcFolder);
     paths = {
         bundle,
         distStatic,
+        src,
         distServer: join(ROOT_FOLDER, config.distServerFolder),
-        src: join(ROOT_FOLDER, config.srcFolder),
-        pages: join(config.tmpFolder, config.pagesFolder),
+        tmpPages: join(config.tmpFolder, config.pagesFolder),
+        srcPages: join(src, config.pagesFolder),
         assets: join(distStatic, config.assetsFolder),
         rkaImport: join(bundle, RKA_IMPORT_FILE),
     };

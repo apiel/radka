@@ -20,7 +20,8 @@ export declare let paths: {
     distStatic: string;
     distServer: string;
     src: string;
-    pages: string;
+    tmpPages: string;
+    srcPages: string;
     bundle: string;
     assets: string;
     rkaImport: string;

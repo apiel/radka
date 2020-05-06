@@ -47,7 +47,7 @@ function generatePage({ page, file }, pagePaths) {
 exports.generatePage = generatePage;
 function collectPagePaths() {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield globAsync(path_1.join(config_1.paths.pages, '**', `*${config_1.config.pagesSuffix}.js`));
+        const files = yield globAsync(path_1.join(config_1.paths.tmpPages, '**', `*${config_1.config.pagesSuffix}.js`));
         logol_1.log('Pages component founds', files);
         const pagePaths = {};
         files.forEach((file) => delete require.cache[file]);
@@ -62,7 +62,8 @@ function collectPagePaths() {
 exports.collectPagePaths = collectPagePaths;
 function getRoutePath(file, glue = path_1.join) {
     const filename = path_1.basename(file, `${config_1.config.pagesSuffix}${path_1.extname(file)}`);
-    return glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.paths.pages.length);
+    const path = glue(path_1.dirname(file), filename === 'index' ? '' : filename, 'index.html').substr(config_1.paths.tmpPages.length);
+    return path;
 }
 function applyPropsToPath(path, props) {
     let pathWithProps = path;
@@ -87,7 +88,7 @@ function appendImportToSource(source, ext, tag) {
     return __awaiter(this, void 0, void 0, function* () {
         const imports = yield Promise.all(global.r_ka_imports
             .filter((path) => path.endsWith(ext))
-            .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.paths.pages.length)))));
+            .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.paths.src.length)))));
         let code = imports.map((s) => s.toString()).join();
         if (ext === '.js') {
             code = lib_1.rkaLoader('r_ka_imports', code);
