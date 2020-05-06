@@ -24,8 +24,10 @@ function build() {
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         yield runBabel();
         yield injectBaseCodeToBundle();
-        yield copyApiToServer();
-        yield runIsomor();
+        if (yield fs_extra_1.pathExists(config_1.paths.srcApi)) {
+            yield copyApiToServer();
+            yield runIsomor();
+        }
         yield runParcel();
         yield generatePages_1.generatePages();
     });
@@ -62,7 +64,7 @@ function injectBaseCodeToBundle() {
     });
 }
 function copyApiToServer() {
-    return fs_extra_1.copy(path_1.join(config_1.paths.src, config_1.config.apiFolder), path_1.join(config_1.paths.distServer, config_1.config.apiFolder), {
+    return fs_extra_1.copy(config_1.paths.srcApi, config_1.paths.distServerApi, {
         recursive: true,
     });
 }
@@ -73,9 +75,11 @@ function runBabel() {
 }
 exports.runBabel = runBabel;
 function runParcel() {
-    logol_1.info('Run parcel');
-    fs_extra_1.ensureFileSync(path_1.join(config_1.paths.distStatic, 'index.css'));
-    return shell('parcel', `build ${path_1.join(config_1.paths.bundle, 'index.js')} --out-dir ${config_1.paths.distStatic}`.split(' '));
+    return __awaiter(this, void 0, void 0, function* () {
+        logol_1.info('Run parcel');
+        yield fs_extra_1.ensureFile(path_1.join(config_1.paths.distStatic, 'index.css'));
+        return shell('parcel', `build ${path_1.join(config_1.paths.bundle, 'index.js')} --out-dir ${config_1.paths.distStatic}`.split(' '));
+    });
 }
 exports.runParcel = runParcel;
 function runIsomor() {
@@ -106,7 +110,12 @@ function shell(command, args, env) {
                 process.stdout.write(chalk_1.red(data.toString()));
             }
         });
-        cmd.on('close', (code) => (code ? process.exit(code) : resolve()));
+        cmd.on('close', (code) => {
+            if (code > 0) {
+                logol_1.error('Watch out, shell command returned an error.');
+            }
+            resolve(code);
+        });
     });
 }
 //# sourceMappingURL=compile.js.map

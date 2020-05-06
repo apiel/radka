@@ -2,13 +2,13 @@ import * as spawn from 'cross-spawn';
 import { join } from 'path';
 import {
     remove,
-    ensureFileSync,
     copy,
     readFile,
     writeFile,
     ensureFile,
+    pathExists,
 } from 'fs-extra';
-import { info, debug } from 'logol';
+import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
 
 import { config, paths, getBundleFile, DEV } from './config';
@@ -25,9 +25,11 @@ export async function build() {
 
     await injectBaseCodeToBundle();
 
-    await copyApiToServer();
+    if (await pathExists(paths.srcApi)) {
+        await copyApiToServer();
+        await runIsomor();
+    }
 
-    await runIsomor();
     await runParcel();
 
     await generatePages();
@@ -69,13 +71,9 @@ async function injectBaseCodeToBundle() {
 }
 
 export function copyApiToServer() {
-    return copy(
-        join(paths.src, config.apiFolder),
-        join(paths.distServer, config.apiFolder),
-        {
-            recursive: true,
-        },
-    );
+    return copy(paths.srcApi, paths.distServerApi, {
+        recursive: true,
+    });
 }
 
 export function runBabel() {
@@ -86,12 +84,12 @@ export function runBabel() {
     );
 }
 
-export function runParcel() {
+export async function runParcel() {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
-    ensureFileSync(join(paths.distStatic, 'index.css'));
+    await ensureFile(join(paths.distStatic, 'index.css'));
 
     return shell(
         'parcel',
@@ -118,7 +116,7 @@ function shell(
     env?: NodeJS.ProcessEnv,
 ) {
     debug('shell', command, args.join(' '));
-    return new Promise((resolve) => {
+    return new Promise<number>((resolve) => {
         const cmd = spawn(command, args, {
             env: {
                 COLUMNS:
@@ -140,6 +138,12 @@ function shell(
                 process.stdout.write(red(data.toString()));
             }
         });
-        cmd.on('close', (code) => (code ? process.exit(code) : resolve()));
+        // cmd.on('close', (code) => (code ? process.exit(code) : resolve()));
+        cmd.on('close', (code) => {
+            if (code > 0) {
+                error('Watch out, shell command returned an error.');
+            }
+            resolve(code);
+        });
     });
 }

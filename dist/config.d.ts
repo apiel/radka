@@ -19,9 +19,11 @@ export declare let config: {
 export declare let paths: {
     distStatic: string;
     distServer: string;
+    distServerApi: string;
     src: string;
     tmpPages: string;
     srcPages: string;
+    srcApi: string;
     bundle: string;
     assets: string;
     rkaImport: string;
