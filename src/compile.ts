@@ -10,6 +10,7 @@ import {
 } from 'fs-extra';
 import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
+import * as ParcelBundler from 'parcel-bundler';
 
 import { config, paths, getBundleFile, DEV } from './config';
 import { generatePages } from './generatePages';
@@ -80,7 +81,9 @@ export function runBabel() {
     info('Run babel');
     return shell(
         'babel',
-        `${paths.src} --out-dir ${config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(' '),
+        `${paths.src} --out-dir ${config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(
+            ' ',
+        ),
     );
 }
 
@@ -91,12 +94,12 @@ export async function runParcel() {
     // (in one way, shouldnt CSS always exist)
     await ensureFile(join(paths.distStatic, 'index.css'));
 
-    return shell(
-        'parcel',
-        `build ${join(paths.bundle, 'index.js')} --out-dir ${
-            paths.distStatic
-        }`.split(' '),
-    );
+    const bundler = new ParcelBundler(join(paths.bundle, 'index.js'), {
+        outDir: paths.distStatic,
+        watch: false,
+        hmr: false,
+    });
+    await bundler.bundle();
 }
 
 export function runIsomor() {
