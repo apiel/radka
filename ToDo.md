@@ -1,4 +1,4 @@
-- typescript
+- typescript, see about tsconfig in dev project to fix linting issues
 
 - try to use something else than Parcel, dev mode doesnt work well
     + or maybe https://parceljs.org/api.html
