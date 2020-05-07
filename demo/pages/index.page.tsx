@@ -21,10 +21,10 @@ function Home() {
             <a href={Item.link({ id: 3 })}>link</a>
             <a href={Item.link({ id: 2 })}>link</a>
             <p id="counter">none</p>
-            <img src={require('../assets/radkajs.png')} alt=""/>
-            <img src={require('..' + '/' + 'assets' + '/' + 'radkajs.png')} alt=""/>
-            <img src={require(myTestAssetFolder + 'radkajs.png')} alt=""/>
-            <img src={require(join('..', '/', 'assets', '/', 'radkajs.png'))} alt=""/>
+            <img src={require('../assets/radka.jpg')} alt=""/>
+            <img src={require('..' + '/' + 'assets' + '/' + 'radka.jpg')} alt=""/>
+            <img src={require(myTestAssetFolder + 'radka.jpg')} alt=""/>
+            <img src={require(join('..', '/', 'assets', '/', 'radka.jpg'))} alt=""/>
         </section>
     );
 }
