@@ -26,9 +26,8 @@
     "start": "ts-node src/index.ts",
     "httpd": "http-server ./site/static",
     "build": "rm -rf dist/ && tsc -p tsconfig.json && chmod +x dist/index.js",
-    "build-babel": "babel src-demo --out-dir tmp",
-    "build-babel-server": "babel src-demo/api --out-dir site/server/api --config-file ./.babelrc.server.json",
-    "build-isomor": "ISOMOR_DIST_APP_FOLDER=tmp isomor-transpiler"
+    "test-babel": "babel --copy-files --extensions '.ts,.tsx,.js,.jsx' /home/alex/dev/node/pkg/radka/demo --out-dir /home/alex/dev/node/pkg/radka/tmp",
+    "babel": "babel --copy-files --extensions '.ts,.tsx,.js,.jsx'"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",
@@ -40,6 +39,7 @@
     "@babel/plugin-transform-react-jsx": "^7.9.4",
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.9.0",
     "babel-preset-minify": "^0.5.1",
     "chalk": "^4.0.0",
     "chokidar": "^3.4.0",

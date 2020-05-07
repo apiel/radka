@@ -71,7 +71,7 @@ function copyApiToServer() {
 exports.copyApiToServer = copyApiToServer;
 function runBabel() {
     logol_1.info('Run babel');
-    return shell('babel', `${config_1.paths.src} --out-dir ${config_1.config.tmpFolder} --copy-files`.split(' '));
+    return shell('babel', `${config_1.paths.src} --out-dir ${config_1.config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(' '));
 }
 exports.runBabel = runBabel;
 function runParcel() {
@@ -96,6 +96,7 @@ function shell(command, args, env) {
     logol_1.debug('shell', command, args.join(' '));
     return new Promise((resolve) => {
         const cmd = spawn(command, args, {
+            cwd: process.cwd(),
             env: Object.assign(Object.assign({ COLUMNS: process.env.COLUMNS || process.stdout.columns.toString(), LINES: process.env.LINES || process.stdout.rows.toString(), TEMP_FOLDER: config_1.config.tmpFolder }, env), process.env),
         });
         cmd.stdout.on('data', (data) => {

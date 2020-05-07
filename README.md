@@ -74,7 +74,7 @@ We can add a link to the homepage:
 
 ```jsx
 import { jsx, page } from 'radka';
-import Main from '../index.page.jsx';
+import Main from '../index.page';
 
 function Pet({ type, description }) {
    return (
@@ -106,7 +106,8 @@ To inject this script in the index page, you have 2 options, either import the s
 ```jsx
 import { jsx, page, Import } from 'radka';
 
-// either use this method or the Import tag
+// either use this method or the <Import /> tag
+// when using this method, it's important to don't had the extension to the import '.js' or '.ts'
 // import './index.script';
 
 function Main() {
@@ -121,6 +122,8 @@ function Main() {
 
 export default page(Main);
 ```
+
+> **Note:** when importing a js or a ts file with the `import` method, don't use the extension `.js` or `.ts` in the path, e.g.: `import './index.script';`
 
 Instead of injecting the code directly in the page, you might want to have a shared javascript file between all pages. For this you can create a bundle. Create a new file `src/bundle/index.js`:
 

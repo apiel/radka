@@ -1,5 +1,9 @@
 {
-    "presets": ["@babel/preset-env", "minify"],
+    "presets": [
+        ["@babel/preset-typescript", { "onlyRemoveTypeImports": true }],
+        "@babel/preset-env",
+        "minify"
+    ],
     "plugins": [
         "./dist/babel",
         "@babel/plugin-transform-modules-commonjs",

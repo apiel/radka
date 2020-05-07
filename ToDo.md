@@ -1,11 +1,9 @@
-- if api folder empty then problem...
-
 - typescript
 
-- use config in babel file
+- try to use something else than Parcel, dev mode doesnt work well
+    + or maybe https://parceljs.org/api.html
 
-- ~~stop using pragmatic since issues are not solved~~
-    -> PR has been merged so we can now use pragmatic
+- use config in babel file
 
 - deploy: zeit (server function), heroku, netlify, aws?
 

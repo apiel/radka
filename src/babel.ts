@@ -1,11 +1,11 @@
 import { ensureFileSync } from 'fs-extra';
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { join, dirname, extname } from 'path';
+import { join, dirname } from 'path';
 import { appendFileSync } from 'fs';
 import * as md5 from 'md5';
 
-import { paths, RKA_IMPORT_FILE, config } from './config';
+import { paths, RKA_IMPORT_FILE } from './config';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { isAssetFilename } from './lib';
@@ -17,20 +17,16 @@ export default function () {
         // post: () => console.log('post'),
         visitor: {
             ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: any) {
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     addImportToBundle(path);
                     // ToDo: how to handle local import ./something // path.remove(); ?
                 } else if (
-                    state.filename.endsWith(`.jsx`) &&
+                    isJsxFile(state.filename) &&
                     !path.node.specifiers.length
                 ) {
-                    if (
-                        path.node.source.value.endsWith('.script') ||
-                        path.node.source.value.endsWith('.script.js')
-                    ) {
+                    if (path.node.source.value.endsWith('.script')) {
                         let importPath = path.node.source.value;
-                        const ext = extname(importPath) === '.js' ? '' : '.js';
-                        pushImportFile(path, state, `${importPath}${ext}`);
+                        pushImportFile(path, state, `${importPath}.js`);
                     } else if (path.node.source.value.endsWith('.css')) {
                         let importPath = path.node.source.value;
                         pushImportFile(path, state, importPath);
@@ -41,13 +37,13 @@ export default function () {
                 path: NodePath<t.ExportDefaultDeclaration>,
                 state: any,
             ) {
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     if (path.node.declaration) {
                         path.replaceWith(path.node.declaration);
                     } else {
                         path.remove();
                     }
-                } else if (state.filename.endsWith('.page.jsx')) {
+                } else if (isPageFile(state.filename)) {
                     handlePage(path, state);
                 }
             },
@@ -57,7 +53,7 @@ export default function () {
             ) {
                 // !path.node.declaration &&
                 //     console.log('ExportNamedDeclaration', JsonAst(path.node));
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     if (path.node.declaration) {
                         path.replaceWith(path.node.declaration);
                     } else {
@@ -77,6 +73,18 @@ export default function () {
             },
         },
     };
+}
+
+function isScriptFile(filename: string) {
+    return filename.endsWith('.script.js') || filename.endsWith('.script.ts');
+}
+
+function isPageFile(filename: string) {
+    return filename.endsWith('.page.jsx') || filename.endsWith('.page.tsx');
+}
+
+function isJsxFile(filename: string) {
+    return filename.endsWith('.jsx') || filename.endsWith('.tsx');
 }
 
 function handlePage(path: NodePath<t.ExportDefaultDeclaration>, state: any) {

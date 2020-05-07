@@ -12,16 +12,14 @@ function default_1() {
     return {
         visitor: {
             ImportDeclaration(path, state) {
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     addImportToBundle(path);
                 }
-                else if (state.filename.endsWith(`.jsx`) &&
+                else if (isJsxFile(state.filename) &&
                     !path.node.specifiers.length) {
-                    if (path.node.source.value.endsWith('.script') ||
-                        path.node.source.value.endsWith('.script.js')) {
+                    if (path.node.source.value.endsWith('.script')) {
                         let importPath = path.node.source.value;
-                        const ext = path_1.extname(importPath) === '.js' ? '' : '.js';
-                        pushImportFile(path, state, `${importPath}${ext}`);
+                        pushImportFile(path, state, `${importPath}.js`);
                     }
                     else if (path.node.source.value.endsWith('.css')) {
                         let importPath = path.node.source.value;
@@ -30,7 +28,7 @@ function default_1() {
                 }
             },
             ExportDefaultDeclaration(path, state) {
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     if (path.node.declaration) {
                         path.replaceWith(path.node.declaration);
                     }
@@ -38,12 +36,12 @@ function default_1() {
                         path.remove();
                     }
                 }
-                else if (state.filename.endsWith('.page.jsx')) {
+                else if (isPageFile(state.filename)) {
                     handlePage(path, state);
                 }
             },
             ExportNamedDeclaration(path, state) {
-                if (state.filename.endsWith('.script.js')) {
+                if (isScriptFile(state.filename)) {
                     if (path.node.declaration) {
                         path.replaceWith(path.node.declaration);
                     }
@@ -63,6 +61,15 @@ function default_1() {
     };
 }
 exports.default = default_1;
+function isScriptFile(filename) {
+    return filename.endsWith('.script.js') || filename.endsWith('.script.ts');
+}
+function isPageFile(filename) {
+    return filename.endsWith('.page.jsx') || filename.endsWith('.page.tsx');
+}
+function isJsxFile(filename) {
+    return filename.endsWith('.jsx') || filename.endsWith('.tsx');
+}
 function handlePage(path, state) {
     if (path.node.declaration.type === 'CallExpression' &&
         path.node.declaration.callee.type === 'Identifier' &&

@@ -80,7 +80,7 @@ export function runBabel() {
     info('Run babel');
     return shell(
         'babel',
-        `${paths.src} --out-dir ${config.tmpFolder} --copy-files`.split(' '),
+        `${paths.src} --out-dir ${config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(' '),
     );
 }
 
@@ -118,6 +118,7 @@ function shell(
     debug('shell', command, args.join(' '));
     return new Promise<number>((resolve) => {
         const cmd = spawn(command, args, {
+            cwd: process.cwd(),
             env: {
                 COLUMNS:
                     process.env.COLUMNS || process.stdout.columns.toString(),
