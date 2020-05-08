@@ -27,7 +27,7 @@ export async function build() {
     await injectBaseCodeToBundle();
 
     if (await pathExists(paths.srcApi)) {
-        await copyApiToServer();
+        await copyApiToServer(); // ToDo is this necessary???
         await runIsomor();
     }
 
@@ -87,7 +87,7 @@ export function runBabel() {
     );
 }
 
-export async function runParcel() {
+export async function runParcel(watch = false) {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
@@ -96,9 +96,18 @@ export async function runParcel() {
 
     const bundler = new ParcelBundler(join(paths.bundle, 'index.js'), {
         outDir: paths.distStatic,
-        watch: false,
-        hmr: false,
+        watch,
     });
+    if (watch) {
+        const bundlerWatch = (bundler as any).watch.bind(bundler);
+        (bundler as any).watch = async (path: string, asset: any) => {
+            // console.log('path', path);
+            if (path.endsWith('package.json')) {
+                return;
+            }
+            return bundlerWatch(path, asset);
+        };
+    }
     await bundler.bundle();
 }
 
