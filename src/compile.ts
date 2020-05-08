@@ -87,28 +87,20 @@ export function runBabel() {
     );
 }
 
-export async function runParcel(watch = false) {
+export function getParcel() {
+    return new ParcelBundler(join(paths.bundle, 'index.js'), {
+        outDir: paths.distStatic,
+        watch: false,
+    });
+}
+
+export async function runParcel() {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
     await ensureFile(join(paths.distStatic, 'index.css'));
-
-    const bundler = new ParcelBundler(join(paths.bundle, 'index.js'), {
-        outDir: paths.distStatic,
-        watch,
-    });
-    if (watch) {
-        const bundlerWatch = (bundler as any).watch.bind(bundler);
-        (bundler as any).watch = async (path: string, asset: any) => {
-            // console.log('path', path);
-            if (path.endsWith('package.json')) {
-                return;
-            }
-            return bundlerWatch(path, asset);
-        };
-    }
-    await bundler.bundle();
+    await getParcel().bundle();
 }
 
 export function runIsomor() {

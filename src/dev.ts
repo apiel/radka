@@ -7,23 +7,29 @@ import { isomorWsEvent } from 'isomor-server';
 import { WsServerAction } from 'isomor';
 import * as WebSocket from 'ws';
 import * as md5 from 'md5';
+import ParcelBundler from 'parcel-bundler';
 
 import { setDev, paths, config } from './config';
-import { build, runIsomor, runBabel, runParcel } from './compile';
+import { build, runIsomor, runBabel, runParcel, getParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
 import { generatePages, generatePage, collectPagePaths } from './generatePages';
 import { server } from './server';
 import { rkaLoader } from './lib';
 
 let serv: Server;
+// let parcel: ParcelBundler;
 
-export async function dev(rebuild: boolean) {
+export async function dev(skipRebuild: boolean) {
     info('Run Radka.js in dev mode');
     setDev();
 
-    if (rebuild || !(await pathExists(paths.distStatic))) {
+    // we should get parcel from build
+    // parcel = getParcel();
+
+    if (!skipRebuild) {
         await build();
     }
+
     watcher();
     await startServer();
 }
@@ -99,6 +105,7 @@ async function buildStatic(forceParcel = false) {
         // After having some issue with `parcel serve` (build loop forever)
         // let just rebuild everything till with find a solution
         await runParcel();
+        // await parcel.bundle();
     }
 }
 
@@ -123,7 +130,11 @@ function triggerClientReload() {
     if (wsClient) {
         // ToDo: use wsSend from isomor, need to export first
         // WsServerAction.PUSH
-        const msg = JSON.stringify({ action: WsServerAction.PUSH, id: 'HR', payload: 'r_ka_reload' });
+        const msg = JSON.stringify({
+            action: WsServerAction.PUSH,
+            id: 'HR',
+            payload: 'r_ka_reload',
+        });
         wsClient.send(msg);
     }
 }

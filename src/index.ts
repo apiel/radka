@@ -20,7 +20,7 @@ const cosmiconfigOptions = {
 };
 
 async function run() {
-    const { configFile, _, rebuild, ...config } = minimist(process.argv.slice(2));
+    const { configFile, _, skipRebuild, ...config } = minimist(process.argv.slice(2));
     if (config.help || config.h) {
         console.log(`Usage: radka [dev|server|build]
 
@@ -41,7 +41,7 @@ ${Object.keys(globalConfig)
         setConfig(config);
         info('Config', globalConfig);
         if (_.includes('dev')) {
-            await dev(rebuild);
+            await dev(skipRebuild);
         } else if (_.includes('server')) {
             await server();
         } else {

@@ -268,7 +268,7 @@ npx radka dev
 
 This will watch files and automatically rebuild when a change is detected. It will also run a server, so you can access your pages without to setup your own environment. Everything should be ready out of the box for dev purpose.
 
-By default, RADKA.js doesn't rebuild the whole site when dev mode start. But you can force it, by adding the parameter `--rebuild`.
+By default, RADKA.js rebuild the whole site when dev mode start. You can skip rebuild, by adding the parameter `--skipRebuild`.
 
 > Hot reloading is still work in progress and not very simple, right now it is quiet slow. We still need to find some way to run properly Parcel in dev mode and to improve the babel transpiling. Of course, some help would be really welcome on this topic.
 
