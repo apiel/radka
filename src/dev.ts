@@ -1,5 +1,5 @@
-import { info } from 'logol';
-import { pathExists, copy, remove } from 'fs-extra';
+import { info, warn } from 'logol';
+import { copy, remove } from 'fs-extra';
 import { watch } from 'chokidar';
 import { join } from 'path';
 import { Server } from 'http';
@@ -7,24 +7,19 @@ import { isomorWsEvent } from 'isomor-server';
 import { WsServerAction } from 'isomor';
 import * as WebSocket from 'ws';
 import * as md5 from 'md5';
-import ParcelBundler from 'parcel-bundler';
 
 import { setDev, paths, config } from './config';
-import { build, runIsomor, runBabel, runParcel, getParcel } from './compile';
+import { build, runIsomor, runBabel, getParcel } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
 import { generatePages, generatePage, collectPagePaths } from './generatePages';
 import { server } from './server';
 import { rkaLoader } from './lib';
 
 let serv: Server;
-// let parcel: ParcelBundler;
 
 export async function dev(skipRebuild: boolean) {
     info('Run Radka.js in dev mode');
     setDev();
-
-    // we should get parcel from build
-    // parcel = getParcel();
 
     if (!skipRebuild) {
         await build();
@@ -102,10 +97,19 @@ async function buildStatic(forceParcel = false) {
     await remove(config.tmpFolder);
     await runBabel();
     if (forceParcel || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
-        // After having some issue with `parcel serve` (build loop forever)
-        // let just rebuild everything till with find a solution
-        await runParcel();
-        // await parcel.bundle();
+        // try {
+        //     const path = './tmp/bundle/index.js';
+        //     let asset = await (getParcel() as any).resolveAsset(path);
+        //     await (getParcel() as any).buildQueue.add(asset, true);
+        //     await getParcel().bundle();
+        // } catch (err) {
+        //     warn(
+        //         'Could not rebuild partial bundle, need to rebuild the full bundle.',
+        //         err.message,
+        //     );
+        //     await getParcel(true).bundle();
+        // }
+        await getParcel(true).bundle();
     }
 }
 

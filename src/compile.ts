@@ -87,11 +87,15 @@ export function runBabel() {
     );
 }
 
-export function getParcel() {
-    return new ParcelBundler(join(paths.bundle, 'index.js'), {
-        outDir: paths.distStatic,
-        watch: false,
-    });
+let parcel: ParcelBundler;
+export function getParcel(newBundler = false): ParcelBundler {
+    if (!parcel || newBundler) {
+        parcel =  new ParcelBundler(join(paths.bundle, 'index.js'), {
+            outDir: paths.distStatic,
+            watch: false,
+        });
+    }
+    return parcel;
 }
 
 export async function runParcel() {
