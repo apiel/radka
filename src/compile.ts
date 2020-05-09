@@ -12,7 +12,7 @@ import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
 import * as ParcelBundler from 'parcel-bundler';
 
-import { config, paths, getBundleFile, DEV } from './config';
+import { config, paths, DEV } from './config';
 import { generatePages } from './generatePages';
 import { rkaLoader } from './lib';
 import { injectHotReloadToBundle } from './dev';
@@ -42,8 +42,8 @@ async function read(file: string) {
     return content.toString();
 }
 
-async function injectBaseCodeToBundle() {
-    const bundleFile = getBundleFile();
+export async function injectBaseCodeToBundle() {
+    const bundleFile = paths.tmpBundleEntry;
 
     const codes = [
         rkaLoader('r_ka_bundle', await read(bundleFile)),
@@ -90,7 +90,7 @@ export function runBabel() {
 let parcel: ParcelBundler;
 export function getParcel(newBundler = false): ParcelBundler {
     if (!parcel || newBundler) {
-        parcel =  new ParcelBundler(join(paths.bundle, 'index.js'), {
+        parcel =  new ParcelBundler(paths.tmpBundleEntry, {
             outDir: paths.distStatic,
             watch: false,
         });

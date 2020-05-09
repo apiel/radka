@@ -1,7 +1,7 @@
 import { info, warn } from 'logol';
 import { copy, remove } from 'fs-extra';
 import { watch } from 'chokidar';
-import { join } from 'path';
+import { join, extname } from 'path';
 import { Server } from 'http';
 import { isomorWsEvent } from 'isomor-server';
 import { WsServerAction } from 'isomor';
@@ -9,7 +9,13 @@ import * as WebSocket from 'ws';
 import * as md5 from 'md5';
 
 import { setDev, paths, config } from './config';
-import { build, runIsomor, runBabel, getParcel } from './compile';
+import {
+    build,
+    runIsomor,
+    runBabel,
+    getParcel,
+    injectBaseCodeToBundle,
+} from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
 import { generatePages, generatePage, collectPagePaths } from './generatePages';
 import { server } from './server';
@@ -64,7 +70,7 @@ async function handleFile(filePath: string) {
     if (filePath.startsWith(config.apiFolder)) {
         await handleApiFile(filePath);
     } else if (filePath.startsWith(config.bundleFolder)) {
-        await buildStatic(true);
+        await buildStatic(filePath);
     } else {
         await handleOtherFile(filePath);
     }
@@ -92,25 +98,28 @@ async function handleApiFile(filePath: string) {
     await startServer();
 }
 
-async function buildStatic(forceParcel = false) {
+async function buildStatic(filePath?: string) {
     const md5RkaImport = await fileToMd5(paths.rkaImport);
     await remove(config.tmpFolder);
     await runBabel();
-    if (forceParcel || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
-        // try {
-        //     const path = './tmp/bundle/index.js';
-        //     let asset = await (getParcel() as any).resolveAsset(path);
-        //     await (getParcel() as any).buildQueue.add(asset, true);
-        //     await getParcel().bundle();
-        // } catch (err) {
-        //     warn(
-        //         'Could not rebuild partial bundle, need to rebuild the full bundle.',
-        //         err.message,
-        //     );
-        //     await getParcel(true).bundle();
-        // }
-        await getParcel(true).bundle();
+    if (filePath || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
+        await injectBaseCodeToBundle();
+        const path = getBundleFilePath(filePath);
+        let asset = await (getParcel() as any).resolveAsset(path);
+        await (getParcel() as any).buildQueue.add(asset, true);
+        await getParcel().bundle();
     }
+}
+
+function getBundleFilePath(filePath?: string) {
+    if (!filePath) {
+        return paths.tmpBundleEntry;
+    }
+    let path = join(config.tmpFolder, filePath);
+    if (extname(path) === '.ts') {
+        path = path.slice(0, -3) + '.js';
+    }
+    return path;
 }
 
 export function injectHotReloadToBundle() {

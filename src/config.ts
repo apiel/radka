@@ -31,9 +31,10 @@ export let paths = {
     tmpPages: '',
     srcPages: '',
     srcApi: '',
-    bundle: '',
+    tmpBundle: '',
     assets: '',
     rkaImport: '',
+    tmpBundleEntry: '',
 };
 initPaths();
 
@@ -44,11 +45,11 @@ export function setConfig(newConfig = {}) {
 
 function initPaths() {
     const distStatic = join(ROOT_FOLDER, config.distStaticFolder);
-    const bundle = join(config.tmpFolder, config.bundleFolder);
+    const tmpBundle = join(config.tmpFolder, config.bundleFolder);
     const src = join(ROOT_FOLDER, config.srcFolder);
     const distServer = join(ROOT_FOLDER, config.distServerFolder);
     paths = {
-        bundle,
+        tmpBundle,
         distStatic,
         src,
         distServer,
@@ -57,7 +58,8 @@ function initPaths() {
         srcPages: join(src, config.pagesFolder),
         srcApi: join(src, config.apiFolder),
         assets: join(distStatic, config.assetsFolder),
-        rkaImport: join(bundle, RKA_IMPORT_FILE),
+        rkaImport: join(tmpBundle, RKA_IMPORT_FILE),
+        tmpBundleEntry: join(paths.tmpBundle, 'index.js'),
     };
 }
 
@@ -66,5 +68,3 @@ export function setDev() {
     // ToDo: set some type for typescript
     (global as any).DEV = DEV;
 }
-
-export const getBundleFile = () => join(paths.bundle, 'index.js');
