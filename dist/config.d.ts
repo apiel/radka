@@ -24,10 +24,10 @@ export declare let paths: {
     tmpPages: string;
     srcPages: string;
     srcApi: string;
-    bundle: string;
+    tmpBundle: string;
     assets: string;
     rkaImport: string;
+    tmpBundleEntry: string;
 };
 export declare function setConfig(newConfig?: {}): void;
 export declare function setDev(): void;
-export declare const getBundleFile: () => string;

@@ -30,9 +30,10 @@ exports.paths = {
     tmpPages: '',
     srcPages: '',
     srcApi: '',
-    bundle: '',
+    tmpBundle: '',
     assets: '',
     rkaImport: '',
+    tmpBundleEntry: '',
 };
 initPaths();
 function setConfig(newConfig = {}) {
@@ -42,11 +43,11 @@ function setConfig(newConfig = {}) {
 exports.setConfig = setConfig;
 function initPaths() {
     const distStatic = path_1.join(exports.ROOT_FOLDER, exports.config.distStaticFolder);
-    const bundle = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);
+    const tmpBundle = path_1.join(exports.config.tmpFolder, exports.config.bundleFolder);
     const src = path_1.join(exports.ROOT_FOLDER, exports.config.srcFolder);
     const distServer = path_1.join(exports.ROOT_FOLDER, exports.config.distServerFolder);
     exports.paths = {
-        bundle,
+        tmpBundle,
         distStatic,
         src,
         distServer,
@@ -55,7 +56,8 @@ function initPaths() {
         srcPages: path_1.join(src, exports.config.pagesFolder),
         srcApi: path_1.join(src, exports.config.apiFolder),
         assets: path_1.join(distStatic, exports.config.assetsFolder),
-        rkaImport: path_1.join(bundle, exports.RKA_IMPORT_FILE),
+        rkaImport: path_1.join(tmpBundle, exports.RKA_IMPORT_FILE),
+        tmpBundleEntry: path_1.join(exports.paths.tmpBundle, 'index.js'),
     };
 }
 function setDev() {
@@ -63,5 +65,4 @@ function setDev() {
     global.DEV = exports.DEV;
 }
 exports.setDev = setDev;
-exports.getBundleFile = () => path_1.join(exports.paths.bundle, 'index.js');
 //# sourceMappingURL=config.js.map

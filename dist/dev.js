@@ -23,11 +23,11 @@ const generatePages_1 = require("./generatePages");
 const server_1 = require("./server");
 const lib_1 = require("./lib");
 let serv;
-function dev(rebuild) {
+function dev(skipRebuild) {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.info('Run Radka.js in dev mode');
         config_1.setDev();
-        if (rebuild || !(yield fs_extra_1.pathExists(config_1.paths.distStatic))) {
+        if (!skipRebuild) {
             yield compile_1.build();
         }
         watcher();
@@ -70,7 +70,7 @@ function handleFile(filePath) {
             yield handleApiFile(filePath);
         }
         else if (filePath.startsWith(config_1.config.bundleFolder)) {
-            yield buildStatic(true);
+            yield buildStatic(filePath);
         }
         else {
             yield handleOtherFile(filePath);
@@ -101,15 +101,29 @@ function handleApiFile(filePath) {
         yield startServer();
     });
 }
-function buildStatic(forceParcel = false) {
+function buildStatic(filePath) {
     return __awaiter(this, void 0, void 0, function* () {
         const md5RkaImport = yield utils_1.fileToMd5(config_1.paths.rkaImport);
         yield fs_extra_1.remove(config_1.config.tmpFolder);
         yield compile_1.runBabel();
-        if (forceParcel || md5RkaImport !== (yield utils_1.fileToMd5(config_1.paths.rkaImport))) {
-            yield compile_1.runParcel();
+        if (filePath || md5RkaImport !== (yield utils_1.fileToMd5(config_1.paths.rkaImport))) {
+            yield compile_1.injectBaseCodeToBundle();
+            const path = getBundleFilePath(filePath);
+            let asset = yield compile_1.getParcel().resolveAsset(path);
+            yield compile_1.getParcel().buildQueue.add(asset, true);
+            yield compile_1.getParcel().bundle();
         }
     });
+}
+function getBundleFilePath(filePath) {
+    if (!filePath) {
+        return config_1.paths.tmpBundleEntry;
+    }
+    let path = path_1.join(config_1.config.tmpFolder, filePath);
+    if (path_1.extname(path) === '.ts') {
+        path = path.slice(0, -3) + '.js';
+    }
+    return path;
 }
 function injectHotReloadToBundle() {
     const code = `const { subscribe, openWS } = require("isomor");
@@ -124,7 +138,11 @@ isomor_server_1.isomorWsEvent.on('connection', (ws) => {
 });
 function triggerClientReload() {
     if (wsClient) {
-        const msg = JSON.stringify({ action: isomor_1.WsServerAction.PUSH, id: 'HR', payload: 'r_ka_reload' });
+        const msg = JSON.stringify({
+            action: isomor_1.WsServerAction.PUSH,
+            id: 'HR',
+            payload: 'r_ka_reload',
+        });
         wsClient.send(msg);
     }
 }

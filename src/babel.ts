@@ -141,7 +141,7 @@ function addImportToBundle(path: NodePath<t.ImportDeclaration>) {
     ast.program.body.push(path.node);
     const output = generate(ast, {}, emptyCode);
 
-    const rkaImportFile = join(paths.bundle, RKA_IMPORT_FILE);
+    const rkaImportFile = join(paths.tmpBundle, RKA_IMPORT_FILE);
     ensureFileSync(rkaImportFile);
     appendFileSync(rkaImportFile, output.code + '\n');
 }

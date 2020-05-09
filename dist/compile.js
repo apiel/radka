@@ -14,6 +14,7 @@ const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const logol_1 = require("logol");
 const chalk_1 = require("chalk");
+const ParcelBundler = require("parcel-bundler");
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
 const lib_1 = require("./lib");
@@ -42,7 +43,7 @@ function read(file) {
 }
 function injectBaseCodeToBundle() {
     return __awaiter(this, void 0, void 0, function* () {
-        const bundleFile = config_1.getBundleFile();
+        const bundleFile = config_1.paths.tmpBundleEntry;
         const codes = [
             lib_1.rkaLoader('r_ka_bundle', yield read(bundleFile)),
             yield read(config_1.paths.rkaImport),
@@ -63,6 +64,7 @@ function injectBaseCodeToBundle() {
         yield fs_extra_1.writeFile(bundleFile, codes.join(';'));
     });
 }
+exports.injectBaseCodeToBundle = injectBaseCodeToBundle;
 function copyApiToServer() {
     return fs_extra_1.copy(config_1.paths.srcApi, config_1.paths.distServerApi, {
         recursive: true,
@@ -74,11 +76,22 @@ function runBabel() {
     return shell('babel', `${config_1.paths.src} --out-dir ${config_1.config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(' '));
 }
 exports.runBabel = runBabel;
+let parcel;
+function getParcel(newBundler = false) {
+    if (!parcel || newBundler) {
+        parcel = new ParcelBundler(config_1.paths.tmpBundleEntry, {
+            outDir: config_1.paths.distStatic,
+            watch: false,
+        });
+    }
+    return parcel;
+}
+exports.getParcel = getParcel;
 function runParcel() {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.info('Run parcel');
         yield fs_extra_1.ensureFile(path_1.join(config_1.paths.distStatic, 'index.css'));
-        return shell('parcel', `build ${path_1.join(config_1.paths.bundle, 'index.js')} --out-dir ${config_1.paths.distStatic}`.split(' '));
+        yield getParcel().bundle();
     });
 }
 exports.runParcel = runParcel;

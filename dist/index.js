@@ -39,7 +39,7 @@ const cosmiconfigOptions = {
 };
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const _a = minimist(process.argv.slice(2)), { configFile, _, rebuild } = _a, config = __rest(_a, ["configFile", "_", "rebuild"]);
+        const _a = minimist(process.argv.slice(2)), { configFile, _, skipRebuild } = _a, config = __rest(_a, ["configFile", "_", "skipRebuild"]);
         if (config.help || config.h) {
             console.log(`Usage: radka [dev|server|build]
 
@@ -59,7 +59,7 @@ ${Object.keys(config_1.config)
             config_1.setConfig(config);
             logol_1.info('Config', config_1.config);
             if (_.includes('dev')) {
-                yield dev_1.dev(rebuild);
+                yield dev_1.dev(skipRebuild);
             }
             else if (_.includes('server')) {
                 yield server_1.server();
