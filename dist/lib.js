@@ -32,7 +32,9 @@ exports.jsx = {
 let linkIdSeq = 0;
 function page(component, propsList, linkId = `page-${linkIdSeq++}`) {
     return {
-        propsList,
+        getPropsList: Array.isArray(propsList)
+            ? () => ({ propsList })
+            : propsList,
         component,
         linkId,
         link: (props) => `%link%${linkId}%${serialize(props)}%`,

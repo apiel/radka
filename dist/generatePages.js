@@ -34,10 +34,8 @@ function generatePage({ page, file }, pagePaths) {
         const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
         logol_1.log('Load page component', file);
         page.setPaths(config_1.paths);
-        if (page.propsList) {
-            for (const props of page.propsList) {
-                yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), pagePaths, props);
-            }
+        if (page.getPropsList) {
+            yield generateDynamicPage(page, pagePaths, htmlPath, page.getPropsList);
         }
         else {
             yield saveComponentToHtml(page, htmlPath, pagePaths);
@@ -45,6 +43,18 @@ function generatePage({ page, file }, pagePaths) {
     });
 }
 exports.generatePage = generatePage;
+function generateDynamicPage(page, pagePaths, htmlPath, getPropsList) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { propsList, next } = getPropsList();
+        for (const props of propsList) {
+            yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), pagePaths, props);
+        }
+        if (next) {
+            yield generateDynamicPage(page, pagePaths, htmlPath, next);
+        }
+    });
+}
+exports.generateDynamicPage = generateDynamicPage;
 function collectPagePaths() {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield globAsync(path_1.join(config_1.paths.tmpPages, '**', `*${config_1.config.pagesSuffix}.js`));

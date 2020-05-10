@@ -10,7 +10,10 @@ function Product({ id, color }) {
     );
 }
 
-export default page(Product, [
-    { id: "1", color: 'red' },
-    { id: "2", color: 'blue' },
-]);
+export default page(Product, () => ({
+    propsList: [
+        { id: '1', color: 'red' },
+        { id: '2', color: 'blue' },
+    ],
+    next: () => ({ propsList: [{ id: '3', color: 'green' }] }),
+}));

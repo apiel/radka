@@ -48,8 +48,15 @@ export type Props = {
 
 type PropsList = Props[] | undefined;
 
-export interface Page {
+export interface GetterPropsList {
     propsList: PropsList;
+    next?: GetPropsList;
+}
+
+export type GetPropsList = () => GetterPropsList;
+
+export interface Page {
+    getPropsList: GetPropsList;
     component: Function;
     linkId: string;
     link: (props?: LinkProps) => string;
@@ -57,9 +64,15 @@ export interface Page {
 }
 
 // ToDo: need to improve types
-export function page(component: Function, propsList?: PropsList, linkId = `page-${linkIdSeq++}`): Page {
+export function page(
+    component: Function,
+    propsList?: GetPropsList | PropsList,
+    linkId = `page-${linkIdSeq++}`,
+): Page {
     return {
-        propsList,
+        getPropsList: Array.isArray(propsList)
+            ? () => ({ propsList })
+            : propsList,
         component,
         linkId,
         link: (props?: LinkProps) => `%link%${linkId}%${serialize(props)}%`,

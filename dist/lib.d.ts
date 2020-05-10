@@ -10,14 +10,19 @@ export declare type Props = {
     [key: string]: any;
 };
 declare type PropsList = Props[] | undefined;
-export interface Page {
+export interface GetterPropsList {
     propsList: PropsList;
+    next?: GetPropsList;
+}
+export declare type GetPropsList = () => GetterPropsList;
+export interface Page {
+    getPropsList: GetPropsList;
     component: Function;
     linkId: string;
     link: (props?: LinkProps) => string;
     setPaths: (values: any) => void;
 }
-export declare function page(component: Function, propsList?: PropsList, linkId?: string): Page;
+export declare function page(component: Function, propsList?: GetPropsList | PropsList, linkId?: string): Page;
 export declare function Import({ src }: {
     src: string;
 }): any;

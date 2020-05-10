@@ -7,7 +7,7 @@ import { ensureFile, outputFile, readFile } from 'fs-extra';
 import urlJoin from 'url-join';
 
 import { paths, config } from './config';
-import { Page, Props, rkaLoader } from './lib';
+import { Page, Props, rkaLoader, GetPropsList } from './lib';
 import { fileToMd5 } from './utils';
 
 const globAsync = promisify(glob);
@@ -26,17 +26,30 @@ export async function generatePage(
     const htmlPath = join(paths.distStatic, getRoutePath(file));
     log('Load page component', file);
     page.setPaths(paths);
-    if (page.propsList) {
-        for (const props of page.propsList) {
-            await saveComponentToHtml(
-                page,
-                applyPropsToPath(htmlPath, props),
-                pagePaths,
-                props,
-            );
-        }
+    if (page.getPropsList) {
+        await generateDynamicPage(page, pagePaths, htmlPath, page.getPropsList);
     } else {
         await saveComponentToHtml(page, htmlPath, pagePaths);
+    }
+}
+
+export async function generateDynamicPage(
+    page: Page,
+    pagePaths: PagePaths,
+    htmlPath: string,
+    getPropsList: GetPropsList,
+) {
+    const { propsList, next } = getPropsList();
+    for (const props of propsList) {
+        await saveComponentToHtml(
+            page,
+            applyPropsToPath(htmlPath, props),
+            pagePaths,
+            props,
+        );
+    }
+    if (next) {
+        await generateDynamicPage(page, pagePaths, htmlPath, next);
     }
 }
 
@@ -105,9 +118,7 @@ async function appendImportToSource(source: string, ext: string, tag: string) {
         (global as any).r_ka_imports
             .filter((path: string) => path.endsWith(ext))
             .map((path: string) =>
-                readFile(
-                    join(config.tmpFolder, path.substr(paths.src.length)),
-                ),
+                readFile(join(config.tmpFolder, path.substr(paths.src.length))),
             ),
     );
 
