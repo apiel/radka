@@ -90,6 +90,8 @@ function Pet({ type, description }) {
 
 Each page returns a link function, providing the url to access the page. So if the page changes its path, the route will be automatically updated.
 
+For pages with dynamic content, you can pass the props with in the link `Pet.link({type: 'dog'})`.
+
 Now let's create a script to inject in the page. Create a file `src/pages/index.script.js`:
 
 ```js
@@ -199,12 +201,12 @@ export function Hello({ name }) {
 
 ## Folder and file structure
 
-- pages are in `src/pages`
-    - page file should end by `.page.jsx`
-    - page can be named with `[name]` to create dynamic path e.g. `src/pages/[id].page.jsx`
-- components are in `src/components`
-- bundle files are in `src/bundle`
-- injected script files for pages and components must finish by `.script.js`
+-   pages are in `src/pages`
+    -   page file should end by `.page.jsx`
+    -   page can be named with `[name]` to create dynamic path e.g. `src/pages/[id].page.jsx`
+-   components are in `src/components`
+-   bundle files are in `src/bundle`
+-   injected script files for pages and components must finish by `.script.js`
 
 # API routes
 
@@ -248,9 +250,9 @@ function Main() {
         <div>
             <h1>Main page</h1>
             <p>This is an example</p>
-            <img src={require('../images/example.png')} alt=""/>
+            <img src={require('../images/example.png')} alt="" />
             or
-            <img src={require(join('..', 'images', 'example.png'))} alt=""/>
+            <img src={require(join('..', 'images', 'example.png'))} alt="" />
         </div>
     );
 }
@@ -285,7 +287,7 @@ function Pet({ type, description }) {
     );
 }
 
-export default page(Pet, getMyPetsFromDb(global.DEV && { limit: 3}));
+export default page(Pet, getMyPetsFromDb(global.DEV && { limit: 3 }));
 ```
 
 ## Preloading pages
@@ -296,8 +298,8 @@ Turbolinks is activated by default but can be deactivated: `npx radka --turbolin
 
 Using this feature can have some unexpected side effect, see [here](https://www.npmjs.com/package/turbolinks#building-your-turbolinks-application)
 
->Turbolinks is fast because it doesn’t reload the page when you follow a link. Instead, your application becomes a persistent, long-running process in the browser. This requires you to rethink the way you structure your JavaScript.
+> Turbolinks is fast because it doesn’t reload the page when you follow a link. Instead, your application becomes a persistent, long-running process in the browser. This requires you to rethink the way you structure your JavaScript.
 >
->In particular, you can no longer depend on a full page load to reset your environment every time you navigate. The JavaScript window and document objects retain their state across page changes, and any other objects you leave in memory will stay in memory.
+> In particular, you can no longer depend on a full page load to reset your environment every time you navigate. The JavaScript window and document objects retain their state across page changes, and any other objects you leave in memory will stay in memory.
 >
->With awareness and a little extra care, you can design your application to gracefully handle this constraint without tightly coupling it to Turbolinks.
+> With awareness and a little extra care, you can design your application to gracefully handle this constraint without tightly coupling it to Turbolinks.
