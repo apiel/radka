@@ -10,7 +10,6 @@ import {
 } from 'fs-extra';
 import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
-import * as ParcelBundler from 'parcel-bundler';
 
 import { config, paths, DEV } from './config';
 import { generatePages } from './generatePages';
@@ -87,24 +86,19 @@ export function runBabel() {
     );
 }
 
-let parcel: ParcelBundler;
-export function getParcel(newBundler = false): ParcelBundler {
-    if (!parcel || newBundler) {
-        parcel =  new ParcelBundler(paths.tmpBundleEntry, {
-            outDir: paths.distStatic,
-            watch: false,
-        });
-    }
-    return parcel;
-}
-
 export async function runParcel() {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
     await ensureFile(join(paths.distStatic, 'index.css'));
-    await getParcel().bundle();
+
+    return shell(
+        'parcel',
+        `build ${paths.tmpBundleEntry} --dist-dir ${paths.distStatic}`.split(
+            ' ',
+        ),
+    );
 }
 
 export function runIsomor() {

@@ -54,7 +54,7 @@
     "logol": "^0.0.3",
     "md5": "^2.2.1",
     "minimist": "^1.2.5",
-    "parcel-bundler": "^1.12.4",
+    "parcel": "^2.0.0-nightly.261",
     "tmp": "^0.2.1",
     "ts-loader": "^7.0.3",
     "turbolinks": "^5.2.0",
