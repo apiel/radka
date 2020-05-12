@@ -10,6 +10,9 @@ import {
 } from 'fs-extra';
 import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
+import Parcel from '@parcel/core';
+// import defaultConfigContents from '@parcel/config-default';
+const defaultConfigContents = require('@parcel/config-default');
 
 import { config, paths, DEV } from './config';
 import { generatePages } from './generatePages';
@@ -93,12 +96,24 @@ export async function runParcel() {
     // (in one way, shouldnt CSS always exist)
     await ensureFile(join(paths.distStatic, 'index.css'));
 
-    return shell(
-        'parcel',
-        `build ${paths.tmpBundleEntry} --dist-dir ${paths.distStatic}`.split(
-            ' ',
-        ),
-    );
+    const config = {
+        entries: paths.tmpBundleEntry,
+        defaultConfig: {
+            ...defaultConfigContents,
+            filePath: require.resolve('@parcel/config-default'),
+        },
+        targets: {
+            main: {
+                distDir: paths.distStatic,
+            }
+        },
+        // seem to don't make any difference to have distDir
+        distDir: paths.distStatic,
+    };
+    // console.log('Parcel config', config);
+    const bundler = new Parcel(config);
+
+    await bundler.run();
 }
 
 export function runIsomor() {
