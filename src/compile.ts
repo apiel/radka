@@ -10,7 +10,9 @@ import {
 } from 'fs-extra';
 import { info, debug, error } from 'logol';
 import { gray, yellow, red } from 'chalk';
-import * as ParcelBundler from 'parcel-bundler';
+import Parcel from '@parcel/core';
+// import defaultConfigContents from '@parcel/config-default';
+const defaultConfigContents = require('@parcel/config-default');
 
 import { config, paths, DEV } from './config';
 import { generatePages } from './generatePages';
@@ -87,24 +89,31 @@ export function runBabel() {
     );
 }
 
-let parcel: ParcelBundler;
-export function getParcel(newBundler = false): ParcelBundler {
-    if (!parcel || newBundler) {
-        parcel =  new ParcelBundler(paths.tmpBundleEntry, {
-            outDir: paths.distStatic,
-            watch: false,
-        });
-    }
-    return parcel;
-}
-
 export async function runParcel() {
     info('Run parcel');
 
     // ToDo: find better way, in generate file should only include CSS if file exist
     // (in one way, shouldnt CSS always exist)
     await ensureFile(join(paths.distStatic, 'index.css'));
-    await getParcel().bundle();
+
+    const config = {
+        entries: paths.tmpBundleEntry,
+        defaultConfig: {
+            ...defaultConfigContents,
+            filePath: require.resolve('@parcel/config-default'),
+        },
+        targets: {
+            main: {
+                distDir: paths.distStatic,
+            }
+        },
+        // seem to don't make any difference to have distDir
+        distDir: paths.distStatic,
+    };
+    // console.log('Parcel config', config);
+    const bundler = new Parcel(config);
+
+    await bundler.run();
 }
 
 export function runIsomor() {

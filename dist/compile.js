@@ -14,7 +14,8 @@ const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const logol_1 = require("logol");
 const chalk_1 = require("chalk");
-const ParcelBundler = require("parcel-bundler");
+const core_1 = require("@parcel/core");
+const defaultConfigContents = require('@parcel/config-default');
 const config_1 = require("./config");
 const generatePages_1 = require("./generatePages");
 const lib_1 = require("./lib");
@@ -76,22 +77,22 @@ function runBabel() {
     return shell('babel', `${config_1.paths.src} --out-dir ${config_1.config.tmpFolder} --copy-files --extensions .ts,.tsx,.js,.jsx`.split(' '));
 }
 exports.runBabel = runBabel;
-let parcel;
-function getParcel(newBundler = false) {
-    if (!parcel || newBundler) {
-        parcel = new ParcelBundler(config_1.paths.tmpBundleEntry, {
-            outDir: config_1.paths.distStatic,
-            watch: false,
-        });
-    }
-    return parcel;
-}
-exports.getParcel = getParcel;
 function runParcel() {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.info('Run parcel');
         yield fs_extra_1.ensureFile(path_1.join(config_1.paths.distStatic, 'index.css'));
-        yield getParcel().bundle();
+        const config = {
+            entries: config_1.paths.tmpBundleEntry,
+            defaultConfig: Object.assign(Object.assign({}, defaultConfigContents), { filePath: require.resolve('@parcel/config-default') }),
+            targets: {
+                main: {
+                    distDir: config_1.paths.distStatic,
+                }
+            },
+            distDir: config_1.paths.distStatic,
+        };
+        const bundler = new core_1.default(config);
+        yield bundler.run();
     });
 }
 exports.runParcel = runParcel;

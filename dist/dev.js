@@ -108,22 +108,9 @@ function buildStatic(filePath) {
         yield compile_1.runBabel();
         if (filePath || md5RkaImport !== (yield utils_1.fileToMd5(config_1.paths.rkaImport))) {
             yield compile_1.injectBaseCodeToBundle();
-            const path = getBundleFilePath(filePath);
-            let asset = yield compile_1.getParcel().resolveAsset(path);
-            yield compile_1.getParcel().buildQueue.add(asset, true);
-            yield compile_1.getParcel().bundle();
+            yield compile_1.runParcel();
         }
     });
-}
-function getBundleFilePath(filePath) {
-    if (!filePath) {
-        return config_1.paths.tmpBundleEntry;
-    }
-    let path = path_1.join(config_1.config.tmpFolder, filePath);
-    if (path_1.extname(path) === '.ts') {
-        path = path.slice(0, -3) + '.js';
-    }
-    return path;
 }
 function injectHotReloadToBundle() {
     const code = `const { subscribe, openWS } = require("isomor");

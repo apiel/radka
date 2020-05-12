@@ -13,7 +13,7 @@ import {
     build,
     runIsomor,
     runBabel,
-    getParcel,
+    runParcel,
     injectBaseCodeToBundle,
 } from './compile';
 import { fileIsInRoot, fileToMd5 } from './utils';
@@ -104,22 +104,8 @@ async function buildStatic(filePath?: string) {
     await runBabel();
     if (filePath || md5RkaImport !== (await fileToMd5(paths.rkaImport))) {
         await injectBaseCodeToBundle();
-        const path = getBundleFilePath(filePath);
-        let asset = await (getParcel() as any).resolveAsset(path);
-        await (getParcel() as any).buildQueue.add(asset, true);
-        await getParcel().bundle();
+        await runParcel();
     }
-}
-
-function getBundleFilePath(filePath?: string) {
-    if (!filePath) {
-        return paths.tmpBundleEntry;
-    }
-    let path = join(config.tmpFolder, filePath);
-    if (extname(path) === '.ts') {
-        path = path.slice(0, -3) + '.js';
-    }
-    return path;
 }
 
 export function injectHotReloadToBundle() {
