@@ -29,28 +29,29 @@ function generatePages() {
     });
 }
 exports.generatePages = generatePages;
-function generatePage({ page, file }, pagePaths) {
+function generatePage(pagePath, pagePaths) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { file, page } = pagePath;
         const htmlPath = path_1.join(config_1.paths.distStatic, getRoutePath(file));
         logol_1.log('Load page component', file);
         page.setPaths(config_1.paths);
         if (page.getPropsList) {
-            yield generateDynamicPage(page, pagePaths, htmlPath, page.getPropsList);
+            yield generateDynamicPage(pagePath, pagePaths, htmlPath, page.getPropsList);
         }
         else {
-            yield saveComponentToHtml(page, htmlPath, pagePaths);
+            yield saveComponentToHtml(pagePath, pagePaths, htmlPath);
         }
     });
 }
 exports.generatePage = generatePage;
-function generateDynamicPage(page, pagePaths, htmlPath, getPropsList) {
+function generateDynamicPage(pagePath, pagePaths, htmlPath, getPropsList) {
     return __awaiter(this, void 0, void 0, function* () {
         const { propsList, next } = getPropsList();
         for (const props of propsList) {
-            yield saveComponentToHtml(page, applyPropsToPath(htmlPath, props), pagePaths, props);
+            yield saveComponentToHtml(pagePath, pagePaths, applyPropsToPath(htmlPath, props), props);
         }
         if (next) {
-            yield generateDynamicPage(page, pagePaths, htmlPath, next);
+            yield generateDynamicPage(pagePath, pagePaths, htmlPath, next);
         }
     });
 }
@@ -61,10 +62,14 @@ function collectPagePaths() {
         logol_1.log('Pages component founds', files);
         const pagePaths = {};
         files.forEach((file) => delete require.cache[file]);
-        global.r_ka_imports = [];
         files.forEach((file) => {
+            global.r_ka_imports = [];
             const page = require(file).default;
-            pagePaths[page.linkId] = { file, page };
+            pagePaths[page.linkId] = {
+                file,
+                page,
+                imports: global.r_ka_imports,
+            };
         });
         return pagePaths;
     });
@@ -82,24 +87,24 @@ function applyPropsToPath(path, props) {
     });
     return pathWithProps;
 }
-function saveComponentToHtml(page, htmlPath, links, props) {
+function saveComponentToHtml({ page, imports }, links, htmlPath, props) {
     return __awaiter(this, void 0, void 0, function* () {
         logol_1.log('Generate page', htmlPath);
         let source = page.component(props).render(jsx_pragmatic_1.html());
         source = applyPropsToLinks(source, links);
-        source = yield appendImportToSource(source, '.js', 'script');
-        source = yield appendImportToSource(source, '.css', 'style');
+        source = yield appendImportToSource(source, imports, '.js', 'script');
+        source = yield appendImportToSource(source, imports, '.css', 'style');
         source = yield injectBundles(source);
         yield fs_extra_1.ensureFile(htmlPath);
         yield fs_extra_1.outputFile(htmlPath, source);
     });
 }
-function appendImportToSource(source, ext, tag) {
+function appendImportToSource(source, imports, ext, tag) {
     return __awaiter(this, void 0, void 0, function* () {
-        const imports = yield Promise.all(global.r_ka_imports
+        const importsContent = yield Promise.all(imports
             .filter((path) => path.endsWith(ext))
             .map((path) => fs_extra_1.readFile(path_1.join(config_1.config.tmpFolder, path.substr(config_1.paths.src.length)))));
-        let code = imports.map((s) => s.toString()).join();
+        let code = importsContent.map((s) => s.toString()).join(';');
         if (ext === '.js') {
             code = lib_1.rkaLoader('r_ka_imports', code);
         }

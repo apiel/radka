@@ -14,7 +14,7 @@ export const handleClick = async (param) => {
     console.log('click me', param);
     // info('yo', await getUptime());
     const { uptime } = await getUptime();
-    document.querySelector('h1').textContent = uptime;
+    document.querySelector('h1').textContent = `${uptime}`;
 };
 
 export function yo() {
@@ -23,4 +23,6 @@ export function yo() {
 
 document.querySelector('#login-btn').onclick = () => handleClick(123);
 
-getCounter().then(count => document.querySelector('#counter').textContent = count);
+getCounter().then(
+    (count) => (document.querySelector('#counter').textContent = `${count}`),
+);

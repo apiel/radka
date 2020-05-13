@@ -1,4 +1,5 @@
 import { jsx, page } from '../../dist/lib';
+import './sub2.script';
 
 function Sub() {
     return (

@@ -19,22 +19,25 @@ export async function generatePages() {
     }
 }
 
-export async function generatePage(
-    { page, file }: PagePath,
-    pagePaths: PagePaths,
-) {
+export async function generatePage(pagePath: PagePath, pagePaths: PagePaths) {
+    const { file, page } = pagePath;
     const htmlPath = join(paths.distStatic, getRoutePath(file));
     log('Load page component', file);
     page.setPaths(paths);
     if (page.getPropsList) {
-        await generateDynamicPage(page, pagePaths, htmlPath, page.getPropsList);
+        await generateDynamicPage(
+            pagePath,
+            pagePaths,
+            htmlPath,
+            page.getPropsList,
+        );
     } else {
-        await saveComponentToHtml(page, htmlPath, pagePaths);
+        await saveComponentToHtml(pagePath, pagePaths, htmlPath);
     }
 }
 
 export async function generateDynamicPage(
-    page: Page,
+    pagePath: PagePath,
     pagePaths: PagePaths,
     htmlPath: string,
     getPropsList: GetPropsList,
@@ -42,20 +45,21 @@ export async function generateDynamicPage(
     const { propsList, next } = getPropsList();
     for (const props of propsList) {
         await saveComponentToHtml(
-            page,
-            applyPropsToPath(htmlPath, props),
+            pagePath,
             pagePaths,
+            applyPropsToPath(htmlPath, props),
             props,
         );
     }
     if (next) {
-        await generateDynamicPage(page, pagePaths, htmlPath, next);
+        await generateDynamicPage(pagePath, pagePaths, htmlPath, next);
     }
 }
 
 interface PagePath {
     file: string;
     page: Page;
+    imports: string[];
 }
 type PagePaths = { [pathId: string]: PagePath };
 
@@ -67,10 +71,14 @@ export async function collectPagePaths(): Promise<PagePaths> {
     const pagePaths = {};
     // First cleanup cache separetly else it will interfer with page-ids
     files.forEach((file) => delete require.cache[file]);
-    (global as any).r_ka_imports = []; // clean up before appending import
     files.forEach((file) => {
+        (global as any).r_ka_imports = []; // clean up before appending import
         const page: Page = require(file).default;
-        pagePaths[page.linkId] = { file, page };
+        pagePaths[page.linkId] = {
+            file,
+            page,
+            imports: (global as any).r_ka_imports,
+        };
     });
     // console.log('keys', Object.keys(pagePaths));
     return pagePaths;
@@ -96,33 +104,32 @@ function applyPropsToPath(path: string, props: Props) {
 }
 
 async function saveComponentToHtml(
-    page: Page,
-    htmlPath: string,
+    { page, imports }: PagePath,
     links: PagePaths,
+    htmlPath: string,
     props?: Props,
 ) {
     log('Generate page', htmlPath);
     let source = page.component(props).render(html());
     source = applyPropsToLinks(source, links);
-    // console.log('r_ka_imports', (global as any).r_ka_imports);
-    source = await appendImportToSource(source, '.js', 'script');
-    source = await appendImportToSource(source, '.css', 'style');
+    source = await appendImportToSource(source, imports, '.js', 'script');
+    source = await appendImportToSource(source, imports, '.css', 'style');
     source = await injectBundles(source);
 
     await ensureFile(htmlPath);
     await outputFile(htmlPath, source);
 }
 
-async function appendImportToSource(source: string, ext: string, tag: string) {
-    const imports = await Promise.all(
-        (global as any).r_ka_imports
+async function appendImportToSource(source: string, imports: string[], ext: string, tag: string) {
+    const importsContent = await Promise.all(
+        imports
             .filter((path: string) => path.endsWith(ext))
             .map((path: string) =>
                 readFile(join(config.tmpFolder, path.substr(paths.src.length))),
             ),
     );
 
-    let code = imports.map((s) => s.toString()).join();
+    let code = importsContent.map((s) => s.toString()).join(';');
     if (ext === '.js') {
         code = rkaLoader('r_ka_imports', code);
     }
