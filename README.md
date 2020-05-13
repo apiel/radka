@@ -1,16 +1,16 @@
 # RADKA.js
 
-Radka is a transpiler to generate static html websites using JSX without React. CSS and VanillaJs become more and more powerful providing a lot of features, slowly the complexity of tools like React and Angular become questionable. Static html pages are as well coming back to the trend, with some frameworks like Gatsby or NextJs, mainly to improve SEO and performance. Unfortunately those frameworks are heavily dependent on React. Is React really meant to generate HTML on the server? Why would we have to deal with `useState`, `useEffect` and all those things for state management on the server? Of course, some part of the React logic is also used in the browser, for the dynamic part of the UI but all this logic can easily be done in CSS and VanillaJs, especially since WebComponent is available.
+Radka is a transpiler to generate static html websites using JSX without React. CSS and VanillaJs become more and more powerful providing a lot of features, slowly the complexity of tools like React and Angular become questionable. Static html pages are as well coming back to trend, with some frameworks like Gatsby or NextJs, mainly to improve SEO and performance. Unfortunately those frameworks are heavily dependent on React. Is React really meant to generate HTML on the server? Why would we have to deal with `useState`, `useEffect` and all those things for state management on the server? Of course, some part of the React logic is also used in the browser, for the dynamic part of the UI but all this logic can easily be done in CSS and VanillaJs, especially since WebComponent is available.
 
 Radka is a set of popular libraries packed together. Under the hood it is using Babel with the JSX transpiler from React, JSX pragmatic from Paypal, Turbolinks and Parcel to generate the bundle. The routing concept is inspired by NextJs.
 
 ## Getting started
 
-Create a new npm project and install radka library:
+Create a new project and install radka library:
 
 ```shell
-npm init
-npm install radka --dev
+yarn init
+yarn add radka --dev
 ```
 
 Create a folder `src/pages`. This folder will contain the pages. Create a file `src/pages/index.page.jsx`:
@@ -35,12 +35,12 @@ Every jsx file should import `jsx` from `radka` library, like you would do with 
 Now you can transpile the jsx file. In you npm folder run:
 
 ```
-npx radka
+yarn radka
 ```
 
 This will create a new `site` folder containing the generated html files.
 
-You can use `npx radka server` to run a server for your site.
+You can use `yarn radka server` to run a server for your site.
 
 Let's create another page but with dynamic content. Create a file `src/pages/pet/[type].page.jsx`:
 
@@ -265,16 +265,16 @@ export default page(Main);
 In development mode, it might be useful to reload automatically page while you are updating the source code. To do this, you can use hot reloading:
 
 ```
-npx radka dev
+yarn radka dev
 ```
 
 This will watch files and automatically rebuild when a change is detected. It will also run a server, so you can access your pages without to setup your own environment. Everything should be ready out of the box for dev purpose.
 
 By default, RADKA.js rebuild the whole site when dev mode start. You can skip rebuild, by adding the parameter `--skipRebuild`.
 
-> Hot reloading is still work in progress and not very simple, right now it is quiet slow. We still need to find some way to run properly Parcel in dev mode and to improve the babel transpiling. Of course, some help would be really welcome on this topic.
+> Hot reloading is still work in progress and not very simple, right now it is quiet slow. Of course, some help would be really welcome on this topic.
 
-In some previous example, we have been speak about pages with dynamic content. For those use-case it might important to only load a fragment of data in dev mode, instead to load the full dataset. To solve this, there a global variable available to know if we are in dev mode `global.DEV`:
+In some previous example, we have been speaking about pages with dynamic content. For those use-case it might be important to only load a fragment of data in dev mode, instead to load the full dataset. To solve this, there a global variable available to know if we are in dev mode `global.DEV`:
 
 ```jsx
 //...
@@ -294,8 +294,6 @@ export default page(Pet, getMyPetsFromDb(global.DEV && { limit: 3 }));
 
 RADKA.js is using [turbolinks](https://github.com/turbolinks/turbolinks) to preload pages. Turbolinks makes navigating your web application faster. Get the performance benefits of a single-page application without the added complexity of a client-side JavaScript framework.
 
-Turbolinks is activated by default but can be deactivated: `npx radka --turbolinks=false`.
-
 Using this feature can have some unexpected side effect, see [here](https://www.npmjs.com/package/turbolinks#building-your-turbolinks-application)
 
 > Turbolinks is fast because it doesn’t reload the page when you follow a link. Instead, your application becomes a persistent, long-running process in the browser. This requires you to rethink the way you structure your JavaScript.
@@ -303,3 +301,5 @@ Using this feature can have some unexpected side effect, see [here](https://www.
 > In particular, you can no longer depend on a full page load to reset your environment every time you navigate. The JavaScript window and document objects retain their state across page changes, and any other objects you leave in memory will stay in memory.
 >
 > With awareness and a little extra care, you can design your application to gracefully handle this constraint without tightly coupling it to Turbolinks.
+
+Turbolinks is activated by default but can be deactivated: `yarn radka --turbolinks=false`.
